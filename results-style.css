@@ -28,6 +28,15 @@ body, html {
     height: auto;
 }
 
+/* Glassmorphic Panel */
+.glass-panel {
+    padding: 20px;
+    border-radius: 15px;
+    backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+}
+
 /* Main Content */
 .content {
     display: flex;
