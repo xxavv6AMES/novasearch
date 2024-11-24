@@ -17,38 +17,85 @@
     <!-- Google Search Embed -->
     <script async src="https://cse.google.com/cse.js?cx=4776225bf1aee432e"></script>
 
-    <!-- Structured Data for Rich Snippets -->
-    <script type="application/ld+json">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
     {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "Nova Search",
-        "url": "https://search.nova.xxavvgroup.com",
-        "potentialAction": {
-            "@type": "SearchAction",
-            "target": "https://search.nova.xxavvgroup.com/search?nsq={search_term_string}",
-            "query-input": "required name=search_term_string"
-        }
-    }
-    </script>
-
-    <!-- Structured Data for a Rich Snippet Example -->
-    <script type="application/ld+json">
+      "@type": "Article",
+      "headline": "How to Start Game Development",
+      "description": "A beginner's guide to game development, covering essential tools and techniques.",
+      "author": {
+        "@type": "Person",
+        "name": "John Doe"
+      },
+      "datePublished": "2024-11-24",
+      "dateModified": "2024-11-24",
+      "url": "https://example.com/tutorials/start-game-dev",
+      "image": "https://example.com/images/game-dev.png",
+      "wordCount": 1200,
+      "educationalLevel": "Beginner",
+      "audience": {
+        "@type": "Audience",
+        "audienceType": "Beginner Developers"
+      },
+      "interactionStatistic": {
+        "@type": "InteractionCounter",
+        "interactionType": "https://schema.org/ViewAction",
+        "userInteractionCount": 1520
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.8,
+        "reviewCount": 250
+      }
+    },
     {
-        "@context": "https://schema.org",
-        "@type": "SoftwareApplication",
-        "name": "Nova Search",
-        "operatingSystem": "Web",
-        "applicationCategory": "Search Engine",
-        "description": "search engine",
-        "offers": {
-            "@type": "Offer",
-            "price": "0.00",
-            "priceCurrency": "USD"
+      "@type": "VideoObject",
+      "name": "Beginner Game Dev Tutorial",
+      "description": "Learn the basics of game development with this step-by-step video.",
+      "thumbnailUrl": "https://example.com/images/video-thumb.png",
+      "uploadDate": "2024-11-24",
+      "contentUrl": "https://example.com/videos/beginner-game-dev",
+      "duration": "PT10M30S",
+      "interactionStatistic": {
+        "@type": "InteractionCounter",
+        "interactionType": "https://schema.org/WatchAction",
+        "userInteractionCount": 980
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Nova Search?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Nova Search is a developer-focused search engine built by Novawerks."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How can I refine my search?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Use the refinement labels like Tutorials, Projects, or Documentation to narrow down your results."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What formats does Nova Search support?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Nova Search supports text, video, and code snippets, making it versatile for developers."
+          }
         }
+      ]
     }
-    </script>
-
+  ]
+}
+</script>
     <!-- Pagemap for Enhanced Results -->
     <meta name="pagemap" content="{
         'Webpage': [{
