@@ -50,9 +50,11 @@ body, html {
 }
 
 /* GCSE Searchbox */
+/* Autocomplete Search Box Styling */
 .gcse-searchbox-only {
     max-width: 600px;
-    margin: 0 auto;
+    margin: 20px auto;
+    position: relative;
 }
 
 input.gsc-input {
@@ -62,80 +64,92 @@ input.gsc-input {
     padding: 10px;
     border: 2px solid #bb9f81;
     width: 100%;
+    background: rgba(255, 255, 255, 0.8); /* Subtle glass effect */
+    backdrop-filter: blur(5px);
+    transition: border-color 0.3s ease;
+}
+
+input.gsc-input:focus {
+    border-color: #9f856b;
+    outline: none;
 }
 
 button.gsc-search-button {
     font-family: 'Wix Madefor Display', sans-serif !important;
     font-size: 1rem;
     border-radius: 8px;
-    padding: 10px;
+    padding: 10px 15px;
     background-color: #bb9f81;
     color: white;
     border: none;
     cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 button.gsc-search-button:hover {
     background-color: #9f856b;
+    transform: scale(1.05);
 }
 
 /* Results Section */
-/* Search Results Styling */
 .results {
     flex: 2;
     background: rgba(255, 255, 255, 0.8); /* Glassmorphic effect */
     padding: 20px;
     border-radius: 15px;
     backdrop-filter: blur(10px);
-    overflow: hidden; /* Prevent overflow issues */
+    overflow: hidden;
+    margin-top: 20px;
 }
 
+/* Results Text */
 .results h2, .results h3, .results h4, .results p, .results a {
-    font-family: 'Wix Madefor Display', sans-serif; /* Your custom font */
+    font-family: 'Wix Madefor Text', sans-serif; /* Use Text for readability */
     margin: 0;
     color: #333333;
     line-height: 1.5;
 }
 
+/* Link Styles */
 .results a {
-    color: #0073e6; /* Nova's primary link color */
+    color: #0073e6;
     font-weight: 600;
     text-decoration: none;
     transition: color 0.2s ease, transform 0.2s ease;
 }
 
 .results a:hover {
-    color: #005bb5; /* Darker blue for hover */
-    transform: scale(1.02); /* Slight zoom effect */
+    color: #005bb5;
+    transform: scale(1.02);
 }
 
+/* Individual Result Cards */
 .results .gsc-webResult .gsc-result {
     margin-bottom: 15px;
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.9); /* Glass effect */
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.9);
     border-radius: 10px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .results .gsc-webResult .gsc-result:hover {
-    transform: translateY(-5px); /* Subtle lift on hover */
+    transform: translateY(-5px);
     box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
 }
 
-/* Result Titles */
+/* Titles and Snippets */
 .results .gsc-webResult .gs-title {
     font-size: 1.2rem;
     font-weight: 600;
     color: #333333;
 }
 
-/* Result Snippets */
 .results .gsc-webResult .gs-snippet {
     font-size: 1rem;
     color: #555555;
 }
 
-/* Pagination Styling */
+/* Pagination */
 .results .gsc-cursor-box {
     text-align: center;
     margin-top: 20px;
@@ -156,14 +170,15 @@ button.gsc-search-button:hover {
 
 .results .gsc-cursor-box .gsc-cursor-page:hover {
     background: #0073e6;
-    color: #ffffff; /* White on hover */
+    color: #ffffff;
 }
 
 .results .gsc-cursor-box .gsc-cursor-current-page {
     font-weight: bold;
     background: #0073e6;
-    color: #ffffff; /* Highlighted current page */
+    color: #ffffff;
 }
+
 
 /* Footer */
 footer {

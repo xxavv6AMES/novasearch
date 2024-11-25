@@ -188,7 +188,7 @@
         ]
       }
       </script>
-      
+
     <!-- Pagemap for Enhanced Results -->
     <meta name="pagemap" content="{
         'Webpage': [{
@@ -243,5 +243,27 @@
           <a href="settings">Settings</a>
         </footer>
     </div>
+
+    <!-- JavaScript to make results open in a new tab -->
+    <script>
+        // Listen for changes in the search results
+        document.addEventListener("DOMContentLoaded", function () {
+            // Run after Google Custom Search renders results
+            const observer = new MutationObserver(() => {
+                // Find all result links
+                const resultLinks = document.querySelectorAll(".gsc-webResult a");
+                resultLinks.forEach(link => {
+                    link.setAttribute("target", "_blank");
+                    link.setAttribute("rel", "noopener noreferrer"); // Security enhancement
+                });
+            });
+
+            // Observe changes to the search results section
+            const resultsContainer = document.querySelector(".results");
+            if (resultsContainer) {
+                observer.observe(resultsContainer, { childList: true, subtree: true });
+            }
+        });
+    </script>
 </body>
 </html>
