@@ -217,6 +217,14 @@
             <gcse:searchbox-only enableautocomplete="true"></gcse:searchbox-only>
         </div>
 
+      <div id="cseImagePopout" class="cse-image-popout">
+          <div class="cse-image-popout-content">
+              <div class="cse-image-popout-close">&times;</div>
+              <img id="csePopoutImage" class="cse-image-popout-image" src="" alt="Popout Image">
+              <div id="csePopoutDescription" class="cse-image-popout-description"></div>
+          </div>
+      </div>
+
         <main class="content">
             <section class="results">
                 <gcse:searchresults-only></gcse:searchresults-only>
@@ -263,6 +271,80 @@
             if (resultsContainer) {
                 observer.observe(resultsContainer, { childList: true, subtree: true });
             }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const popout = document.getElementById('cseImagePopout');
+            const popoutImage = document.getElementById('csePopoutImage');
+            const popoutDescription = document.getElementById('csePopoutDescription');
+            const closeButton = document.querySelector('.cse-image-popout-close');
+
+            // Function to initialize image popout for CSE
+            function initializeCSEImagePopout() {
+                // Target image results from Google Custom Search
+                const imageResults = document.querySelectorAll('.gsc-imageResult img');
+                
+                imageResults.forEach(img => {
+                    img.style.cursor = 'pointer'; // Indicate clickability
+                    img.addEventListener('click', () => {
+                        // Get full image source (typically from data-src or src)
+                        const src = img.getAttribute('data-src') || img.src;
+                        const alt = img.alt || 'CSE Image';
+
+                        // Try to get parent result for potential description
+                        const resultParent = img.closest('.gsc-imageResult');
+                        const description = resultParent ? 
+                            (resultParent.querySelector('.gs-title')?.textContent || '') : 
+                            '';
+
+                        popoutImage.src = src;
+                        popoutImage.alt = alt;
+                        popoutDescription.textContent = description;
+                        
+                        popout.classList.add('active');
+                    });
+                });
+            }
+
+            // Initial setup
+            initializeCSEImagePopout();
+
+            // MutationObserver to handle dynamically loaded results
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'childList') {
+                        initializeCSEImagePopout();
+                    }
+                });
+            });
+
+            // Observe the results container for dynamic content changes
+            const resultsContainer = document.querySelector('.gsc-results');
+            if (resultsContainer) {
+                observer.observe(resultsContainer, { 
+                    childList: true, 
+                    subtree: true 
+                });
+            }
+
+            // Close popout when clicking close button
+            closeButton.addEventListener('click', () => {
+                popout.classList.remove('active');
+            });
+
+            // Close popout when clicking outside the image
+            popout.addEventListener('click', (e) => {
+                if (e.target === popout) {
+                    popout.classList.remove('active');
+                }
+            });
+
+            // Close popout with Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && popout.classList.contains('active')) {
+                    popout.classList.remove('active');
+                }
+            });
         });
     </script>
 </body>
