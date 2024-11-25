@@ -4,7 +4,7 @@ body, html {
     padding: 0;
     font-family: 'Wix Madefor Display', sans-serif;
     background: #f9f9f9;
-    color: #333333;
+    color: #333;
     box-sizing: border-box;
 }
 
@@ -18,15 +18,15 @@ body, html {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    width: calc(100% - 20px);
-    margin: 10px auto;
+    width: calc(100% - 40px);
+    max-width: 1200px;
+    margin: 20px auto;
 }
 
 /* Logo */
 .logo {
-    margin: 30px 0;
+    margin: 20px 0;
     text-align: center;
-    animation: fadeIn 1.2s ease-out;
 }
 
 .logo img {
@@ -36,7 +36,7 @@ body, html {
 }
 
 .logo img:hover {
-    transform: scale(1.05); /* Slight zoom on hover */
+    transform: scale(1.1);
 }
 
 /* Glassmorphic Panel */
@@ -44,61 +44,141 @@ body, html {
     padding: 20px;
     border-radius: 15px;
     backdrop-filter: blur(20px);
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.75);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    animation: fadeInUp 1s ease-out;
+    text-align: center;
 }
 
-/* Main Content */
-.content {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
+/* GCSE Searchbox */
+.gcse-searchbox-only {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+input.gsc-input {
+    font-family: 'Wix Madefor Display', sans-serif !important;
+    font-size: 1rem;
+    border-radius: 8px;
+    padding: 10px;
+    border: 2px solid #bb9f81;
     width: 100%;
-    animation: fadeInUp 1s ease-out;
 }
 
-/* Search Results */
+button.gsc-search-button {
+    font-family: 'Wix Madefor Display', sans-serif !important;
+    font-size: 1rem;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #bb9f81;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button.gsc-search-button:hover {
+    background-color: #9f856b;
+}
+
+/* Results Section */
+/* Search Results Styling */
 .results {
     flex: 2;
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.8); /* Glassmorphic effect */
     padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    overflow: hidden; /* Prevent overflow issues */
+}
+
+.results h2, .results h3, .results h4, .results p, .results a {
+    font-family: 'Wix Madefor Display', sans-serif; /* Your custom font */
+    margin: 0;
+    color: #333333;
+    line-height: 1.5;
+}
+
+.results a {
+    color: #0073e6; /* Nova's primary link color */
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.results a:hover {
+    color: #005bb5; /* Darker blue for hover */
+    transform: scale(1.02); /* Slight zoom effect */
+}
+
+.results .gsc-webResult .gsc-result {
+    margin-bottom: 15px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.9); /* Glass effect */
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.results:hover {
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+.results .gsc-webResult .gsc-result:hover {
+    transform: translateY(-5px); /* Subtle lift on hover */
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
 }
 
-/* Right Column */
-.right-column {
-    flex: 1;
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+/* Result Titles */
+.results .gsc-webResult .gs-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333333;
 }
 
-.right-column:hover {
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+/* Result Snippets */
+.results .gsc-webResult .gs-snippet {
+    font-size: 1rem;
+    color: #555555;
+}
+
+/* Pagination Styling */
+.results .gsc-cursor-box {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.results .gsc-cursor-box .gsc-cursor-page {
+    display: inline-block;
+    margin: 0 5px;
+    padding: 5px 10px;
+    font-family: 'Wix Madefor Display', sans-serif;
+    font-size: 0.9rem;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    color: #0073e6;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.results .gsc-cursor-box .gsc-cursor-page:hover {
+    background: #0073e6;
+    color: #ffffff; /* White on hover */
+}
+
+.results .gsc-cursor-box .gsc-cursor-current-page {
+    font-weight: bold;
+    background: #0073e6;
+    color: #ffffff; /* Highlighted current page */
 }
 
 /* Footer */
 footer {
     margin-top: 30px;
     font-size: 0.9rem;
-    color: #555555;
+    color: #555;
     text-align: center;
     padding: 10px 0;
-    animation: fadeIn 1s ease-out;
 }
 
 footer a {
     margin: 0 10px;
     color: #0073e6;
     text-decoration: none;
-    transition: color 0.2s ease-in-out;
 }
 
 footer a:hover {
@@ -106,58 +186,24 @@ footer a:hover {
     text-decoration: underline;
 }
 
-/* Animations */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 /* Responsive Design */
-@media (max-width: 1024px) {
-    .content {
-        flex-direction: column;
-    }
-
-    .right-column {
-        margin-top: 20px;
-    }
-}
-
+/* Mobile Responsiveness */
 @media (max-width: 768px) {
-    .logo img {
-        width: 120px;
+    .results {
+        padding: 15px;
     }
 
-    .results, .right-column {
-        padding: 15px;
+    .results .gsc-webResult .gsc-result {
+        margin-bottom: 10px;
     }
 }
 
 @media (max-width: 480px) {
-    .logo img {
-        width: 100px;
+    .results .gsc-webResult .gs-title {
+        font-size: 1rem;
     }
 
-    .results, .right-column {
-        padding: 10px;
-    }
-
-    footer {
-        font-size: 0.8rem;
+    .results .gsc-webResult .gs-snippet {
+        font-size: 0.9rem;
     }
 }
