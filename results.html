@@ -84,6 +84,111 @@
       }
     }
     </script>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          // 1. Dictionary/Definition Card
+          {
+            "@type": "DefinedTerm",
+            "name": "Algorithm",
+            "description": "A step-by-step procedure or formula for solving problems or performing a task.",
+            "termCode": "computer-science-term",
+            "inLanguage": "en"
+          },
+          
+          // 2. Calculator/Conversion Result
+          {
+            "@type": "QuantitativeValue",
+            "value": 42,
+            "unitCode": "C62", // For numeric value
+            "unitText": "Conversion Result"
+          },
+          
+          // 3. Recipe/Cooking Card
+          {
+            "@type": "Recipe",
+            "name": "Chocolate Chip Cookies",
+            "author": {
+              "@type": "Person",
+              "name": "Jane Doe"
+            },
+            "description": "Delicious homemade chocolate chip cookies",
+            "prepTime": "PT15M",
+            "cookTime": "PT12M",
+            "totalTime": "PT27M",
+            "recipeYield": "24 cookies",
+            "nutrition": {
+              "@type": "NutritionInformation",
+              "calories": "150 calories"
+            }
+          },
+          
+          // 4. Product/Shopping Card
+          {
+            "@type": "Product",
+            "name": "Developer Laptop",
+            "description": "High-performance laptop for software development",
+            "brand": {
+              "@type": "Brand",
+              "name": "TechPro"
+            },
+            "offers": {
+              "@type": "Offer",
+              "price": "1299.99",
+              "priceCurrency": "USD",
+              "availability": "https://schema.org/InStock"
+            },
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": "4.5",
+              "reviewCount": "89"
+            }
+          },
+          
+          // 5. Event Card
+          {
+            "@type": "Event",
+            "name": "DevConf 2024",
+            "description": "Annual developer conference for tech professionals",
+            "startDate": "2024-09-15",
+            "endDate": "2024-09-17",
+            "location": {
+              "@type": "Place",
+              "name": "Tech Convention Center",
+              "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "123 Tech Lane",
+                "addressLocality": "San Francisco",
+                "addressRegion": "CA"
+              }
+            }
+          },
+          
+          // 6. How-To Guide
+          {
+            "@type": "HowTo",
+            "name": "How to Set Up a Development Environment",
+            "step": [
+              {
+                "@type": "HowToStep",
+                "text": "Install your preferred code editor"
+              },
+              {
+                "@type": "HowToStep",
+                "text": "Set up version control with Git"
+              },
+              {
+                "@type": "HowToStep",
+                "text": "Configure your programming language and tools"
+              }
+            ]
+          }
+        ]
+      }
+      </script>
+      
     <!-- Pagemap for Enhanced Results -->
     <meta name="pagemap" content="{
         'Webpage': [{
