@@ -1,0 +1,134 @@
+/* General Reset */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Wix Madefor Display', sans-serif;
+    background: #f9f9f9;
+    color: #333333;
+    box-sizing: border-box;
+}
+
+/* Container */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+    width: 100%;
+}
+
+/* Logo */
+.logo {
+    margin-bottom: 30px;
+}
+
+.logo img {
+    width: 150px;
+}
+
+/* Error Message Section */
+.error-message {
+    max-width: 600px;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 1.2s ease-out;
+}
+
+.error-message h1 {
+    font-size: 3rem;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.error-message p {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.error-message a {
+    display: inline-block;
+    padding: 12px 30px;
+    background: #0073e6;
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.1rem;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+}
+
+.error-message a:hover {
+    background: #005bb5;
+}
+
+/* Footer */
+footer {
+    margin-top: 50px;
+    font-size: 0.9rem;
+    color: #555555;
+    text-align: center;
+}
+
+footer a {
+    margin: 0 10px;
+    color: #0073e6;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .logo img {
+        width: 120px;
+    }
+
+    .error-message {
+        width: 90%;
+        padding: 30px;
+    }
+
+    .error-message h1 {
+        font-size: 2.5rem;
+    }
+
+    .error-message p {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo img {
+        width: 100px;
+    }
+
+    .error-message {
+        padding: 20px;
+    }
+
+    .error-message h1 {
+        font-size: 2rem;
+    }
+
+    .error-message p {
+        font-size: 0.9rem;
+    }
+}
