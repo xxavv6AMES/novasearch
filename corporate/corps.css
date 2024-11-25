@@ -4,7 +4,7 @@ body, html {
     padding: 0;
     font-family: 'Wix Madefor Display', sans-serif;
     background: #ffffff;
-    color: #3333;
+    color: #333;
     box-sizing: border-box;
 }
 
@@ -18,13 +18,12 @@ body, html {
 /* Header */
 .header {
     background: #f4f4f4;
-    border-bottom: 2px solid #ffbd06;
+    border-bottom: 2px solid #0073e6; /* Blue accent */
     padding: 30px 0;
 }
 
 .header .logo img {
     width: 150px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .header .nav {
@@ -36,15 +35,14 @@ body, html {
     color: #333;
     text-decoration: none;
     font-weight: 600;
-    transition: color 0.3s ease;
+    transition: color 0.3s ease, border-bottom 0.3s ease;
 }
 
 .header .nav a:hover,
 .header .nav .active {
-    color: #ffbd06;
+    color: #0073e6; /* Blue accent */
     font-weight: 700;
-    background-color: #f0f0f0;
-    border-bottom: 2px solid #ffbd06;
+    border-bottom: 2px solid #0073e6; /* Blue accent */
 }
 
 /* Main Content */
@@ -77,10 +75,8 @@ body, html {
 .right-column {
     flex: 1;
     padding: 30px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    background: #f9f9f9;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd; /* Flat borders */
+    border-radius: 10px; /* Slight rounding for modern look */
 }
 
 .left-column h2,
@@ -92,62 +88,39 @@ body, html {
 }
 
 .left-column p,
-.right-column p {
+.right-column p,
+.right-column ul li {
     line-height: 1.8;
     letter-spacing: 0.02em;
-    color: #555;
 }
 
 .right-column ul {
-    list-style: none;
-    padding: 0;
-}
-
-.right-column ul li {
-    margin-bottom: 15px;
-    font-size: 1.2rem;
-    color: #333;
+    list-style-type:none; /* Remove bullets for a clean look */
 }
 
 /* Footer */
 .footer {
     margin-top: 60px;
     padding: 30px 0;
-    background: #f4f4f4;
-    text-align: center;
+    background-color:#f4f4f4; /* Light background */
 }
 
 .footer p {
-    margin: 0;
-    color: #555;
-    font-size: 0.9rem;
-}
-
-.footer nav {
-    margin-top: 15px;
+    margin-bottom:15px; /* Space between text and links */
 }
 
 .footer nav a {
-    margin: 0 15px;
-    color: #0073e6;
-    text-decoration: none;
-    font-size: 0.9rem;
-}
-
-.footer nav a:hover {
-    text-decoration: underline;
-    color: #005ca7;
+    margin-right :15px; /* Space between links */
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
-    .content {
-        flex-direction: column;
-    }
-
-    .header .nav {
-        float: none;
-        text-align: center;
-        margin-top: 15px;
-    }
+@media (max-width :768px) {
+   .content { 
+      flex-direction :column; 
+   }
+   .header .nav { 
+      float :none; 
+      text-align :center; 
+      margin-top :15px; 
+   }
 }
