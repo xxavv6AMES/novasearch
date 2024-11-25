@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Basic Meta Tags -->
+    <!-- Meta Tags -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Nova Search - search engine for resources, documentation, and tools. Find what you need quickly and efficiently.">
@@ -11,340 +11,307 @@
     <link rel="icon" href="https://cdn.glitch.global/8cdc79c2-e03b-4688-aa5d-1f26e1539764/nova%20(1).ico?v=1732402209810">
 
     <!-- Fonts and Styles -->
-    <link href="https://fonts.googleapis.com/css2?family=Wix+Madefor+Display:wght@400;600&family=Wix+Madefor+Text:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Wix+Madefor+Display:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="results-style.css">
 
-    <!-- Google Search Embed -->
+    <!-- Google Custom Search -->
     <script async src="https://cse.google.com/cse.js?cx=4776225bf1aee432e"></script>
-    
-    <!-- Open Graph / Social Media Tags -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://search.nova.xxavvgroup.com">
-    <meta property="og:title" content="Nova Search - Find Resources">
-    <meta property="og:description" content="Discover the most comprehensive search engine tailored for developers. Find tutorials, documentation, and tools instantly.">
-    <meta property="og:image" content="https://cdn.glitch.global/8cdc79c2-e03b-4688-aa5d-1f26e1539764/nova.png?v=1732400592380">
-    
-    <!-- Twitter Card Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://search.nova.xxavvgroup.com">
-    <meta name="twitter:title" content="Nova Search - Resources At A Glance">
-    <meta name="twitter:description" content="The ultimate search tool. Find code, tutorials, and tech resources in seconds.">
-    <meta name="twitter:image" content="https://cdn.glitch.global/8cdc79c2-e03b-4688-aa5d-1f26e1539764/nova.png?v=1732400592380">
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://search.nova.xxavvgroup.com">
-    
-    <!-- Improved Structured Data (JSON-LD) -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "Nova Search",
-      "url": "https://search.nova.xxavvgroup.com",
-      "description": "A developer-focused search engine for finding coding resources, documentation, and tools",
-      "publisher": {
-        "@type": "Organization",
-        "name": "Novawerks",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://cdn.glitch.global/8cdc79c2-e03b-4688-aa5d-1f26e1539764/nova.png?v=1732400592380"
+
+        <!-- Improved Structured Data (JSON-LD) -->
+        <script type="application/ld+json">
+          {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "Nova Search",
+            "url": "https://search.nova.xxavvgroup.com",
+            "description": "A developer-focused search engine for finding coding resources, documentation, and tools",
+            "publisher": {
+              "@type": "Organization",
+              "name": "Novawerks",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://cdn.glitch.global/8cdc79c2-e03b-4688-aa5d-1f26e1539764/nova.png?v=1732400592380"
+              }
+            },
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://search.nova.xxavvgroup.com?q={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          }
+          </script>
+          
+          <!-- Additional Structured Data for Searchable Content -->
+          <script type="application/ld+json">
+          {
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "name": "Search Results - Nova Search",
+            "description": "Search results page for developer resources, tutorials, and coding tools",
+            "breadcrumb": {
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://search.nova.xxavvgroup.com"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Search",
+                  "item": "https://search.nova.xxavvgroup.com/search"
+                }
+              ]
+            }
+          }
+          </script>
+      
+          <script type="application/ld+json">
+            {
+              "@context": "https://schema.org",
+              "@graph": [
+                // 1. Dictionary/Definition Card
+                {
+                  "@type": "DefinedTerm",
+                  "name": "Algorithm",
+                  "description": "A step-by-step procedure or formula for solving problems or performing a task.",
+                  "termCode": "computer-science-term",
+                  "inLanguage": "en"
+                },
+                
+                // 2. Calculator/Conversion Result
+                {
+                  "@type": "QuantitativeValue",
+                  "value": 42,
+                  "unitCode": "C62", // For numeric value
+                  "unitText": "Conversion Result"
+                },
+                
+                // 3. Recipe/Cooking Card
+                {
+                  "@type": "Recipe",
+                  "name": "Chocolate Chip Cookies",
+                  "author": {
+                    "@type": "Person",
+                    "name": "Jane Doe"
+                  },
+                  "description": "Delicious homemade chocolate chip cookies",
+                  "prepTime": "PT15M",
+                  "cookTime": "PT12M",
+                  "totalTime": "PT27M",
+                  "recipeYield": "24 cookies",
+                  "nutrition": {
+                    "@type": "NutritionInformation",
+                    "calories": "150 calories"
+                  }
+                },
+                
+                // 4. Product/Shopping Card
+                {
+                  "@type": "Product",
+                  "name": "Developer Laptop",
+                  "description": "High-performance laptop for software development",
+                  "brand": {
+                    "@type": "Brand",
+                    "name": "TechPro"
+                  },
+                  "offers": {
+                    "@type": "Offer",
+                    "price": "1299.99",
+                    "priceCurrency": "USD",
+                    "availability": "https://schema.org/InStock"
+                  },
+                  "aggregateRating": {
+                    "@type": "AggregateRating",
+                    "ratingValue": "4.5",
+                    "reviewCount": "89"
+                  }
+                },
+                
+                // 5. Event Card
+                {
+                  "@type": "Event",
+                  "name": "DevConf 2024",
+                  "description": "Annual developer conference for tech professionals",
+                  "startDate": "2024-09-15",
+                  "endDate": "2024-09-17",
+                  "location": {
+                    "@type": "Place",
+                    "name": "Tech Convention Center",
+                    "address": {
+                      "@type": "PostalAddress",
+                      "streetAddress": "123 Tech Lane",
+                      "addressLocality": "San Francisco",
+                      "addressRegion": "CA"
+                    }
+                  }
+                },
+                
+                // 6. How-To Guide
+                {
+                  "@type": "HowTo",
+                  "name": "How to Set Up a Development Environment",
+                  "step": [
+                    {
+                      "@type": "HowToStep",
+                      "text": "Install your preferred code editor"
+                    },
+                    {
+                      "@type": "HowToStep",
+                      "text": "Set up version control with Git"
+                    },
+                    {
+                      "@type": "HowToStep",
+                      "text": "Configure your programming language and tools"
+                    }
+                  ]
+                }
+              ]
+            }
+            </script>
+
+    <!-- Styles for Image Popout -->
+    <style>
+        .cse-image-popout {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
         }
-      },
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://search.nova.xxavvgroup.com?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
-    }
-    </script>
-    
-    <!-- Additional Structured Data for Searchable Content -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebPage",
-      "name": "Search Results - Nova Search",
-      "description": "Search results page for developer resources, tutorials, and coding tools",
-      "breadcrumb": {
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "Home",
-            "item": "https://search.nova.xxavvgroup.com"
-          },
-          {
-            "@type": "ListItem",
-            "position": 2,
-            "name": "Search",
-            "item": "https://search.nova.xxavvgroup.com/search"
-          }
-        ]
-      }
-    }
-    </script>
 
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@graph": [
-          // 1. Dictionary/Definition Card
-          {
-            "@type": "DefinedTerm",
-            "name": "Algorithm",
-            "description": "A step-by-step procedure or formula for solving problems or performing a task.",
-            "termCode": "computer-science-term",
-            "inLanguage": "en"
-          },
-          
-          // 2. Calculator/Conversion Result
-          {
-            "@type": "QuantitativeValue",
-            "value": 42,
-            "unitCode": "C62", // For numeric value
-            "unitText": "Conversion Result"
-          },
-          
-          // 3. Recipe/Cooking Card
-          {
-            "@type": "Recipe",
-            "name": "Chocolate Chip Cookies",
-            "author": {
-              "@type": "Person",
-              "name": "Jane Doe"
-            },
-            "description": "Delicious homemade chocolate chip cookies",
-            "prepTime": "PT15M",
-            "cookTime": "PT12M",
-            "totalTime": "PT27M",
-            "recipeYield": "24 cookies",
-            "nutrition": {
-              "@type": "NutritionInformation",
-              "calories": "150 calories"
-            }
-          },
-          
-          // 4. Product/Shopping Card
-          {
-            "@type": "Product",
-            "name": "Developer Laptop",
-            "description": "High-performance laptop for software development",
-            "brand": {
-              "@type": "Brand",
-              "name": "TechPro"
-            },
-            "offers": {
-              "@type": "Offer",
-              "price": "1299.99",
-              "priceCurrency": "USD",
-              "availability": "https://schema.org/InStock"
-            },
-            "aggregateRating": {
-              "@type": "AggregateRating",
-              "ratingValue": "4.5",
-              "reviewCount": "89"
-            }
-          },
-          
-          // 5. Event Card
-          {
-            "@type": "Event",
-            "name": "DevConf 2024",
-            "description": "Annual developer conference for tech professionals",
-            "startDate": "2024-09-15",
-            "endDate": "2024-09-17",
-            "location": {
-              "@type": "Place",
-              "name": "Tech Convention Center",
-              "address": {
-                "@type": "PostalAddress",
-                "streetAddress": "123 Tech Lane",
-                "addressLocality": "San Francisco",
-                "addressRegion": "CA"
-              }
-            }
-          },
-          
-          // 6. How-To Guide
-          {
-            "@type": "HowTo",
-            "name": "How to Set Up a Development Environment",
-            "step": [
-              {
-                "@type": "HowToStep",
-                "text": "Install your preferred code editor"
-              },
-              {
-                "@type": "HowToStep",
-                "text": "Set up version control with Git"
-              },
-              {
-                "@type": "HowToStep",
-                "text": "Configure your programming language and tools"
-              }
-            ]
-          }
-        ]
-      }
-      </script>
+        .cse-image-popout.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 1;
+        }
 
-    <!-- Pagemap for Enhanced Results -->
-    <meta name="pagemap" content="{
-        'Webpage': [{
-            'name': 'Nova Search',
-            'description': 'search engine',
-            'url': 'https://search.nova.xxavvgroup.com'
-        }],
-        'Breadcrumb': [{
-            'title': 'Home',
-            'url': 'https://search.nova.xxavvgroup.com'
-        }, {
-            'title': 'Search',
-            'url': 'https://search.nova.xxavvgroup.com'
-        }]
-    }">
+        .cse-image-popout-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        .cse-image-popout-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .cse-image-popout-close {
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .cse-image-popout-close:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+    </style>
 </head>
 <body>
     <div class="container">
+        <!-- Header -->
         <header class="logo">
             <a href="index.html">
                 <img src="https://cdn.glitch.global/8cdc79c2-e03b-4688-aa5d-1f26e1539764/nova.png?v=1732400592380" alt="Nova Logo">
             </a>
         </header>
 
+        <!-- Search Box -->
         <div class="glass-panel search-box">
             <gcse:searchbox-only enableautocomplete="true"></gcse:searchbox-only>
         </div>
 
-      <div id="cseImagePopout" class="cse-image-popout">
-          <div class="cse-image-popout-content">
-              <div class="cse-image-popout-close">&times;</div>
-              <img id="csePopoutImage" class="cse-image-popout-image" src="" alt="Popout Image">
-              <div id="csePopoutDescription" class="cse-image-popout-description"></div>
-          </div>
-      </div>
-
+        <!-- Main Content -->
         <main class="content">
             <section class="results">
                 <gcse:searchresults-only></gcse:searchresults-only>
             </section>
-
-            <aside class="right-column">
-                <div class="additional-content">
-                    <h2>Popular Searches</h2>
-                    <ul>
-                        <li><a href="#">API Documentation</a></li>
-                        <li><a href="#">Code Snippets</a></li>
-                        <li><a href="#">Development Tools</a></li>
-                        <li><a href="#">Tutorials</a></li>
-                    </ul>
-                </div>
-            </aside>
         </main>
 
         <!-- Footer -->
         <footer>
-          <a href="corporate/about.html">About</a>
-          <a href="corporate/privacy.html">Privacy</a>
-          <a href="corporate/terms.html">Terms &amp; Conditions</a>
-          <a href="settings">Settings</a>
+            <a href="corporate/about.html">About</a>
+            <a href="corporate/privacy.html">Privacy</a>
+            <a href="corporate/terms.html">Terms &amp; Conditions</a>
+            <a href="settings">Settings</a>
         </footer>
     </div>
 
-    <!-- JavaScript to make results open in a new tab -->
+    <!-- Image Popout -->
+    <div id="cseImagePopout" class="cse-image-popout">
+        <div class="cse-image-popout-content">
+            <span class="cse-image-popout-close">&times;</span>
+            <img id="csePopoutImage" class="cse-image-popout-image" src="" alt="Popout Image">
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script>
-        // Listen for changes in the search results
-        document.addEventListener("DOMContentLoaded", function () {
-            // Run after Google Custom Search renders results
-            const observer = new MutationObserver(() => {
-                // Find all result links
-                const resultLinks = document.querySelectorAll(".gsc-webResult a");
-                resultLinks.forEach(link => {
-                    link.setAttribute("target", "_blank");
-                    link.setAttribute("rel", "noopener noreferrer"); // Security enhancement
-                });
-            });
-
-            // Observe changes to the search results section
-            const resultsContainer = document.querySelector(".results");
-            if (resultsContainer) {
-                observer.observe(resultsContainer, { childList: true, subtree: true });
-            }
-        });
-
         document.addEventListener('DOMContentLoaded', () => {
             const popout = document.getElementById('cseImagePopout');
             const popoutImage = document.getElementById('csePopoutImage');
-            const popoutDescription = document.getElementById('csePopoutDescription');
             const closeButton = document.querySelector('.cse-image-popout-close');
 
-            // Function to initialize image popout for CSE
             function initializeCSEImagePopout() {
-                // Target image results from Google Custom Search
                 const imageResults = document.querySelectorAll('.gsc-imageResult img');
-                
                 imageResults.forEach(img => {
-                    img.style.cursor = 'pointer'; // Indicate clickability
+                    img.style.cursor = 'pointer';
                     img.addEventListener('click', () => {
-                        // Get full image source (typically from data-src or src)
-                        const src = img.getAttribute('data-src') || img.src;
-                        const alt = img.alt || 'CSE Image';
-
-                        // Try to get parent result for potential description
-                        const resultParent = img.closest('.gsc-imageResult');
-                        const description = resultParent ? 
-                            (resultParent.querySelector('.gs-title')?.textContent || '') : 
-                            '';
-
-                        popoutImage.src = src;
-                        popoutImage.alt = alt;
-                        popoutDescription.textContent = description;
-                        
+                        popoutImage.src = img.getAttribute('data-src') || img.src;
                         popout.classList.add('active');
                     });
                 });
             }
 
-            // Initial setup
-            initializeCSEImagePopout();
-
-            // MutationObserver to handle dynamically loaded results
-            const observer = new MutationObserver((mutations) => {
-                mutations.forEach((mutation) => {
-                    if (mutation.type === 'childList') {
-                        initializeCSEImagePopout();
-                    }
-                });
-            });
-
-            // Observe the results container for dynamic content changes
-            const resultsContainer = document.querySelector('.gsc-results');
-            if (resultsContainer) {
-                observer.observe(resultsContainer, { 
-                    childList: true, 
-                    subtree: true 
-                });
-            }
-
-            // Close popout when clicking close button
             closeButton.addEventListener('click', () => {
                 popout.classList.remove('active');
+                popoutImage.src = '';
             });
 
-            // Close popout when clicking outside the image
-            popout.addEventListener('click', (e) => {
-                if (e.target === popout) {
-                    popout.classList.remove('active');
-                }
+            const observer = new MutationObserver(() => initializeCSEImagePopout());
+            const resultsContainer = document.querySelector(".results");
+            if (resultsContainer) observer.observe(resultsContainer, { childList: true, subtree: true });
+        });
+
+          
+            document.addEventListener("DOMContentLoaded", function () {
+            const observer = new MutationObserver(() => {
+                const resultLinks = document.querySelectorAll(".gsc-webResult a");
+                resultLinks.forEach(link => {
+                    link.setAttribute("target", "_blank");
+                    link.setAttribute("rel", "noopener noreferrer");
+                });
             });
 
-            // Close popout with Escape key
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && popout.classList.contains('active')) {
-                    popout.classList.remove('active');
-                }
-            });
+            const resultsContainer = document.querySelector(".results");
+            if (resultsContainer) {
+                observer.observe(resultsContainer, { childList: true, subtree: true });
+            }
         });
     </script>
 </body>
