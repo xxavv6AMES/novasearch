@@ -172,63 +172,72 @@
             }
             </script>
 
-    <!-- Styles for Image Popout -->
     <style>
-        .cse-image-popout {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(10px);
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out;
-        }
+.cse-image-popout {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    right: 0;
+    top: 0;
+    width: 400px;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    overflow-y: auto;
+}
 
-        .cse-image-popout.active {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 1;
-        }
+.cse-image-popout.active {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 1;
+}
 
-        .cse-image-popout-content {
-            position: relative;
-            max-width: 90%;
-            max-height: 90%;
-        }
+.cse-image-popout-content {
+    max-width: 90%;
+    max-height: 90%;
+}
 
-        .cse-image-popout-image {
-            max-width: 150%;
-            object-fit: contain;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
+.cse-image-popout-image {
+    max-width: 100%;
+    max-height: 70%; /* Allow room for metadata */
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
 
-        .cse-image-popout-close {
-            position: absolute;
-            top: -40px;
-            right: -40px;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(5px);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: white;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
+.cse-image-popout-metadata {
+    margin-top: 15px;
+    color: white;
+    font-size: 0.9rem;
+    text-align: left;
+    width: 90%;
+    overflow-wrap: break-word;
+}
 
-        .cse-image-popout-close:hover {
-            background: rgba(255, 255, 255, 0.5);
-        }
+.cse-image-popout-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.cse-image-popout-close:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
     </style>
 </head>
 <body>
@@ -263,39 +272,72 @@
 
     <!-- Image Popout -->
     <div id="cseImagePopout" class="cse-image-popout">
-        <div class="cse-image-popout-content">
-            <span class="cse-image-popout-close">&times;</span>
-            <img id="csePopoutImage" class="cse-image-popout-image" src="" alt="Popout Image">
-        </div>
-    </div>
+      <div class="cse-image-popout-content">
+          <span class="cse-image-popout-close">&times;</span>
+          <img id="csePopoutImage" class="cse-image-popout-image" src="" alt="Popout Image">
+          <div id="cseImageMetadata" class="cse-image-popout-metadata">
+          </div>
+      </div>
+  </div>
 
     <!-- Scripts -->
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const popout = document.getElementById('cseImagePopout');
-            const popoutImage = document.getElementById('csePopoutImage');
-            const closeButton = document.querySelector('.cse-image-popout-close');
+document.addEventListener('DOMContentLoaded', () => {
+    const popout = document.getElementById('cseImagePopout');
+    const popoutImage = document.getElementById('csePopoutImage');
+    const closeButton = document.querySelector('.cse-image-popout-close');
+    const metadataContainer = document.getElementById('cseImageMetadata');
 
-            function initializeCSEImagePopout() {
-                const imageResults = document.querySelectorAll('.gsc-imageResult img');
-                imageResults.forEach(img => {
-                    img.style.cursor = 'pointer';
-                    img.addEventListener('click', () => {
-                        popoutImage.src = img.getAttribute('data-src') || img.src;
-                        popout.classList.add('active');
-                    });
-                });
-            }
+    function initializeCSEImagePopout() {
+        const imageResults = document.querySelectorAll('.gsc-imageResult img');
+        imageResults.forEach(img => {
+            img.style.cursor = 'pointer';
+            img.addEventListener('click', () => {
+                // Set the image source
+                popoutImage.src = img.getAttribute('data-src') || img.src;
 
-            closeButton.addEventListener('click', () => {
-                popout.classList.remove('active');
-                popoutImage.src = '';
+                // Fetch metadata
+                const dimensions = img.getAttribute('data-actualwidth') + ' x ' + img.getAttribute('data-actualheight');
+                const link = img.closest('a')?.href || '#';
+                const title = img.closest('a')?.getAttribute('title') || 'Unknown title';
+                const license = img.getAttribute('data-license') || 'Unknown license';
+                const webpage = new URL(link).host || 'Unknown webpage';
+
+                // Populate metadata
+                metadataContainer.innerHTML = `
+                    <p><strong>Dimensions:</strong> ${dimensions}</p>
+                    <p><strong>Page Title:</strong> ${title}</p>
+                    <p><strong>License Info:</strong> ${license}</p>
+                    <p><strong>Web Address:</strong> <a href="${link}" target="_blank" rel="noopener noreferrer">${webpage}</a></p>
+                `;
+
+                // Show popout
+                popout.classList.add('active');
             });
-
-            const observer = new MutationObserver(() => initializeCSEImagePopout());
-            const resultsContainer = document.querySelector(".results");
-            if (resultsContainer) observer.observe(resultsContainer, { childList: true, subtree: true });
         });
+    }
+
+    closeButton.addEventListener('click', () => {
+        popout.classList.remove('active');
+        popoutImage.src = '';
+        metadataContainer.innerHTML = ''; // Clear metadata
+    });
+
+    // Observe changes in the results container to reinitialize listeners
+    const observer = new MutationObserver(() => initializeCSEImagePopout());
+    const resultsContainer = document.querySelector(".results");
+    if (resultsContainer) observer.observe(resultsContainer, { childList: true, subtree: true });
+
+    // Disable the default lightbox from CSE
+    const style = document.createElement('style');
+    style.textContent = `
+        .gsc-modal-background,
+        .gsc-modal-container {
+            display: none !important;
+        }
+    `;
+    document.head.appendChild(style);
+});
 
           
             document.addEventListener("DOMContentLoaded", function () {
