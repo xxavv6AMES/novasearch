@@ -73,18 +73,25 @@ footer a:hover {
 }
 
 /* Sidebar styles */
+/* Sidebar styles */
 .sidebar {
-    position: fixed; /* Keep sidebar fixed */
+    position: fixed; /* Fixed positioning to make it sticky */
     top: 0;
-    right: -250px; /* Initially hide off-screen */
+    right: 0; /* Initially visible on the right side */
+    transform: translateX(100%); /* Initially off-screen */
     width: 250px;
     height: 100%;
     background: rgba(255, 255, 255, 0.6); /* Glassmorphic background */
     backdrop-filter: blur(15px); /* Same blur as other glass panels */
     box-shadow: -2px 0 30px rgba(0, 0, 0, 0.1); /* Shadow for depth effect */
-    transition: right 0.3s ease; /* Smooth transition */
+    transition: transform 0.3s ease; /* Smooth transition for slide-in/out effect */
     z-index: 1000; /* Ensure it appears above other content */
     border-left: 1px solid rgba(255, 255, 255, 0.3); /* Subtle left border for definition */
+}
+
+/* Sidebar - Show the sidebar */
+.sidebar.open {
+    transform: translateX(0); /* Move sidebar to visible position */
 }
 
 /* Sidebar heading */
@@ -119,4 +126,14 @@ footer a:hover {
 
 #close-sidebar:hover {
     color: #ffcc00; /* Brighter yellow on hover */
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%; /* Full width on mobile */
+        transform: translateX(100%); /* Still hidden initially */
+    }
+    .sidebar.open {
+        transform: translateX(0); /* Slide in from the right */
+    }
 }
