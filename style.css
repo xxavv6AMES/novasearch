@@ -71,3 +71,52 @@ footer a:hover {
         width: 100px;
     }
 }
+
+/* Sidebar styles */
+.sidebar {
+    position: fixed; /* Keep sidebar fixed */
+    top: 0;
+    right: -250px; /* Initially hide off-screen */
+    width: 250px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.6); /* Glassmorphic background */
+    backdrop-filter: blur(15px); /* Same blur as other glass panels */
+    box-shadow: -2px 0 30px rgba(0, 0, 0, 0.1); /* Shadow for depth effect */
+    transition: right 0.3s ease; /* Smooth transition */
+    z-index: 1000; /* Ensure it appears above other content */
+    border-left: 1px solid rgba(255, 255, 255, 0.3); /* Subtle left border for definition */
+}
+
+/* Sidebar heading */
+.sidebar h2 {
+    margin-top: 20px;
+    text-align: center;
+    color: #333; /* Darker text for contrast */
+}
+
+/* Sidebar links */
+.sidebar a {
+    display: block;
+    padding: 15px;
+    color: #333; /* Darker text color */
+    text-decoration: none;
+    transition: background-color 0.2s ease; /* Smooth background transition on hover */
+}
+
+.sidebar a:hover {
+    background-color: rgba(200, 200, 200, 0.3); /* Light hover effect */
+}
+
+/* Close button styles */
+#close-sidebar {
+    margin-top: auto; /* Push close button to bottom */
+    padding: 10px;
+    color: #c89f50; /* Yellowish theme for close button */
+    background-color: transparent; 
+    border: none;
+    cursor: pointer;
+}
+
+#close-sidebar:hover {
+    color: #ffcc00; /* Brighter yellow on hover */
+}

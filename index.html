@@ -8,13 +8,26 @@
     <link href="https://fonts.googleapis.com/css2?family=Wix+Madefor+Display:wght@400;600&family=Wix+Madefor+Text:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script async src="https://cse.google.com/cse.js?cx=4776225bf1aee432e"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
     <div class="container">
         <!-- Logo -->
         <header class="logo">
             <img src="https://cdn.glitch.global/8cdc79c2-e03b-4688-aa5d-1f26e1539764/nova.png?v=1732400592380" alt="Nova Logo">
+            <button class="app-icon" id="app-button">
+                <i class="fas fa-th-large"></i>
+            </button>
         </header>
+
+        <!-- Sidebar Menu -->
+        <div class="sidebar" id="sidebar-menu">
+            <h2>Nova Apps</h2>
+            <a href="#">Your Account</a>
+            <a href="#">Nova Search</a>
+            <a href="#">Nova App</a>
+            <button id="close-sidebar">Close</button>
+        </div>
 
         <!-- Search Box -->
         <main>
@@ -31,5 +44,7 @@
             <a href="settings">Settings</a>
         </footer>
     </div>
+
+    <script src="script.js"></script> <!-- Link to your JavaScript file -->
 </body>
 </html>
