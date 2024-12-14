@@ -13,26 +13,26 @@
 <body>
     <div class="container">
         <!-- Logo -->
-<header class="logo">
-    <img src="https://cdn.glitch.global/8cdc79c2-e03b-4688-aa5d-1f26e1539764/nova.png?v=1732400592380" alt="Nova Logo">
-    <button class="app-icon" id="app-button">
-        <i class="fas fa-th-large"></i> <!-- Icon for sidebar toggle -->
-    </button>
-</header>
+        <header class="logo">
+            <img src="https://cdn.glitch.global/8cdc79c2-e03b-4688-aa5d-1f26e1539764/nova.png?v=1732400592380" alt="Nova Logo">
+        </header>
 
+        <!-- App Icon Button for Sidebar -->
+        <button class="app-icon" id="app-button">
+            <i class="fas fa-th-large"></i>
+        </button>
 
         <!-- Sidebar Menu -->
         <div class="sidebar" id="sidebar-menu">
             <h2>Nova Apps</h2>
             <a href="https://account.nova.xxavvgroup.com" target="_blank">Your Account</a>
             <a href="https://docs.nova.xxavvgroup.com" target="_blank">Nova Docs</a>
-            <!-- Add more links as needed -->
             <button id="close-sidebar">Close</button>
         </div>
 
         <!-- Search Box -->
         <main>
-            <div class="glass-panel search-box">
+            <div class="glass-panel gcse-searchbox-only">
                 <gcse:searchbox-only enableautocomplete="true"></gcse:searchbox-only>
             </div>
         </main>
@@ -46,6 +46,6 @@
         </footer>
     </div>
 
-    <script src="script.js"></script> <!-- Link to your JavaScript file -->
+    <script src="script.js"></script>
 </body>
 </html>
