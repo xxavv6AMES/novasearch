@@ -1,63 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Meta Tags -->
+    <!-- Character Encoding and Viewport -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Nova Search - Discover resources, documentation, and tools efficiently">
-    <meta name="keywords" content="Nova Search, developer search, coding resources, development tools">
-    <meta name="author" content="Novawerks">
     
-    <title>Search Results | Nova</title>
+    <!-- Primary SEO Meta Tags -->
+    <title>Results - Nova Search</title>
+    <meta name="description" content="Nova Search: Your ultimate platform for finding developer resources, coding documentation, and development tools. Streamline your research with powerful, intuitive search capabilities.">
+    <meta name="keywords" content="developer search, coding resources, programming tools, documentation search, developer toolkit, code reference, tech research">
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Nova Search - Developer Resource Discovery">
+    <meta property="og:description" content="Powerful search platform for developers to find resources, documentation, and tools efficiently.">
+    <meta property="og:image" content="https://cdn.glitch.global/8cdc79c2-e03b-4688-aa5d-1f26e1539764/nova.png?v=1732400592380">
+    <meta property="og:url" content="https://search.nova.xxavvgroup.com/results.html">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Nova Search - Developer Resource Discovery">
+    <meta name="twitter:description" content="Powerful search platform for developers to find resources, documentation, and tools efficiently.">
+    <meta name="twitter:image" content="https://cdn.glitch.global/8cdc79c2-e03b-4688-aa5d-1f26e1539764/nova.png?v=1732400592380">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://search.nova.xxavvgroup.com/results.html">
     
     <!-- Favicon -->
-    <link rel="icon" href="https://cdn.glitch.global/8cdc79c2-e03b-4688-aa5d-1f26e1539764/nova%20(1).ico?v=1732402209810">
-
+    <link rel="icon" href="https://cdn.glitch.global/8cdc79c2-e03b-4688-aa5d-1f26e1539764/nova%20(1).ico?v=1732402209810" type="image/x-icon">
+    
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Wix+Madefor+Display:wght@400;600&family=Wix+Madefor+Text:wght@400;600;700&display=swap" rel="stylesheet">
-
-    <!-- Google Custom Search -->
-    <script async src="https://cse.google.com/cse.js?cx=4776225bf1aee432e"></script>
-
+    
     <!-- External Stylesheet -->
     <link rel="stylesheet" href="results-style.css">
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="https://cdn.glitch.global/8cdc79c2-e03b-4688-aa5d-1f26e1539764/nova.png?v=1732400592380" as="image">
+    
+    <!-- Robots Meta Tag -->
+    <meta name="robots" content="index, follow">
+    
+    <!-- Webmaster Tools Verification (placeholder - replace with actual verification codes) -->
+    <!-- <meta name="google-site-verification" content="your-verification-code">
+    <meta name="bing-site-verification" content="your-verification-code"> -->
+    
+    <!-- Google Custom Search -->
+    <script async src="https://cse.google.com/cse.js?cx=4776225bf1aee432e"></script>
 </head>
 <body>
+    <!-- Skip to Content Link for Accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
     <div class="container">
         <!-- Header with Logo -->
-        <header class="logo">
-            <a href="index.html">
-                <img src="https://cdn.glitch.global/8cdc79c2-e03b-4688-aa5d-1f26e1539764/nova.png?v=1732400592380" alt="Nova Search Logo">
+        <header class="logo" role="banner">
+            <a href="index.html" aria-label="Nova Search Home">
+                <img src="https://cdn.glitch.global/8cdc79c2-e03b-4688-aa5d-1f26e1539764/nova.png?v=1732400592380" alt="Nova Search Logo" width="150" height="50">
             </a>
         </header>
 
         <!-- Search Container -->
-        <div class="glass-panel">
+        <div class="glass-panel" role="search">
             <div class="gcse-searchbox-only">
                 <gcse:searchbox-only enableautocomplete="true"></gcse:searchbox-only>
             </div>
         </div>
 
         <!-- Search Results -->
-        <main>
-            <section class="results">
+        <main id="main-content">
+            <section class="results" aria-live="polite">
                 <gcse:searchresults-only></gcse:searchresults-only>
             </section>
         </main>
 
         <!-- Site Footer -->
-        <footer>
-            <a href="corporate/about.html">About</a>
-            <a href="corporate/privacy.html">Privacy</a>
-            <a href="corporate/terms.html">Terms &amp; Conditions</a>
-            <a href="settings">Settings</a>
+        <footer role="contentinfo">
+            <nav>
+                <a href="corporate/about.html">About</a>
+                <a href="corporate/privacy.html">Privacy</a>
+                <a href="corporate/terms.html">Terms &amp; Conditions</a>
+                <a href="settings">Settings</a>
+            </nav>
+            <p>&copy; 2024 Nova Search. All Rights Reserved.</p>
         </footer>
     </div>
 
     <!-- Image Popout Modal -->
     <div id="cseImagePopout" class="cse-image-popout">
         <div class="cse-image-popout-content">
-            <span class="cse-image-popout-close">&times;</span>
+            <span class="cse-image-popout-close" aria-label="Close image details">&times;</span>
             <img id="csePopoutImage" class="cse-image-popout-image" src="" alt="Expanded Search Image">
             <div id="cseImageMetadata" class="cse-image-popout-metadata"></div>
         </div>
@@ -75,41 +107,70 @@
                 const imageResults = document.querySelectorAll('.gsc-imageResult img');
                 imageResults.forEach(img => {
                     img.style.cursor = 'pointer';
-                    img.addEventListener('click', () => {
-                        // Set the image source
-                        popoutImage.src = img.getAttribute('data-src') || img.src;
-
-                        // Fetch metadata
-                        const dimensions = `${img.getAttribute('data-actualwidth')} x ${img.getAttribute('data-actualheight')}`;
-                        const link = img.closest('a')?.href || '#';
-                        const title = img.closest('a')?.getAttribute('title') || 'Unknown title';
-                        const license = img.getAttribute('data-license') || 'Unknown license';
-                        const webpage = new URL(link).host || 'Unknown webpage';
-
-                        // Populate metadata
-                        metadataContainer.innerHTML = `
-                            <p><strong>Dimensions:</strong> ${dimensions}</p>
-                            <p><strong>Page Title:</strong> ${title}</p>
-                            <p><strong>License Info:</strong> ${license}</p>
-                            <p><strong>Web Address:</strong> <a href="${link}" target="_blank" rel="noopener noreferrer">${webpage}</a></p>
-                        `;
-
-                        // Show popout
-                        popout.classList.add('active');
+                    img.setAttribute('tabindex', '0'); // Keyboard accessibility
+                    img.addEventListener('click', handleImagePopout);
+                    img.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') handleImagePopout(e);
                     });
                 });
             }
 
-            closeButton.addEventListener('click', () => {
+            function handleImagePopout(event) {
+                const img = event.target;
+                // Set the image source
+                popoutImage.src = img.getAttribute('data-src') || img.src;
+                popoutImage.alt = `Expanded view of image from ${new URL(img.closest('a')?.href || '#').host}`;
+
+                // Fetch metadata
+                const dimensions = `${img.getAttribute('data-actualwidth')} x ${img.getAttribute('data-actualheight')}`;
+                const link = img.closest('a')?.href || '#';
+                const title = img.closest('a')?.getAttribute('title') || 'Unknown title';
+                const license = img.getAttribute('data-license') || 'Unknown license';
+                const webpage = new URL(link).host || 'Unknown webpage';
+
+                // Populate metadata
+                metadataContainer.innerHTML = `
+                    <p><strong>Dimensions:</strong> ${dimensions}</p>
+                    <p><strong>Page Title:</strong> ${title}</p>
+                    <p><strong>License Info:</strong> ${license}</p>
+                    <p><strong>Web Address:</strong> <a href="${link}" target="_blank" rel="noopener noreferrer">${webpage}</a></p>
+                `;
+
+                // Show popout
+                popout.classList.add('active');
+                popout.setAttribute('aria-hidden', 'false');
+                closeButton.focus();
+            }
+
+            closeButton.addEventListener('click', closeImagePopout);
+            closeButton.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') closeImagePopout();
+            });
+
+            function closeImagePopout() {
                 popout.classList.remove('active');
+                popout.setAttribute('aria-hidden', 'true');
                 popoutImage.src = '';
+                popoutImage.alt = '';
                 metadataContainer.innerHTML = '';
+            }
+
+            // Keyboard support for closing popout
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && popout.classList.contains('active')) {
+                    closeImagePopout();
+                }
             });
 
             // Observe changes in the results container to reinitialize listeners
-            const observer = new MutationObserver(() => initializeCSEImagePopout());
+            const observer = new MutationObserver(() => {
+                initializeCSEImagePopout();
+                ensureExternalLinks();
+            });
             const resultsContainer = document.querySelector(".results");
-            if (resultsContainer) observer.observe(resultsContainer, { childList: true, subtree: true });
+            if (resultsContainer) {
+                observer.observe(resultsContainer, { childList: true, subtree: true });
+            }
 
             // Disable the default CSE lightbox
             const style = document.createElement('style');
@@ -122,18 +183,31 @@
             document.head.appendChild(style);
 
             // Ensure all result links open in new tabs
-            const linkObserver = new MutationObserver(() => {
+            function ensureExternalLinks() {
                 const resultLinks = document.querySelectorAll(".gsc-webResult a");
                 resultLinks.forEach(link => {
                     link.setAttribute("target", "_blank");
                     link.setAttribute("rel", "noopener noreferrer");
+                    link.setAttribute('aria-label', `Open ${link.textContent} in a new tab`);
                 });
-            });
-
-            if (resultsContainer) {
-                linkObserver.observe(resultsContainer, { childList: true, subtree: true });
             }
+
+            // Initial call to set up links and image popouts
+            initializeCSEImagePopout();
+            ensureExternalLinks();
+        });
+
+        // Performance and SEO optimization
+        window.addEventListener('load', () => {
+            // Lazy load non-critical resources
+            const nonCriticalStyles = document.createElement('link');
+            nonCriticalStyles.rel = 'stylesheet';
+            nonCriticalStyles.href = 'non-critical-styles.css';
+            document.head.appendChild(nonCriticalStyles);
         });
     </script>
+
+    <!-- Performance Optimization - Async Loading of Non-Critical Scripts -->
+    <script async src="analytics.js"></script>
 </body>
 </html>
