@@ -1,139 +1,256 @@
-/* General Reset */
+/* General Reset with Enhanced Typography and Smooth Scrolling */
 body, html {
     margin: 0;
     padding: 0;
     font-family: 'Wix Madefor Display', sans-serif;
-    background: #f5f5f5; /* Light background for light mode */
-    color: #333; /* Darker text for contrast */
+    background: linear-gradient(135deg, #f5f7fa 0%, #f5f5f5 100%);
+    color: #2c3e50;
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    scroll-behavior: smooth;
+    line-height: 1.6;
+    transition: background 0.5s ease;
 }
 
-/* Container */
+/* Container with Subtle Depth */
 .container {
     text-align: center;
     width: 90%;
     max-width: 600px;
-    padding: 20px;
+    padding: 30px;
+    perspective: 1000px;
 }
 
-/* Logo */
+/* Logo with Subtle Hover Effect */
 .logo img {
     width: 150px;
     height: auto;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    transition: transform 0.3s ease, filter 0.3s ease;
+    will-change: transform;
 }
 
-/* Glassmorphic Panel */
+.logo img:hover {
+    transform: scale(1.05) rotate(2deg);
+    filter: brightness(1.1) contrast(1.1);
+}
+
+/* Enhanced Glassmorphic Panel with Advanced Effects */
 .glass-panel {
-    padding: 20px;
-    border-radius: 15px;
-    backdrop-filter: blur(15px); /* Increased blur for more translucency */
-    background: rgba(255, 255, 255, 0.6); /* More opaque background for better readability */
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Softer shadow */
-    border: 1px solid rgba(255, 255, 255, 0.3); /* Subtle border for definition */
+    padding: 30px;
+    border-radius: 20px;
+    backdrop-filter: blur(20px) saturate(180%);
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: 
+        0 10px 40px rgba(0, 0, 0, 0.1),
+        0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-panel::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+        circle at center, 
+        rgba(255, 255, 255, 0.2) 0%, 
+        transparent 70%
+    );
+    opacity: 0.5;
+    transform: rotate(-45deg);
+    z-index: -1;
+    transition: transform 0.6s ease;
+}
+
+.glass-panel:hover {
+    transform: translateY(-5px);
+    box-shadow: 
+        0 15px 50px rgba(0, 0, 0, 0.15),
+        0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
 .gcse-searchbox-only {
     max-width: 600px;
     margin: 20px auto;
     position: relative;
+    transition: all 0.3s ease;
 }
 
-/* Footer */
+.gcse-searchbox-only:focus-within {
+    transform: scale(1.02);
+}
+
+/* Footer with Enhanced Interactivity */
 footer {
     margin-top: 2rem;
     font-size: 0.9rem;
-    color: #666; /* Darker color for better contrast */
+    color: #4a4a4a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
 }
 
 footer a {
-    margin: 0 10px;
-    color: #666; /* Consistent link color */
+    position: relative;
+    color: #4a4a4a;
     text-decoration: none;
-    transition: color 0.2s ease;
+    transition: color 0.3s ease;
+    padding: 5px 10px;
+}
+
+footer a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 50%;
+    background-color: #c89f50;
+    transition: all 0.3s ease;
 }
 
 footer a:hover {
-    color: #c89f50; /* Yellowish theme on hover */
+    color: #c89f50;
 }
 
-/* Responsive Design */
+footer a:hover::after {
+    width: 100%;
+    left: 0;
+}
+
+/* Responsive Design with Smooth Adjustments */
 @media (max-width: 768px) {
     .container {
         width: 95%;
+        padding: 15px;
     }
 
     .logo img {
         width: 100px;
+        transition: transform 0.3s ease;
+    }
+
+    .logo img:active {
+        transform: scale(0.95);
     }
 }
 
-/* Sidebar styles */
-/* Sidebar styles */
+/* Sidebar with Enhanced Interactivity */
 .sidebar {
-    position: fixed; /* Fixed positioning to make it sticky */
+    position: fixed;
     top: 0;
-    right: 0; /* Initially visible on the right side */
-    transform: translateX(100%); /* Initially off-screen */
+    right: 0;
+    transform: translateX(100%);
     width: 250px;
     height: 100%;
-    background: rgba(255, 255, 255, 0.6); /* Glassmorphic background */
-    backdrop-filter: blur(15px); /* Same blur as other glass panels */
-    box-shadow: -2px 0 30px rgba(0, 0, 0, 0.1); /* Shadow for depth effect */
-    transition: transform 0.3s ease; /* Smooth transition for slide-in/out effect */
-    z-index: 1000; /* Ensure it appears above other content */
-    border-left: 1px solid rgba(255, 255, 255, 0.3); /* Subtle left border for definition */
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: -4px 0 50px rgba(0, 0, 0, 0.1);
+    transition: 
+        transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55),
+        opacity 0.4s ease;
+    z-index: 1000;
+    border-left: 1px solid rgba(255, 255, 255, 0.4);
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
 }
 
-/* Sidebar - Show the sidebar */
 .sidebar.open {
-    transform: translateX(0); /* Move sidebar to visible position */
+    transform: translateX(0);
+    opacity: 1;
 }
 
-/* Sidebar heading */
 .sidebar h2 {
-    margin-top: 20px;
+    margin-top: 30px;
     text-align: center;
-    color: #333; /* Darker text for contrast */
+    color: #2c3e50;
+    letter-spacing: 1px;
+    position: relative;
 }
 
-/* Sidebar links */
+.sidebar h2::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    width: 50px;
+    height: 3px;
+    background-color: #c89f50;
+    transform: translateX(-50%);
+}
+
 .sidebar a {
     display: block;
     padding: 15px;
-    color: #333; /* Darker text color */
+    color: #2c3e50;
     text-decoration: none;
-    transition: background-color 0.2s ease; /* Smooth background transition on hover */
+    transition: 
+        background-color 0.3s ease,
+        transform 0.2s ease,
+        color 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.sidebar a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(200, 200, 200, 0.2);
+    transition: left 0.3s ease;
+    z-index: -1;
 }
 
 .sidebar a:hover {
-    background-color: rgba(200, 200, 200, 0.3); /* Light hover effect */
+    background-color: rgba(200, 200, 200, 0.3);
+    transform: translateX(10px);
+    color: #c89f50;
 }
 
-/* Close button styles */
+.sidebar a:hover::before {
+    left: 0;
+}
+
 #close-sidebar {
-    margin-top: auto; /* Push close button to bottom */
-    padding: 10px;
-    color: #c89f50; /* Yellowish theme for close button */
-    background-color: transparent; 
+    margin-top: auto;
+    padding: 15px;
+    color: #c89f50;
+    background-color: transparent;
     border: none;
     cursor: pointer;
+    font-weight: bold;
+    transition: 
+        color 0.3s ease,
+        transform 0.2s ease;
 }
 
 #close-sidebar:hover {
-    color: #ffcc00; /* Brighter yellow on hover */
+    color: #ffcc00;
+    transform: rotate(90deg);
 }
 
+/* Mobile Responsiveness */
 @media (max-width: 768px) {
     .sidebar {
-        width: 100%; /* Full width on mobile */
-        transform: translateX(100%); /* Still hidden initially */
+        width: 100%;
+        transform: translateX(100%);
     }
+
     .sidebar.open {
-        transform: translateX(0); /* Slide in from the right */
+        transform: translateX(0);
     }
 }
