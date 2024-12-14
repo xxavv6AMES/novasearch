@@ -4,191 +4,48 @@
     <!-- Meta Tags -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Nova Search - search engine for resources, documentation, and tools. Find what you need quickly and efficiently.">
-    <meta name="keywords" content="Nova Search, developer search engine, coding tools, development resources, Novawerks">
+    <meta name="description" content="Nova Search - Discover resources, documentation, and tools efficiently">
+    <meta name="keywords" content="Nova Search, developer search, coding resources, development tools">
     <meta name="author" content="Novawerks">
-    <title>Search Results - Nova</title>
+    
+    <title>Search Results | Nova</title>
+    
+    <!-- Favicon -->
     <link rel="icon" href="https://cdn.glitch.global/8cdc79c2-e03b-4688-aa5d-1f26e1539764/nova%20(1).ico?v=1732402209810">
 
-    <!-- Fonts and Styles -->
-    <link href="https://fonts.googleapis.com/css2?family=Wix+Madefor+Display:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="results-style.css">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Wix+Madefor+Display:wght@400;600&family=Wix+Madefor+Text:wght@400;600;700&display=swap" rel="stylesheet">
 
     <!-- Google Custom Search -->
     <script async src="https://cse.google.com/cse.js?cx=4776225bf1aee432e"></script>
 
-    <!-- Genius Meta Tags for Song Results -->
-    <meta property="og:title" content="Britney Spears – Overprotected">
-    <meta property="og:description" content="“Overprotected” is a song recorded by Britney Spears for her third studio album, Britney (2001). The song was released on January 22, 2002 as the second single from the album.">
-    <meta property="og:image" content="https://images.genius.com/c402e7079269ddfdff8177c89c910077.1000x1000x1.jpg">
-    <meta property="og:url" content="https://genius.com/Britney-spears-overprotected-lyrics">
-    <meta property="og:type" content="music.song">
-    <meta property="og:site_name" content="Genius">
-
-    <!-- Twitter Meta Tags for Song Results -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Britney Spears – Overprotected">
-    <meta name="twitter:description" content="“Overprotected” is a song recorded by Britney Spears for her third studio album, Britney (2001). The song was released on January 22, 2002 as the second single from the album.">
-    <meta name="twitter:image" content="https://images.genius.com/c402e7079269ddfdff8177c89c910077.1000x1000x1.jpg">
-    <meta name="twitter:url" content="https://genius.com/Britney-spears-overprotected-lyrics">
-    
-    <!-- Additional Meta Tags -->
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="theme-color" content="#ce6c96">
-    <meta name="twitter:app:id:iphone" content="709482991">
-    <meta name="twitter:app:name:iphone" content="Genius">
-    <meta name="twitter:app:url:iphone" content="genius://songs/193466">
-    <meta name="apple-itunes-app" content="app-id=709482991">
-
-          <script type="application/ld+json">
-            {
-                "@context": "https://schema.org",
-                "@type": "WebSite",
-                "name": "Nova Search",
-                "url": "https://search.nova.xxavvgroup.com",
-                "description": "A developer-focused search engine for finding coding resources, documentation, and tools",
-                "publisher": {
-                    "@type": "Organization",
-                    "name": "Novawerks",
-                    "logo": {
-                        "@type": "ImageObject",
-                        "url": "https://cdn.glitch.global/8cdc79c2-e03b-4688-aa5d-1f26e1539764/nova.png?v=1732400592380"
-                    }
-                },
-                "potentialAction": {
-                    "@type": "SearchAction",
-                    "target": "https://search.nova.xxavvgroup.com?q={search_term_string}",
-                    "query-input": "required name=search_term_string"
-                }
-            }
-            </script>
-      
-          <script type="application/ld+json">
-            {
-              "@context": "https://schema.org",
-              "@graph": [
-                // 1. Dictionary/Definition Card
-                {
-                  "@type": "DefinedTerm",
-                  "name": "Algorithm",
-                  "description": "A step-by-step procedure or formula for solving problems or performing a task.",
-                  "termCode": "computer-science-term",
-                  "inLanguage": "en"
-                },
-                
-                // 2. Calculator/Conversion Result
-                {
-                  "@type": "QuantitativeValue",
-                  "value": 42,
-                  "unitCode": "C62", // For numeric value
-                  "unitText": "Conversion Result"
-                },
-                
-                // 3. Recipe/Cooking Card
-                {
-                  "@type": "Recipe",
-                  "name": "Chocolate Chip Cookies",
-                  "author": {
-                    "@type": "Person",
-                    "name": "Jane Doe"
-                  },
-                  "description": "Delicious homemade chocolate chip cookies",
-                  "prepTime": "PT15M",
-                  "cookTime": "PT12M",
-                  "totalTime": "PT27M",
-                  "recipeYield": "24 cookies",
-                  "nutrition": {
-                    "@type": "NutritionInformation",
-                    "calories": "150 calories"
-                  }
-                },
-                
-                // 4. Product/Shopping Card
-                {
-                  "@type": "Product",
-                  "name": "Developer Laptop",
-                  "description": "High-performance laptop for software development",
-                  "brand": {
-                    "@type": "Brand",
-                    "name": "TechPro"
-                  },
-                  "offers": {
-                    "@type": "Offer",
-                    "price": "1299.99",
-                    "priceCurrency": "USD",
-                    "availability": "https://schema.org/InStock"
-                  },
-                  "aggregateRating": {
-                    "@type": "AggregateRating",
-                    "ratingValue": "4.5",
-                    "reviewCount": "89"
-                  }
-                },
-                
-                // 5. Event Card
-                {
-                  "@type": "Event",
-                  "name": "DevConf 2024",
-                  "description": "Annual developer conference for tech professionals",
-                  "startDate": "2024-09-15",
-                  "endDate": "2024-09-17",
-                  "location": {
-                    "@type": "Place",
-                    "name": "Tech Convention Center",
-                    "address": {
-                      "@type": "PostalAddress",
-                      "streetAddress": "123 Tech Lane",
-                      "addressLocality": "San Francisco",
-                      "addressRegion": "CA"
-                    }
-                  }
-                },
-                
-                // 6. How-To Guide
-                {
-                  "@type": "HowTo",
-                  "name": "How to Set Up a Development Environment",
-                  "step": [
-                    {
-                      "@type": "HowToStep",
-                      "text": "Install your preferred code editor"
-                    },
-                    {
-                      "@type": "HowToStep",
-                      "text": "Set up version control with Git"
-                    },
-                    {
-                      "@type": "HowToStep",
-                      "text": "Configure your programming language and tools"
-                    }
-                  ]
-                }
-              ]
-            }
-            </script>
+    <!-- External Stylesheet -->
+    <link rel="stylesheet" href="results-style.css">
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
+        <!-- Header with Logo -->
         <header class="logo">
             <a href="index.html">
-                <img src="https://cdn.glitch.global/8cdc79c2-e03b-4688-aa5d-1f26e1539764/nova.png?v=1732400592380" alt="Nova Logo">
+                <img src="https://cdn.glitch.global/8cdc79c2-e03b-4688-aa5d-1f26e1539764/nova.png?v=1732400592380" alt="Nova Search Logo">
             </a>
         </header>
 
-        <!-- Search Box -->
-        <div class="glass-panel search-box">
-            <gcse:searchbox-only enableautocomplete="true"></gcse:searchbox-only>
+        <!-- Search Container -->
+        <div class="glass-panel">
+            <div class="gcse-searchbox-only">
+                <gcse:searchbox-only enableautocomplete="true"></gcse:searchbox-only>
+            </div>
         </div>
 
-        <!-- Main Content -->
-        <main class="content">
+        <!-- Search Results -->
+        <main>
             <section class="results">
                 <gcse:searchresults-only></gcse:searchresults-only>
             </section>
         </main>
 
-        <!-- Footer -->
+        <!-- Site Footer -->
         <footer>
             <a href="corporate/about.html">About</a>
             <a href="corporate/privacy.html">Privacy</a>
@@ -197,77 +54,75 @@
         </footer>
     </div>
 
-    <!-- Image Popout -->
+    <!-- Image Popout Modal -->
     <div id="cseImagePopout" class="cse-image-popout">
-      <div class="cse-image-popout-content">
-          <span class="cse-image-popout-close">&times;</span>
-          <img id="csePopoutImage" class="cse-image-popout-image" src="" alt="Popout Image">
-          <div id="cseImageMetadata" class="cse-image-popout-metadata"></div>
-      </div>
-  </div>
+        <div class="cse-image-popout-content">
+            <span class="cse-image-popout-close">&times;</span>
+            <img id="csePopoutImage" class="cse-image-popout-image" src="" alt="Expanded Search Image">
+            <div id="cseImageMetadata" class="cse-image-popout-metadata"></div>
+        </div>
+    </div>
 
-    <!-- Scripts -->
+    <!-- Page-Specific Scripts -->
     <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const popout = document.getElementById('cseImagePopout');
-    const popoutImage = document.getElementById('csePopoutImage');
-    const closeButton = document.querySelector('.cse-image-popout-close');
-    const metadataContainer = document.getElementById('cseImageMetadata');
+        document.addEventListener('DOMContentLoaded', () => {
+            const popout = document.getElementById('cseImagePopout');
+            const popoutImage = document.getElementById('csePopoutImage');
+            const closeButton = document.querySelector('.cse-image-popout-close');
+            const metadataContainer = document.getElementById('cseImageMetadata');
 
-    function initializeCSEImagePopout() {
-        const imageResults = document.querySelectorAll('.gsc-imageResult img');
-        imageResults.forEach(img => {
-            img.style.cursor = 'pointer';
-            img.addEventListener('click', () => {
-                // Set the image source
-                popoutImage.src = img.getAttribute('data-src') || img.src;
+            function initializeCSEImagePopout() {
+                const imageResults = document.querySelectorAll('.gsc-imageResult img');
+                imageResults.forEach(img => {
+                    img.style.cursor = 'pointer';
+                    img.addEventListener('click', () => {
+                        // Set the image source
+                        popoutImage.src = img.getAttribute('data-src') || img.src;
 
-                // Fetch metadata
-                const dimensions = img.getAttribute('data-actualwidth') + ' x ' + img.getAttribute('data-actualheight');
-                const link = img.closest('a')?.href || '#';
-                const title = img.closest('a')?.getAttribute('title') || 'Unknown title';
-                const license = img.getAttribute('data-license') || 'Unknown license';
-                const webpage = new URL(link).host || 'Unknown webpage';
+                        // Fetch metadata
+                        const dimensions = `${img.getAttribute('data-actualwidth')} x ${img.getAttribute('data-actualheight')}`;
+                        const link = img.closest('a')?.href || '#';
+                        const title = img.closest('a')?.getAttribute('title') || 'Unknown title';
+                        const license = img.getAttribute('data-license') || 'Unknown license';
+                        const webpage = new URL(link).host || 'Unknown webpage';
 
-                // Populate metadata
-                metadataContainer.innerHTML = `
-                    <p><strong>Dimensions:</strong> ${dimensions}</p>
-                    <p><strong>Page Title:</strong> ${title}</p>
-                    <p><strong>License Info:</strong> ${license}</p>
-                    <p><strong>Web Address:</strong> <a href="${link}" target="_blank" rel="noopener noreferrer">${webpage}</a></p>
-                `;
+                        // Populate metadata
+                        metadataContainer.innerHTML = `
+                            <p><strong>Dimensions:</strong> ${dimensions}</p>
+                            <p><strong>Page Title:</strong> ${title}</p>
+                            <p><strong>License Info:</strong> ${license}</p>
+                            <p><strong>Web Address:</strong> <a href="${link}" target="_blank" rel="noopener noreferrer">${webpage}</a></p>
+                        `;
 
-                // Show popout
-                popout.classList.add('active');
+                        // Show popout
+                        popout.classList.add('active');
+                    });
+                });
+            }
+
+            closeButton.addEventListener('click', () => {
+                popout.classList.remove('active');
+                popoutImage.src = '';
+                metadataContainer.innerHTML = '';
             });
-        });
-    }
 
-    closeButton.addEventListener('click', () => {
-        popout.classList.remove('active');
-        popoutImage.src = '';
-        metadataContainer.innerHTML = ''; // Clear metadata
-    });
+            // Observe changes in the results container to reinitialize listeners
+            const observer = new MutationObserver(() => initializeCSEImagePopout());
+            const resultsContainer = document.querySelector(".results");
+            if (resultsContainer) observer.observe(resultsContainer, { childList: true, subtree: true });
 
-    // Observe changes in the results container to reinitialize listeners
-    const observer = new MutationObserver(() => initializeCSEImagePopout());
-    const resultsContainer = document.querySelector(".results");
-    if (resultsContainer) observer.observe(resultsContainer, { childList: true, subtree: true });
+            // Disable the default CSE lightbox
+            const style = document.createElement('style');
+            style.textContent = `
+                .gsc-modal-background,
+                .gsc-modal-container {
+                    display: none !important;
+                }
+            `;
+            document.head.appendChild(style);
 
-    // Disable the default lightbox from CSE
-    const style = document.createElement('style');
-    style.textContent = `
-        .gsc-modal-background,
-        .gsc-modal-container {
-            display: none !important;
-        }
-    `;
-    document.head.appendChild(style);
-});
-
-          
-            document.addEventListener("DOMContentLoaded", function () {
-            const observer = new MutationObserver(() => {
+            // Ensure all result links open in new tabs
+            const linkObserver = new MutationObserver(() => {
                 const resultLinks = document.querySelectorAll(".gsc-webResult a");
                 resultLinks.forEach(link => {
                     link.setAttribute("target", "_blank");
@@ -275,9 +130,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
 
-            const resultsContainer = document.querySelector(".results");
             if (resultsContainer) {
-                observer.observe(resultsContainer, { childList: true, subtree: true });
+                linkObserver.observe(resultsContainer, { childList: true, subtree: true });
             }
         });
     </script>
