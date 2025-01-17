@@ -254,3 +254,7 @@ footer a:hover::after {
         transform: translateX(0);
     }
 }
+
+html {
+    transition: background-color 0.3s, color 0.3s;
+}
