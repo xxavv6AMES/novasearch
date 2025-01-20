@@ -124,6 +124,43 @@ h2 {
     background: #006cc1;
 }
 
+/* Changelog specific styles */
+.release-date {
+    font-size: 1.2rem;
+    opacity: 0.8;
+    margin-top: var(--spacing-unit);
+}
+
+.feature-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.feature-card.highlight {
+    border-left: 4px solid var(--primary-color);
+    background: linear-gradient(to right, rgba(0,120,212,0.05), transparent);
+}
+
+.button-group {
+    display: flex;
+    gap: calc(var(--spacing-unit) * 2);
+    margin-top: calc(var(--spacing-unit) * 3);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-outline:hover {
+    background: rgba(0,120,212,0.1);
+}
+
 @media (max-width: 768px) {
     .hero h1 {
         font-size: 2.5rem;

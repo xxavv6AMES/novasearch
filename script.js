@@ -74,6 +74,27 @@ function setTheme(theme) {
     link.href = `${theme}.css`;
 }
 
+// Banner handling
+document.addEventListener('DOMContentLoaded', function() {
+    const banner = document.getElementById('announcement-banner');
+    const closeBanner = banner.querySelector('.close-banner');
+    
+    // Check if banner was previously dismissed
+    if (localStorage.getItem('bdismissed1.9')) {
+        banner.style.display = 'none';
+    }
+
+    closeBanner.addEventListener('click', () => {
+        banner.classList.add('hide');
+        // After animation completes, hide the banner
+        setTimeout(() => {
+            banner.style.display = 'none';
+        }, 300);
+        // Store the dismissal in localStorage
+        localStorage.setItem('bdismissed1.9', 'true');
+    });
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     initAuth0();
     initializeEventListeners();

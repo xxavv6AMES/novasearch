@@ -1,3 +1,42 @@
+/* Banner Styles */
+.announcement-banner {
+    background: linear-gradient(135deg, #c89f50 0%, #ffcc00 100%);
+    color: #2c3e50;
+    padding: 12px 20px;
+    text-align: center;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.announcement-banner.hide {
+    transform: translateY(-100%);
+    opacity: 0;
+}
+
+.announcement-banner a {
+    color: #2c3e50;
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+.announcement-banner .close-banner {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    color: #2c3e50;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.announcement-banner .close-banner:hover {
+    opacity: 1;
+}
+
 /* General Reset with Enhanced Typography and Smooth Scrolling */
 body, html {
     margin: 0;
