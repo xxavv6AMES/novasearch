@@ -46,13 +46,24 @@
     <link rel="stylesheet" href="style.css">
     <script async src="https://cse.google.com/cse.js?cx=4776225bf1aee432e"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
 </head>
 <body>
     <div class="container">
-        <!-- Logo -->
-        <header class="logo">
-            <img src="https://d2zcpib8duehag.cloudfront.net/novasearchnotext.png" alt="Nova Logo">
-        </header>
+                <!-- Logo -->
+                <header class="logo">
+                    <img src="https://d2zcpib8duehag.cloudfront.net/novasearchnotext.png" alt="Nova Logo">
+                </header>
+
+        <!-- Auth UI Elements -->
+        <div class="auth-container">
+            <button id="login-button" style="display: none;">Login</button>
+            <div id="user-info" style="display: none;">
+                <img id="user-picture" alt="User profile" class="user-picture">
+                <span id="user-name"></span>
+                <button id="logout-button">Logout</button>
+            </div>
+        </div>
 
         <!-- App Icon Button for Sidebar -->
         <button class="app-icon" id="app-button">

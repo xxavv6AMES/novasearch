@@ -2,21 +2,24 @@ let auth0Client;
 
 // Initialize Auth0
 async function initAuth0() {
-    auth0Client = await auth0.createAuth0Client({
-        domain: 'auth.novawerks.xxavvgroup.com',
-        clientId: 'RGfDMp59V4UhqLIBZYwVZqHQwKly3lQ3',
-        authorizationParams: {
-            redirect_uri: window.location.origin
+    try {
+        auth0Client = await auth0.createAuth0Client({
+            domain: 'auth.novawerks.xxavvgroup.com',
+            clientId: 'RGfDMp59V4UhqLIBZYwVZqHQwKly3lQ3',
+            authorizationParams: {
+                redirect_uri: window.location.origin
+            }
+        });
+
+        if (location.search.includes("code=") && location.search.includes("state=")) {
+            await auth0Client.handleRedirectCallback();
+            window.history.replaceState({}, document.title, window.location.pathname);
         }
-    });
 
-    // Check if user is returning from authentication
-    if (location.search.includes("code=") && location.search.includes("state=")) {
-        await auth0Client.handleRedirectCallback();
-        window.history.replaceState({}, document.title, window.location.pathname);
+        await updateUIState();
+    } catch (error) {
+        console.error('Auth0 initialization failed:', error);
     }
-
-    updateUIState();
 }
 
 // Update UI based on authentication state
@@ -37,68 +40,42 @@ async function updateUIState() {
     }
 }
 
-// Login handler
-document.getElementById('login-button').addEventListener('click', async () => {
-    await auth0Client.loginWithRedirect();
-});
+function initializeEventListeners() {
+    // Auth events
+    document.getElementById('login-button').addEventListener('click', () => auth0Client.loginWithRedirect());
+    document.getElementById('logout-button').addEventListener('click', () => 
+        auth0Client.logout({ logoutParams: { returnTo: window.location.origin } }));
 
-// Logout handler
-document.getElementById('logout-button').addEventListener('click', async () => {
-    await auth0Client.logout({
-        logoutParams: {
-            returnTo: window.location.origin
-        }
-    });
-});
+    // Sidebar events
+    document.getElementById("app-button").addEventListener("click", () => 
+        document.getElementById("sidebar-menu").classList.add("open"));
+    document.getElementById("close-sidebar").addEventListener("click", () => 
+        document.getElementById("sidebar-menu").classList.remove("open"));
 
-document.getElementById("app-button").addEventListener("click", () => {
-    const sidebar = document.getElementById("sidebar-menu");
-    
-    // Toggle sidebar visibility
-    sidebar.classList.add("open"); // Show sidebar
-});
-
-document.getElementById("close-sidebar").addEventListener("click", () => {
-    const sidebar = document.getElementById("sidebar-menu");
-    
-    // Hide sidebar
-    sidebar.classList.remove("open"); // Hide sidebar
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    initAuth0();
-
+    // Theme handling
     const themeToggle = document.getElementById('theme-toggle');
-    const themeIcon = document.getElementById('theme-icon');
-
-    // Check for stored theme preference or default to 'style'
-    const currentTheme = localStorage.getItem('theme') || 'style';
-    setTheme(currentTheme);
-
     themeToggle.addEventListener('click', () => {
         const newTheme = document.documentElement.dataset.theme === 'style' ? 'darkstyle' : 'style';
         setTheme(newTheme);
     });
+}
 
-    function setTheme(theme) {
-        // Set the theme attribute on the HTML root element
-        document.documentElement.dataset.theme = theme;
+function setTheme(theme) {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem('theme', theme);
+    
+    document.getElementById('theme-icon').className = theme === 'darkstyle' ? 'fas fa-sun' : 'fas fa-moon';
+    
+    const link = document.querySelector('link[rel="stylesheet"][id="theme-style"]') 
+        || document.head.appendChild(Object.assign(document.createElement('link'), {
+            id: 'theme-style',
+            rel: 'stylesheet'
+        }));
+    link.href = `${theme}.css`;
+}
 
-        // Store the preference in localStorage
-        localStorage.setItem('theme', theme);
-
-        // Update the theme icon dynamically
-        themeIcon.className = theme === 'darkstyle' ? 'fas fa-sun' : 'fas fa-moon';
-
-        // Update the stylesheet
-        let link = document.querySelector('link[rel="stylesheet"][id="theme-style"]');
-        if (!link) {
-            // If theme stylesheet doesn't exist, create it
-            link = document.createElement('link');
-            link.id = 'theme-style';
-            link.rel = 'stylesheet';
-            document.head.appendChild(link);
-        }
-        link.href = theme === 'darkstyle' ? 'darkstyle.css' : 'style.css';
-    }
+document.addEventListener('DOMContentLoaded', () => {
+    initAuth0();
+    initializeEventListeners();
+    setTheme(localStorage.getItem('theme') || 'style');
 });
