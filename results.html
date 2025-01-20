@@ -37,18 +37,20 @@
                 <img src="https://d2zcpib8duehag.cloudfront.net/novasearchnotext.png" alt="Nova Search" class="logo" width="60" height="60">
             </a>
             
-            <div class="search-box">
-                <div class="gcse-searchbox"></div>
+            <div class="glass-panel" role="search">
+                <div class="gcse-searchbox-only">
+                    <gcse:searchbox-only enableautocomplete="true" data-enable-history="true"></gcse:searchbox-only>
+                </div>
             </div>
             
             <button class="settings-button">Settings</button>
         </div>
     </header>
 
-    <main class="main-container">
-        <div class="container">
-            <div class="gcse-searchresults-only"></div>
-        </div>
+    <main id="main-content">
+        <section class="results" aria-live="polite">
+            <gcse:searchresults-only></gcse:searchresults-only>
+        </section>
     </main>
 
     <footer class="footer">
