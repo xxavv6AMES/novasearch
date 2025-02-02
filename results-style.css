@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
 :root {
     --primary-color: #1a73e8;
     --text-primary: #202124;
@@ -14,6 +16,8 @@
     --radius-lg: 12px;
     --results-spacing: 24px;
     --snippet-color: #4d5156;
+    --font-heading: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
 }
 
 /* Base Styles */
@@ -67,6 +71,8 @@ body {
     max-width: 692px;
     width: 100%;
     padding: 0 20px;
+    flex-grow: 1;
+    max-width: 720px;
 }
 
 .search-box {
@@ -105,11 +111,18 @@ body {
     padding: 16px !important;
     border-radius: var(--radius-md) !important;
     transition: background-color 0.2s ease !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 12px !important;
+    margin-bottom: 16px !important;
+    padding: 20px !important;
+    transition: all 0.2s ease !important;
 }
 
 .gsc-result:hover {
     background-color: var(--hover-bg);
     background-color: var(--hover-bg) !important;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 /* Loading States */
@@ -181,6 +194,13 @@ body {
     font-size: 18px !important;
     color: var(--primary-color) !important;
     text-decoration: none !important;
+    font-family: var(--font-heading) !important;
+    font-size: 20px !important;
+    font-weight: 600 !important;
+    color: var(--primary-color) !important;
+    text-decoration: none !important;
+    margin-bottom: 8px !important;
+    display: block !important;
 }
 
 .gs-snippet {
@@ -188,12 +208,21 @@ body {
     color: var(--snippet-color) !important;
     line-height: 1.5 !important;
     font-size: 14px !important;
+    font-family: var(--font-body) !important;
+    font-size: 15px !important;
+    line-height: 1.6 !important;
+    color: var(--text-primary) !important;
+    margin: 8px 0 !important;
 }
 
 .gsc-url-top {
     font-family: 'Inter', sans-serif !important;
     color: var(--text-secondary) !important;
     font-size: 13px !important;
+    font-family: var(--font-body) !important;
+    font-size: 14px !important;
+    color: var(--text-secondary) !important;
+    margin-bottom: 4px !important;
 }
 
 /* Search Box in Results */
@@ -206,6 +235,10 @@ body {
     border-radius: var(--radius-md) !important;
     border: 1px solid var(--border-color) !important;
     padding: 8px !important;
+    border-radius: 12px !important;
+    border: 1.5px solid var(--border-color) !important;
+    padding: 4px 12px !important;
+    box-shadow: var(--shadow-sm) !important;
 }
 
 .gsc-search-button-v2 {
@@ -307,4 +340,25 @@ body {
     color: white;
     font-size: 24px;
     cursor: pointer;
+}
+
+/* Pagination styling */
+.gsc-cursor-box {
+    margin-top: 32px !important;
+    text-align: center !important;
+}
+
+.gsc-cursor-page {
+    font-family: var(--font-heading) !important;
+    font-size: 16px !important;
+    padding: 8px 12px !important;
+    border-radius: 8px !important;
+    margin: 0 4px !important;
+    color: var(--text-primary) !important;
+    transition: all 0.2s ease !important;
+}
+
+.gsc-cursor-current-page {
+    background-color: var(--primary-color) !important;
+    color: white !important;
 }

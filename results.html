@@ -31,6 +31,47 @@
     <!-- Google Custom Search -->
     <script async src="https://cse.google.com/cse.js?cx=4776225bf1aee432e"></script>
     <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
+    <script>
+        // Handle query parameters
+        window.addEventListener('load', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const query = urlParams.get('q');
+            
+            if (query) {
+                // Set the query in the search box once it's loaded
+                const checkSearchBox = setInterval(() => {
+                    const searchInput = document.querySelector('.gsc-input');
+                    if (searchInput) {
+                        searchInput.value = query;
+                        clearInterval(checkSearchBox);
+                    }
+                }, 100);
+            }
+        });
+
+        // Make all search results open in new tabs
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.addedNodes.length) {
+                    const links = document.querySelectorAll('.gs-title');
+                    links.forEach(link => {
+                        if (link.tagName === 'A') {
+                            link.setAttribute('target', '_blank');
+                            link.setAttribute('rel', 'noopener noreferrer');
+                        }
+                    });
+                }
+            });
+        });
+
+        // Start observing once the results container is available
+        window.addEventListener('load', () => {
+            const resultsContainer = document.querySelector('.gsc-resultsbox-visible');
+            if (resultsContainer) {
+                observer.observe(resultsContainer, { childList: true, subtree: true });
+            }
+        });
+    </script>
 </head>
 <body>
     <header class="main-header">
