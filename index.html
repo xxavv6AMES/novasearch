@@ -40,6 +40,9 @@
 
     <!-- Webmaster Tools Verification -->
     <meta name="msvalidate.01" content="412FF96B0709F5139281F2626F5B966B" />
+    <meta name="theme-color" content="#ffffff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
     <link rel="icon" href="https://d2zcpib8duehag.cloudfront.net/novasearchnotext.png">
     <link href="https://fonts.googleapis.com/css2?family=Wix+Madefor+Display:wght@400;600&family=Wix+Madefor+Text:wght@400;600&display=swap" rel="stylesheet">
@@ -49,61 +52,66 @@
     <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
 </head>
 <body>
-    <div class="announcement-banner" id="announcement-banner">
-        🎉 We've just updated our search engine! <a href="corporate/changelog.html">See what's new</a>
-        <button class="close-banner" aria-label="Dismiss announcement">
-            <i class="fas fa-times"></i>
-        </button>
-    </div>
-    <div class="container">
-                <!-- Logo -->
-                <header class="logo">
-                    <img src="https://d2zcpib8duehag.cloudfront.net/novasearchnotext.png" alt="Nova Logo">
-                </header>
-
-        <!-- Auth UI Elements -->
-        <div class="auth-container">
-            <button id="login-button" style="display: none;">Login</button>
-            <div id="user-info" style="display: none;">
-                <img id="user-picture" alt="User profile" class="user-picture">
-                <span id="user-name"></span>
-                <button id="logout-button">Logout</button>
+    <header class="main-header">
+        <div class="header-container">
+            <button class="menu-button" id="app-button" aria-label="Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <a href="/" class="logo-link">
+                <img src="https://d2zcpib8duehag.cloudfront.net/novasearchnotext.png" alt="Nova Logo" width="40" height="40">
+            </a>
+            <div class="auth-container">
+                <button id="login-button" class="auth-button">Sign In</button>
+                <div id="user-info" class="user-info">
+                    <img id="user-picture" alt="User profile" class="user-picture">
+                    <div class="user-dropdown">
+                        <span id="user-name"></span>
+                        <button id="logout-button" class="auth-button">Sign Out</button>
+                    </div>
+                </div>
             </div>
         </div>
+    </header>
 
-        <!-- App Icon Button for Sidebar -->
-        <button class="app-icon" id="app-button">
-            <i class="fas fa-th-large"></i>
-        </button>
-
-        <!-- Sidebar Menu -->
-        <div class="sidebar" id="sidebar-menu">
-            <h2>Nova Apps</h2>
-            <a href="https://account.nova.xxavvgroup.com" target="_blank">Your Account</a>
-            <a href="https://docs.nova.xxavvgroup.com" target="_blank">Nova Docs</a>
-            <button id="close-sidebar">Close</button>
-        </div>
-
-        <!-- Search Box -->
-        <main>
-            <div class="glass-panel">
+    <main class="main-content">
+        <div class="search-container">
+            <div class="search-box-wrapper">
                 <gcse:searchbox-only enableautocomplete="true"></gcse:searchbox-only>
             </div>
-        </main>
+        </div>
+    </main>
 
-        <!-- Footer -->
-        <footer>
+    <nav id="sidebar-menu" class="sidebar" aria-label="Main navigation">
+        <div class="sidebar-header">
+            <h2>Nova Apps</h2>
+            <button id="close-sidebar" aria-label="Close menu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="sidebar-content">
+            <a href="https://account.nova.xxavvgroup.com" class="sidebar-link">
+                <i class="fas fa-user"></i>Your Account
+            </a>
+            <a href="https://docs.nova.xxavvgroup.com" class="sidebar-link">
+                <i class="fas fa-book"></i>Nova Docs
+            </a>
+            <button id="theme-toggle" class="sidebar-link" aria-label="Toggle Theme">
+                <i id="theme-icon" class="fas fa-moon"></i>
+                <span>Toggle Theme</span>
+            </button>
+        </div>
+    </nav>
+
+    <footer class="main-footer">
+        <nav class="footer-nav">
             <a href="corporate/about.html">About</a>
             <a href="corporate/privacy.html">Privacy</a>
-            <a href="corporate/terms.html">Terms &amp; Conditions</a>
+            <a href="corporate/terms.html">Terms</a>
             <a href="settings.html">Settings</a>
-            <!-- Theme Switch Button -->
-            <button id="theme-toggle" aria-label="Toggle Theme">
-                <i id="theme-icon" class="fas fa-moon"></i> Toggle Theme
-            </button>
-        </footer>
-    </div>
+        </nav>
+    </footer>
 
+    <div class="overlay" id="overlay"></div>
     <script src="script.js"></script>
 </body>
 </html>

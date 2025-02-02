@@ -22,6 +22,7 @@
 
     <!-- Styles -->
     <link rel="stylesheet" href="results-style.css">
+    <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     
     <!-- Preload Critical Assets -->
@@ -29,42 +30,78 @@
     
     <!-- Google Custom Search -->
     <script async src="https://cse.google.com/cse.js?cx=4776225bf1aee432e"></script>
+    <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
 </head>
 <body>
-    <header class="header">
-        <div class="container">
+    <header class="main-header">
+        <div class="header-container">
+            <button class="menu-button" id="app-button" aria-label="Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            
             <a href="/" class="logo-link">
-                <img src="https://d2zcpib8duehag.cloudfront.net/novasearchnotext.png" alt="Nova Search" class="logo" width="60" height="60">
+                <img src="https://d2zcpib8duehag.cloudfront.net/novasearchnotext.png" alt="Nova Search" width="40" height="40">
             </a>
             
-            <div class="search-container" role="search">
-                <div class="gcse-searchbox-only">
-                    <gcse:searchbox-only enableautocomplete="true" data-enable-history="true"></gcse:searchbox-only>
+            <div class="search-container">
+                <div class="search-box-wrapper">
+                    <gcse:searchbox enableautocomplete="true" autocompletematch="true"></gcse:searchbox>
                 </div>
             </div>
-            
-            <button class="settings-button">Settings</button>
+
+            <div class="auth-container">
+                <button id="login-button" class="auth-button">Sign In</button>
+                <div id="user-info" class="user-info">
+                    <img id="user-picture" alt="User profile" class="user-picture">
+                    <div class="user-dropdown">
+                        <span id="user-name"></span>
+                        <button id="logout-button" class="auth-button">Sign Out</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
 
-    <main id="main-content">
+    <nav id="sidebar-menu" class="sidebar" aria-label="Main navigation">
+        <div class="sidebar-header">
+            <h2>Nova Apps</h2>
+            <button id="close-sidebar" aria-label="Close menu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="sidebar-content">
+            <a href="https://account.nova.xxavvgroup.com" class="sidebar-link">
+                <i class="fas fa-user"></i>Your Account
+            </a>
+            <a href="https://docs.nova.xxavvgroup.com" class="sidebar-link">
+                <i class="fas fa-book"></i>Nova Docs
+            </a>
+            <button id="theme-toggle" class="sidebar-link" aria-label="Toggle Theme">
+                <i id="theme-icon" class="fas fa-moon"></i>
+                <span>Toggle Theme</span>
+            </button>
+        </div>
+    </nav>
+
+    <main class="main-content">
         <div class="results-container">
-            <div class="gcse-searchresults-only"></div>
+            <gcse:searchresults-only></gcse:searchresults-only>
         </div>
     </main>
 
-    <footer class="footer">
-        <div class="container">
-            <nav>
-                <a href="corporate/about.html">About</a>
-                <a href="corporate/privacy.html">Privacy</a>
-                <a href="corporate/terms.html">Terms</a>
-            </nav>
-            <p>&copy; 2025 xxavvTechnologies</p>
-        </div>
+    <footer class="main-footer">
+        <nav class="footer-nav">
+            <a href="corporate/about.html">About</a>
+            <a href="corporate/privacy.html">Privacy</a>
+            <a href="corporate/terms.html">Terms</a>
+            <a href="settings.html">Settings</a>
+        </nav>
     </footer>
 
+    <div class="overlay" id="overlay"></div>
+
     <!-- Core Scripts -->
+    <script src="script.js"></script>
     <script type="module">
         import { SearchUI } from './js/search-ui.js';
         import { ImageViewer } from './js/image-viewer.js';

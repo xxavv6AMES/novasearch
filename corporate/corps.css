@@ -161,6 +161,73 @@ h2 {
     background: rgba(0,120,212,0.1);
 }
 
+/* Version 2.0 Changelog Specific Styles */
+.version-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 16px;
+    font-size: 0.9rem;
+    margin-bottom: calc(var(--spacing-unit) * 2);
+}
+
+.design-showcase {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: calc(var(--spacing-unit) * 4);
+    margin: calc(var(--spacing-unit) * 6) 0;
+}
+
+.design-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.design-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.design-card-content {
+    padding: calc(var(--spacing-unit) * 3);
+}
+
+.color-palette {
+    display: flex;
+    gap: calc(var(--spacing-unit));
+    margin: calc(var(--spacing-unit) * 2) 0;
+}
+
+.color-swatch {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 2px solid rgba(0,0,0,0.1);
+}
+
+.before-after {
+    position: relative;
+    background: var(--light-gray);
+    padding: calc(var(--spacing-unit) * 2);
+    border-radius: 8px;
+    margin: calc(var(--spacing-unit) * 2) 0;
+}
+
+.version-hero {
+    background: linear-gradient(135deg, #0078d4 0%, #00a2ff 100%);
+    padding: calc(var(--spacing-unit) * 16) 0;
+    text-align: center;
+}
+
+.version-hero h1 {
+    font-size: 4rem;
+    margin-bottom: calc(var(--spacing-unit) * 2);
+}
+
 @media (max-width: 768px) {
     .hero h1 {
         font-size: 2.5rem;

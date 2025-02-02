@@ -41,16 +41,29 @@ async function updateUIState() {
 }
 
 function initializeEventListeners() {
+    // Sidebar toggle
+    const sidebar = document.getElementById('sidebar-menu');
+    const overlay = document.getElementById('overlay');
+    
+    document.getElementById('app-button').addEventListener('click', () => {
+        sidebar.classList.add('open');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    });
+
+    document.getElementById('close-sidebar').addEventListener('click', closeSidebar);
+    overlay.addEventListener('click', closeSidebar);
+
+    function closeSidebar() {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
     // Auth events
     document.getElementById('login-button').addEventListener('click', () => auth0Client.loginWithRedirect());
     document.getElementById('logout-button').addEventListener('click', () => 
         auth0Client.logout({ logoutParams: { returnTo: window.location.origin } }));
-
-    // Sidebar events
-    document.getElementById("app-button").addEventListener("click", () => 
-        document.getElementById("sidebar-menu").classList.add("open"));
-    document.getElementById("close-sidebar").addEventListener("click", () => 
-        document.getElementById("sidebar-menu").classList.remove("open"));
 
     // Theme handling
     const themeToggle = document.getElementById('theme-toggle');
@@ -73,27 +86,6 @@ function setTheme(theme) {
         }));
     link.href = `${theme}.css`;
 }
-
-// Banner handling
-document.addEventListener('DOMContentLoaded', function() {
-    const banner = document.getElementById('announcement-banner');
-    const closeBanner = banner.querySelector('.close-banner');
-    
-    // Check if banner was previously dismissed
-    if (localStorage.getItem('bdismissed1.9')) {
-        banner.style.display = 'none';
-    }
-
-    closeBanner.addEventListener('click', () => {
-        banner.classList.add('hide');
-        // After animation completes, hide the banner
-        setTimeout(() => {
-            banner.style.display = 'none';
-        }, 300);
-        // Store the dismissal in localStorage
-        localStorage.setItem('bdismissed1.9', 'true');
-    });
-});
 
 document.addEventListener('DOMContentLoaded', () => {
     initAuth0();

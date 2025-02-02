@@ -12,6 +12,8 @@
     --radius-sm: 4px;
     --radius-md: 8px;
     --radius-lg: 12px;
+    --results-spacing: 24px;
+    --snippet-color: #4d5156;
 }
 
 /* Base Styles */
@@ -89,6 +91,9 @@ body {
     max-width: var(--max-width);
     margin: 0 auto;
     padding: 20px 24px;
+    width: 100%;
+    max-width: 800px;
+    padding: 20px;
 }
 
 .gsc-result {
@@ -96,10 +101,15 @@ body {
     padding: 16px;
     border-radius: var(--radius-md);
     transition: background-color 200ms ease;
+    margin-bottom: var(--results-spacing) !important;
+    padding: 16px !important;
+    border-radius: var(--radius-md) !important;
+    transition: background-color 0.2s ease !important;
 }
 
 .gsc-result:hover {
     background-color: var(--hover-bg);
+    background-color: var(--hover-bg) !important;
 }
 
 /* Image Viewer Dialog */
@@ -177,4 +187,112 @@ body {
     text-decoration: none;
 }
 
-/* ...existing utility classes and overrides... */
+/* Results Page Specific Styles */
+.main-content {
+    margin-top: var(--header-height);
+    padding: 0;
+    justify-content: flex-start;
+}
+
+/* Google CSE Overrides */
+.gsc-control-cse {
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+}
+
+.gs-title {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 18px !important;
+    color: var(--primary-color) !important;
+    text-decoration: none !important;
+}
+
+.gs-snippet {
+    font-family: 'Inter', sans-serif !important;
+    color: var(--snippet-color) !important;
+    line-height: 1.5 !important;
+    font-size: 14px !important;
+}
+
+.gsc-url-top {
+    font-family: 'Inter', sans-serif !important;
+    color: var(--text-secondary) !important;
+    font-size: 13px !important;
+}
+
+/* Search Box in Results */
+.search-box-wrapper {
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.gsc-input-box {
+    border-radius: var(--radius-md) !important;
+    border: 1px solid var(--border-color) !important;
+    padding: 8px !important;
+}
+
+.gsc-search-button-v2 {
+    border-radius: var(--radius-md) !important;
+    padding: 10px 24px !important;
+    background-color: var(--primary-color) !important;
+    border: none !important;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    .header-container {
+        padding: 8px;
+    }
+
+    .search-container {
+        padding: 0 8px;
+    }
+
+    .results-container {
+        padding: 12px;
+    }
+
+    .gs-title {
+        font-size: 16px !important;
+    }
+
+    .gs-snippet {
+        font-size: 13px !important;
+    }
+}
+
+/* Image Results */
+.gsc-imageResult {
+    border-radius: var(--radius-md) !important;
+    overflow: hidden !important;
+    transition: transform 0.2s ease !important;
+}
+
+.gsc-imageResult:hover {
+    transform: translateY(-2px) !important;
+}
+
+/* Loading States */
+.gsc-loading-fade {
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(var(--primary-color-rgb), 0.1),
+        transparent) !important;
+}
+
+/* Theme Support */
+[data-theme="darkstyle"] {
+    .gsc-result {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+    }
+
+    .gs-snippet {
+        color: rgba(255, 255, 255, 0.8) !important;
+    }
+
+    .gsc-url-top {
+        color: rgba(255, 255, 255, 0.6) !important;
+    }
+}
