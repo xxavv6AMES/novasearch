@@ -1,46 +1,33 @@
 export class ImageViewer {
     constructor() {
         this.initializeViewer();
-        this.bindEvents();
     }
 
     initializeViewer() {
-        this.viewer = document.createElement('dialog');
-        this.viewer.className = 'image-viewer';
-        this.viewer.innerHTML = `
-            <div class="viewer-content">
-                <img src="" alt="Preview">
-                <button class="close-viewer">×</button>
-            </div>
-        `;
-        document.body.appendChild(this.viewer);
-    }
-
-    bindEvents() {
-        // Handle image result clicks
+        // Add event listeners for image results
         document.addEventListener('click', (e) => {
-            const imageResult = e.target.closest('.gsc-imageResult');
-            if (imageResult) {
-                e.preventDefault();
-                this.showImage(imageResult.querySelector('img').src);
-            }
-        });
-
-        // Close viewer handlers
-        this.viewer.querySelector('.close-viewer').addEventListener('click', () => {
-            this.viewer.close();
-        });
-
-        this.viewer.addEventListener('click', (e) => {
-            if (e.target === this.viewer) {
-                this.viewer.close();
+            if (e.target.tagName === 'IMG' && e.target.closest('.gs-image-box')) {
+                this.showImage(e.target.src);
             }
         });
     }
 
     showImage(src) {
-        const img = this.viewer.querySelector('img');
-        img.src = src;
-        this.viewer.showModal();
+        const viewer = document.createElement('div');
+        viewer.className = 'image-viewer';
+        viewer.innerHTML = `
+            <div class="image-viewer-content">
+                <img src="${src}" alt="Full size image">
+                <button class="close-viewer"><i class="fas fa-times"></i></button>
+            </div>
+        `;
+
+        viewer.addEventListener('click', (e) => {
+            if (e.target === viewer || e.target.closest('.close-viewer')) {
+                viewer.remove();
+            }
+        });
+
+        document.body.appendChild(viewer);
     }
 }

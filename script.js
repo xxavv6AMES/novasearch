@@ -24,19 +24,27 @@ async function initAuth0() {
 
 // Update UI based on authentication state
 async function updateUIState() {
-    const isAuthenticated = await auth0Client.isAuthenticated();
-    const loginButton = document.getElementById('login-button');
-    const userInfo = document.getElementById('user-info');
+    try {
+        const isAuthenticated = await auth0Client.isAuthenticated();
+        const loginButton = document.getElementById('login-button');
+        const userInfo = document.getElementById('user-info');
 
-    if (isAuthenticated) {
-        const user = await auth0Client.getUser();
-        document.getElementById('user-picture').src = user.picture;
-        document.getElementById('user-name').textContent = user.name;
-        loginButton.style.display = 'none';
-        userInfo.style.display = 'flex';
-    } else {
-        loginButton.style.display = 'block';
-        userInfo.style.display = 'none';
+        if (isAuthenticated) {
+            const user = await auth0Client.getUser();
+            if (user && user.picture) {
+                document.getElementById('user-picture').src = user.picture;
+            }
+            if (user && user.name) {
+                document.getElementById('user-name').textContent = user.name;
+            }
+            loginButton.style.display = 'none';
+            userInfo.style.display = 'flex';
+        } else {
+            loginButton.style.display = 'block';
+            userInfo.style.display = 'none';
+        }
+    } catch (error) {
+        console.error('Error updating UI state:', error);
     }
 }
 
