@@ -228,6 +228,38 @@ h2 {
     margin-bottom: calc(var(--spacing-unit) * 2);
 }
 
+/* Previous Version Styles */
+.previous-version {
+    background: var(--light-gray);
+    padding: calc(var(--spacing-unit) * 4);
+    border-radius: 8px;
+    margin: calc(var(--spacing-unit) * 4) 0;
+}
+
+.previous-version h2 {
+    color: var(--secondary-color);
+    font-size: 1.5rem;
+    margin-bottom: calc(var(--spacing-unit) * 2);
+}
+
+.text-content {
+    max-width: 800px;
+}
+
+.text-content h3 {
+    color: var(--primary-color);
+    margin: calc(var(--spacing-unit) * 3) 0 calc(var(--spacing-unit) * 2);
+}
+
+.text-content ul {
+    margin-bottom: calc(var(--spacing-unit) * 3);
+}
+
+.text-content li {
+    margin-bottom: calc(var(--spacing-unit));
+    line-height: 1.6;
+}
+
 @media (max-width: 768px) {
     .hero h1 {
         font-size: 2.5rem;

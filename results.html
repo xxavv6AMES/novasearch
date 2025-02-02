@@ -85,9 +85,15 @@
             </a>
             
             <div class="search-container">
-                <div class="search-box-wrapper">
-                    <gcse:searchbox enableautocomplete="true" autocompletematch="true"></gcse:searchbox>
-                </div>
+                <form action="/results.html" method="get" role="search" class="search-box-wrapper">
+                    <input 
+                        type="search" 
+                        name="nsq" 
+                        class="search-input"
+                        placeholder="Search..."
+                        aria-label="Search"
+                        autocomplete="off">
+                </form>
             </div>
 
             <div class="auth-container">
@@ -128,6 +134,9 @@
         <div class="results-container">
             <gcse:searchresults-only></gcse:searchresults-only>
         </div>
+        <aside class="right-sidebar">
+            <!-- Placeholder for future content -->
+        </aside>
     </main>
 
     <footer class="main-footer">
