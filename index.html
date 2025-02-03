@@ -41,8 +41,7 @@
     <!-- Webmaster Tools Verification -->
     <meta name="msvalidate.01" content="412FF96B0709F5139281F2626F5B966B" />
     <meta name="theme-color" content="#ffffff">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="mobile-web-app-capable" content="yes">
 
     <link rel="icon" href="https://d2zcpib8duehag.cloudfront.net/novasearchnotext.png">
     <link href="https://fonts.googleapis.com/css2?family=Wix+Madefor+Display:wght@400;600&family=Wix+Madefor+Text:wght@400;600&display=swap" rel="stylesheet">
@@ -73,12 +72,71 @@
         </div>
     </header>
 
+    <div class="update-banner" id="update-banner">
+        <div class="banner-content">
+            <span class="banner-badge">New</span>
+            <p>Nova Search has been updated to version 2.2! Now with weather information and improved app integration.</p>
+            <a href="corporate/changelog.html">See what's new</a>
+        </div>
+        <button class="banner-close" aria-label="Dismiss" onclick="dismissBanner()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <div class="page-background"></div>
+    
     <main class="main-content">
         <div class="search-container">
+            <h1 class="welcome-text">Good <span id="timeOfDay">morning</span></h1>
             <div class="search-box-wrapper">
                 <gcse:searchbox-only enableautocomplete="true"></gcse:searchbox-only>
             </div>
+            
+            <div class="quick-access">
+                <div class="quick-tile" data-url="https://mail.nova.xxavvgroup.com">
+                    <img src="https://icons.duckduckgo.com/ip3/mail.nova.xxavvgroup.com.ico" alt="Nova Mail" class="nova-icon">
+                    <span>Nova Mail</span>
+                </div>
+                <div class="quick-tile" data-url="https://calendar.nova.xxavvgroup.com">
+                    <img src="https://icons.duckduckgo.com/ip3/calendar.nova.xxavvgroup.com.ico" alt="Nova Calendar" class="nova-icon">
+                    <span>Nova Calendar</span>
+                </div>
+                <div class="quick-tile" data-url="https://present.nova.xxavvgroup.com">
+                    <img src="https://icons.duckduckgo.com/ip3/present.nova.xxavvgroup.com.ico" alt="Nova Present" class="nova-icon">
+                    <span>Nova Present</span>
+                </div>
+                <div class="quick-tile" data-url="https://gists.nova.xxavvgroup.com">
+                    <img src="https://icons.duckduckgo.com/ip3/gists.nova.xxavvgroup.com.ico" alt="Nova Gists" class="nova-icon">
+                    <span>Nova Gists</span>
+                </div>
+                <div class="quick-tile" data-url="https://docs.nova.xxavvgroup.com">
+                    <img src="https://icons.duckduckgo.com/ip3/docs.nova.xxavvgroup.com.ico" alt="Nova Docs" class="nova-icon">
+                    <span>Nova Docs</span>
+                </div>
+                <div class="quick-tile" data-url="https://astro.nova.xxavvgroup.com">
+                    <img src="https://icons.duckduckgo.com/ip3/astro.nova.xxavvgroup.com.ico" alt="Astro AI" class="nova-icon">
+                    <span>Astro AI</span>
+                </div>
+                <div class="quick-tile" data-url="https://central.nova.xxavvgroup.com">
+                    <img src="https://icons.duckduckgo.com/ip3/central.nova.xxavvgroup.com.ico" alt="Nova Central" class="nova-icon">
+                    <span>Nova Central</span>
+                </div>
+                <div class="quick-tile" id="add-tile">
+                    <i class="fas fa-plus"></i>
+                    <span>Add</span>
+                </div>
+            </div>
         </div>
+
+        <div class="weather-widget">
+            <div id="weather-content">
+                <!-- Weather data will be inserted here via JS -->
+            </div>
+        </div>
+
+        <button class="settings-toggle" aria-label="Customize">
+            <i class="fas fa-cog"></i>
+        </button>
     </main>
 
     <nav id="sidebar-menu" class="sidebar" aria-label="Main navigation">
@@ -89,12 +147,39 @@
             </button>
         </div>
         <div class="sidebar-content">
-            <a href="https://account.nova.xxavvgroup.com" class="sidebar-link">
-                <i class="fas fa-user"></i>Your Account
+            <a href="https://mail.nova.xxavvgroup.com" class="sidebar-link">
+                <img src="https://icons.duckduckgo.com/ip3/mail.nova.xxavvgroup.com.ico" alt="Nova Mail" class="nova-icon">
+                Nova Mail
+            </a>
+            <a href="https://calendar.nova.xxavvgroup.com" class="sidebar-link">
+                <img src="https://icons.duckduckgo.com/ip3/calendar.nova.xxavvgroup.com.ico" alt="Nova Calendar" class="nova-icon">
+                Nova Calendar
+            </a>
+            <a href="https://present.nova.xxavvgroup.com" class="sidebar-link">
+                <img src="https://icons.duckduckgo.com/ip3/present.nova.xxavvgroup.com.ico" alt="Nova Present" class="nova-icon">
+                Nova Present
+            </a>
+            <a href="https://gists.nova.xxavvgroup.com" class="sidebar-link">
+                <img src="https://icons.duckduckgo.com/ip3/gists.nova.xxavvgroup.com.ico" alt="Nova Gists" class="nova-icon">
+                Nova Gists
             </a>
             <a href="https://docs.nova.xxavvgroup.com" class="sidebar-link">
-                <i class="fas fa-book"></i>Nova Docs
+                <img src="https://icons.duckduckgo.com/ip3/docs.nova.xxavvgroup.com.ico" alt="Nova Docs" class="nova-icon">
+                Nova Docs
             </a>
+            <a href="https://astro.nova.xxavvgroup.com" class="sidebar-link">
+                <img src="https://icons.duckduckgo.com/ip3/astro.nova.xxavvgroup.com.ico" alt="Astro AI" class="nova-icon">
+                Astro AI
+            </a>
+            <a href="https://central.nova.xxavvgroup.com" class="sidebar-link">
+                <img src="https://icons.duckduckgo.com/ip3/central.nova.xxavvgroup.com.ico" alt="Nova Central" class="nova-icon">
+                Nova Central
+            </a>
+            <a href="https://account.nova.xxavvgroup.com" class="sidebar-link">
+                <img src="https://icons.duckduckgo.com/ip3/account.nova.xxavvgroup.com.ico" alt="Your Account" class="nova-icon">
+                Your Account
+            </a>
+            <hr class="sidebar-divider">
             <button id="theme-toggle" class="sidebar-link" aria-label="Toggle Theme">
                 <i id="theme-icon" class="fas fa-moon"></i>
                 <span>Toggle Theme</span>
