@@ -60,12 +60,39 @@
                 <img src="https://d2zcpib8duehag.cloudfront.net/novasearchnotext.png" alt="Nova Logo" width="40" height="40">
             </a>
             <div class="auth-container">
-                <button id="login-button" class="auth-button">Sign In</button>
+                <button id="login-button" class="auth-button">
+                    <i class="fas fa-user"></i>
+                    <span>Sign In</span>
+                </button>
                 <div id="user-info" class="user-info">
-                    <img id="user-picture" alt="User profile" class="user-picture">
-                    <div class="user-dropdown">
-                        <span id="user-name"></span>
-                        <button id="logout-button" class="auth-button">Sign Out</button>
+                    <div class="user-profile">
+                        <img id="user-picture" alt="User profile" class="user-picture">
+                        <div class="user-dropdown">
+                            <div class="dropdown-header">
+                                <img id="user-picture-large" alt="User profile" class="user-picture-large">
+                                <div class="user-details">
+                                    <span id="user-name" class="user-name"></span>
+                                    <button id="logout-button" class="dropdown-button">Sign Out</button>
+                                </div>
+                            </div>
+                            <div class="dropdown-section">
+                                <h3>Appearance</h3>
+                                <div class="background-controls">
+                                    <button id="daily-background" class="dropdown-button">
+                                        <i class="fas fa-image"></i>
+                                        Use Daily Background
+                                    </button>
+                                    <button id="custom-background" class="dropdown-button">
+                                        <i class="fas fa-upload"></i>
+                                        Custom Background
+                                    </button>
+                                    <button id="reset-background" class="dropdown-button">
+                                        <i class="fas fa-undo"></i>
+                                        Reset Background
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -75,7 +102,7 @@
     <div class="update-banner" id="update-banner">
         <div class="banner-content">
             <span class="banner-badge">New</span>
-            <p>Nova Search has been updated to version 2.2! Now with weather information and improved app integration.</p>
+            <p>Nova Search has been updated to version 2.3! Now with enhanced customization and persistent quick access.</p>
             <a href="corporate/changelog.html">See what's new</a>
         </div>
         <button class="banner-close" aria-label="Dismiss" onclick="dismissBanner()">
@@ -93,34 +120,7 @@
             </div>
             
             <div class="quick-access">
-                <div class="quick-tile" data-url="https://mail.nova.xxavvgroup.com">
-                    <img src="https://icons.duckduckgo.com/ip3/mail.nova.xxavvgroup.com.ico" alt="Nova Mail" class="nova-icon">
-                    <span>Nova Mail</span>
-                </div>
-                <div class="quick-tile" data-url="https://calendar.nova.xxavvgroup.com">
-                    <img src="https://icons.duckduckgo.com/ip3/calendar.nova.xxavvgroup.com.ico" alt="Nova Calendar" class="nova-icon">
-                    <span>Nova Calendar</span>
-                </div>
-                <div class="quick-tile" data-url="https://present.nova.xxavvgroup.com">
-                    <img src="https://icons.duckduckgo.com/ip3/present.nova.xxavvgroup.com.ico" alt="Nova Present" class="nova-icon">
-                    <span>Nova Present</span>
-                </div>
-                <div class="quick-tile" data-url="https://gists.nova.xxavvgroup.com">
-                    <img src="https://icons.duckduckgo.com/ip3/gists.nova.xxavvgroup.com.ico" alt="Nova Gists" class="nova-icon">
-                    <span>Nova Gists</span>
-                </div>
-                <div class="quick-tile" data-url="https://docs.nova.xxavvgroup.com">
-                    <img src="https://icons.duckduckgo.com/ip3/docs.nova.xxavvgroup.com.ico" alt="Nova Docs" class="nova-icon">
-                    <span>Nova Docs</span>
-                </div>
-                <div class="quick-tile" data-url="https://astro.nova.xxavvgroup.com">
-                    <img src="https://icons.duckduckgo.com/ip3/astro.nova.xxavvgroup.com.ico" alt="Astro AI" class="nova-icon">
-                    <span>Astro AI</span>
-                </div>
-                <div class="quick-tile" data-url="https://central.nova.xxavvgroup.com">
-                    <img src="https://icons.duckduckgo.com/ip3/central.nova.xxavvgroup.com.ico" alt="Nova Central" class="nova-icon">
-                    <span>Nova Central</span>
-                </div>
+            
                 <div class="quick-tile" id="add-tile">
                     <i class="fas fa-plus"></i>
                     <span>Add</span>
@@ -134,9 +134,38 @@
             </div>
         </div>
 
-        <button class="settings-toggle" aria-label="Customize">
-            <i class="fas fa-cog"></i>
+        <button class="customize-toggle" aria-label="Customize">
+            <i class="fas fa-paint-brush"></i>
+            <span>Customize</span>
         </button>
+
+        <div class="customize-popup">
+            <div class="popup-header">
+                <h3>Customize Your Page</h3>
+                <button class="close-popup" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="popup-content">
+                <div class="settings-section">
+                    <h4>Background</h4>
+                    <div class="background-controls">
+                        <button id="daily-background" class="settings-button">
+                            <i class="fas fa-image"></i>
+                            Use Daily Background
+                        </button>
+                        <button id="custom-background" class="settings-button">
+                            <i class="fas fa-upload"></i>
+                            Custom Background
+                        </button>
+                        <button id="reset-background" class="settings-button">
+                            <i class="fas fa-undo"></i>
+                            Reset Background
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 
     <nav id="sidebar-menu" class="sidebar" aria-label="Main navigation">

@@ -112,41 +112,149 @@ function setBackground(url) {
     localStorage.setItem('background', url);
 }
 
+// Background management
+function initializeBackgroundControls() {
+    const dailyBackground = document.getElementById('daily-background');
+    const customBackground = document.getElementById('custom-background');
+    const resetBackground = document.getElementById('reset-background');
+
+    dailyBackground.addEventListener('click', () => {
+        const topics = ['nature', 'landscape', 'architecture'];
+        const randomTopic = topics[Math.floor(Math.random() * topics.length)];
+        const url = `https://source.unsplash.com/daily?${randomTopic}`;
+        setBackground(url);
+        localStorage.setItem('backgroundType', 'daily');
+    });
+
+    customBackground.addEventListener('click', () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    setBackground(e.target.result);
+                    localStorage.setItem('backgroundType', 'custom');
+                    localStorage.setItem('customBackground', e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+        
+        input.click();
+    });
+
+    resetBackground.addEventListener('click', () => {
+        document.querySelector('.page-background').style.backgroundImage = '';
+        localStorage.removeItem('backgroundType');
+        localStorage.removeItem('customBackground');
+    });
+}
+
 // Quick access tiles
 function initializeQuickAccess() {
+    loadSavedTiles();
+    
     const tiles = document.querySelectorAll('.quick-tile');
     tiles.forEach(tile => {
         if (tile.dataset.url) {
-            tile.addEventListener('click', () => window.location.href = tile.dataset.url);
+            // Add delete button to existing tiles
+            addDeleteButton(tile);
+            tile.addEventListener('click', (e) => {
+                if (!e.target.closest('.delete-tile')) {
+                    window.location.href = tile.dataset.url;
+                }
+            });
         }
     });
 
     document.getElementById('add-tile').addEventListener('click', addNewTile);
 }
 
+function addDeleteButton(tile) {
+    if (!tile.id || tile.id !== 'add-tile') {
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'delete-tile';
+        deleteButton.innerHTML = '<i class="fas fa-times"></i>';
+        deleteButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteTile(tile);
+        });
+        tile.appendChild(deleteButton);
+    }
+}
+
+function deleteTile(tile) {
+    tile.remove();
+    saveQuickAccess();
+}
+
+function loadSavedTiles() {
+    const savedTiles = JSON.parse(localStorage.getItem('quickAccessTiles') || '[]');
+    const quickAccess = document.querySelector('.quick-access');
+    const addTile = document.getElementById('add-tile');
+
+    savedTiles.forEach(tileData => {
+        const tile = createTile(tileData.url, tileData.name);
+        quickAccess.insertBefore(tile, addTile);
+    });
+}
+
+function createTile(url, name) {
+    const tile = document.createElement('div');
+    tile.className = 'quick-tile';
+    tile.dataset.url = url;
+
+    const domain = new URL(url).hostname;
+    const favicon = `https://icons.duckduckgo.com/ip3/${domain}.ico`;
+
+    tile.innerHTML = `
+        <img src="${favicon}" alt="${name}" class="nova-icon" onerror="this.onerror=null; this.src='https://icons.duckduckgo.com/ip3/nova.xxavvgroup.com.ico';">
+        <span>${name}</span>
+    `;
+
+    addDeleteButton(tile);
+    tile.addEventListener('click', (e) => {
+        if (!e.target.closest('.delete-tile')) {
+            window.location.href = url;
+        }
+    });
+
+    return tile;
+}
+
+function saveQuickAccess() {
+    const tiles = Array.from(document.querySelectorAll('.quick-tile'))
+        .filter(tile => tile.id !== 'add-tile')
+        .map(tile => ({
+            url: tile.dataset.url,
+            name: tile.querySelector('span').textContent
+        }));
+    
+    localStorage.setItem('quickAccessTiles', JSON.stringify(tiles));
+}
+
 function addNewTile() {
     const url = prompt('Enter the website URL:');
-    const name = prompt('Enter a name for this shortcut:');
+    if (!url) return;
     
-    if (url && name) {
+    try {
+        // Validate URL
+        new URL(url);
+        
+        const name = prompt('Enter a name for this shortcut:');
+        if (!name) return;
+        
         const quickAccess = document.querySelector('.quick-access');
-        const newTile = document.createElement('div');
-        newTile.className = 'quick-tile';
-        newTile.dataset.url = url;
+        const tile = createTile(url, name);
+        quickAccess.insertBefore(tile, document.getElementById('add-tile'));
         
-        // Use DuckDuckGo's favicon service
-        const domain = new URL(url).hostname;
-        const favicon = `https://icons.duckduckgo.com/ip3/${domain}.ico`;
-        
-        newTile.innerHTML = `
-            <img src="${favicon}" alt="${name}" class="nova-icon" onerror="this.onerror=null; this.src='https://icons.duckduckgo.com/ip3/nova.xxavvgroup.com.ico';">
-            <span>${name}</span>
-        `;
-        newTile.addEventListener('click', () => window.location.href = url);
-        quickAccess.insertBefore(newTile, document.getElementById('add-tile'));
-        
-        // Save to localStorage
         saveQuickAccess();
+    } catch (error) {
+        alert('Please enter a valid URL (include https:// or http://)');
     }
 }
 
@@ -247,19 +355,103 @@ function dismissBanner() {
     banner.style.overflow = 'hidden';
     banner.style.transition = 'all 0.3s ease';
     
-    // Store dismissal in localStorage
-    localStorage.setItem('bannerDismissed_v2.2', 'true');
+    // Updated version number in storage key
+    localStorage.setItem('bannerDismissed_v2.3', 'true');
     
-    // Remove banner after animation
     setTimeout(() => banner.remove(), 300);
 }
 
 // Check if banner should be shown
 function checkBanner() {
-    if (localStorage.getItem('bannerDismissed_v2.2')) {
+    // Updated version number in storage key
+    if (localStorage.getItem('bannerDismissed_v2.3')) {
         const banner = document.getElementById('update-banner');
         if (banner) banner.remove();
     }
+}
+
+// Customize popup functionality
+function initializeCustomizePopup() {
+    const customizeToggle = document.querySelector('.customize-toggle');
+    const customizePopup = document.querySelector('.customize-popup');
+    const closePopup = document.querySelector('.close-popup');
+
+    customizeToggle.addEventListener('click', () => {
+        customizePopup.classList.add('active');
+    });
+
+    closePopup.addEventListener('click', () => {
+        customizePopup.classList.remove('active');
+    });
+
+    // Initialize background controls in the popup
+    const dailyBackground = document.querySelector('.popup-content #daily-background');
+    const customBackground = document.querySelector('.popup-content #custom-background');
+    const resetBackground = document.querySelector('.popup-content #reset-background');
+
+    dailyBackground.addEventListener('click', () => {
+        const topics = ['nature', 'landscape', 'architecture'];
+        const randomTopic = topics[Math.floor(Math.random() * topics.length)];
+        const url = `https://source.unsplash.com/daily?${randomTopic}`;
+        setBackground(url);
+        localStorage.setItem('backgroundType', 'daily');
+        customizePopup.classList.remove('active');
+    });
+
+    customBackground.addEventListener('click', () => {
+        const choice = confirm('Do you want to:\nOK - Upload an image\nCancel - Enter a URL');
+        
+        if (choice) {
+            // File upload
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        setBackground(e.target.result);
+                        localStorage.setItem('backgroundType', 'custom');
+                        localStorage.setItem('customBackground', e.target.result);
+                        customizePopup.classList.remove('active');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            
+            input.click();
+        } else {
+            // URL input
+            const url = prompt('Enter the image URL:');
+            if (url) {
+                try {
+                    new URL(url); // Validate URL
+                    setBackground(url);
+                    localStorage.setItem('backgroundType', 'custom');
+                    localStorage.setItem('customBackground', url);
+                    customizePopup.classList.remove('active');
+                } catch (error) {
+                    alert('Please enter a valid URL');
+                }
+            }
+        }
+    });
+
+    resetBackground.addEventListener('click', () => {
+        document.querySelector('.page-background').style.backgroundImage = '';
+        localStorage.removeItem('backgroundType');
+        localStorage.removeItem('customBackground');
+        customizePopup.classList.remove('active');
+    });
+
+    // Close popup when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!customizePopup.contains(e.target) && !customizeToggle.contains(e.target)) {
+            customizePopup.classList.remove('active');
+        }
+    });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -271,6 +463,19 @@ document.addEventListener('DOMContentLoaded', () => {
     updateWelcomeMessage();
     initializeWeather();
     checkBanner();
+    initializeBackgroundControls();
+    initializeCustomizePopup();
+    
+    // Restore background settings
+    const backgroundType = localStorage.getItem('backgroundType');
+    if (backgroundType === 'daily') {
+        document.getElementById('daily-background').click();
+    } else if (backgroundType === 'custom') {
+        const customBackground = localStorage.getItem('customBackground');
+        if (customBackground) {
+            setBackground(customBackground);
+        }
+    }
     
     // Update welcome message every hour
     setInterval(updateWelcomeMessage, 3600000);
