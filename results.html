@@ -16,15 +16,7 @@
     
     <!-- Scripts -->
     <script async src="https://cse.google.com/cse.js?cx=4776225bf1aee432e"></script>
-    <!-- Replace Auth0 script with Firebase scripts -->
-    <!-- Replace the existing Firebase scripts with these -->
-    <script type="module">
-      import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-      import { getAuth } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
-      window.initializeApp = initializeApp;
-      window.getAuth = getAuth;
-    </script>
-    <!-- Remove the Auth0 script line -->
+    <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
 </head>
 <body>
     <div class="page-wrapper">
@@ -140,6 +132,6 @@
     </nav>
 
     <div class="overlay" id="overlay"></div>
-    <script type="module" src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
