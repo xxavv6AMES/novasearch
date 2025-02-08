@@ -1,4 +1,6 @@
 let auth0Client;
+const UNSPLASH_ACCESS_KEY = 'Xo9yT7MRQzqOOFc0-VzykE1geqsTNIxb-iMYJkFgveM'; // You'll need to get this from Unsplash
+const BACKGROUND_CATEGORIES = ['nature', 'landscape', 'architecture', 'minimal'];
 
 // Initialize Auth0
 async function initAuth0() {
@@ -31,16 +33,16 @@ async function updateUIState() {
 
         if (isAuthenticated) {
             const user = await auth0Client.getUser();
-            if (user && user.picture) {
+            if (user) {
                 document.getElementById('user-picture').src = user.picture;
-            }
-            if (user && user.name) {
+                document.getElementById('user-picture-large').src = user.picture;
                 document.getElementById('user-name').textContent = user.name;
+                document.getElementById('user-email').textContent = user.email;
             }
             loginButton.style.display = 'none';
             userInfo.style.display = 'flex';
         } else {
-            loginButton.style.display = 'block';
+            loginButton.style.display = 'flex';
             userInfo.style.display = 'none';
         }
     } catch (error) {
@@ -97,14 +99,69 @@ function setTheme(theme) {
 
 // Background handling
 function initializeBackgrounds() {
-    const backgrounds = [
-        'https://source.unsplash.com/daily?nature',
-        'https://source.unsplash.com/daily?landscape',
-        'https://source.unsplash.com/daily?city'
-    ];
+    const backgroundType = localStorage.getItem('backgroundType');
+    if (backgroundType === 'daily') {
+        checkAndUpdateDailyBackground();
+    } else if (backgroundType === 'custom') {
+        const customBackground = localStorage.getItem('customBackground');
+        if (customBackground) {
+            setBackground(customBackground);
+        }
+    }
+}
+
+async function checkAndUpdateDailyBackground() {
+    const lastUpdate = localStorage.getItem('lastBackgroundUpdate');
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const lastUpdateDate = lastUpdate ? new Date(parseInt(lastUpdate)).getTime() : null;
     
-    const savedBackground = localStorage.getItem('background') || backgrounds[0];
-    setBackground(savedBackground);
+    // Use cached background if we already updated today
+    if (lastUpdate && lastUpdateDate >= today) {
+        const cachedBackground = localStorage.getItem('dailyBackground');
+        if (cachedBackground) {
+            setBackground(cachedBackground);
+            return;
+        }
+    }
+    
+    // If it's a new day or no previous background, fetch new one
+    await fetchNewDailyBackground();
+}
+
+async function fetchNewDailyBackground() {
+    try {
+        const randomCategory = BACKGROUND_CATEGORIES[Math.floor(Math.random() * BACKGROUND_CATEGORIES.length)];
+        const response = await fetch(
+            `https://api.unsplash.com/photos/random?query=${randomCategory}&orientation=landscape&w=2560&h=1440&fit=crop&q=90`,
+            {
+                headers: {
+                    'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}`
+                }
+            }
+        );
+        
+        const data = await response.json();
+        const imageUrl = data.urls.full;
+        
+        // Save the new background with today's date at midnight
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        localStorage.setItem('lastBackgroundUpdate', today.getTime().toString());
+        localStorage.setItem('dailyBackground', imageUrl);
+        
+        setBackground(imageUrl);
+        
+        // Track attribution as required by Unsplash
+        fetch(data.links.download_location, {
+            headers: {
+                'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}`
+            }
+        });
+    } catch (error) {
+        console.error('Failed to fetch daily background:', error);
+        setBackground('https://source.unsplash.com/2560x1440/?nature');
+    }
 }
 
 function setBackground(url) {
@@ -118,12 +175,10 @@ function initializeBackgroundControls() {
     const customBackground = document.getElementById('custom-background');
     const resetBackground = document.getElementById('reset-background');
 
-    dailyBackground.addEventListener('click', () => {
-        const topics = ['nature', 'landscape', 'architecture'];
-        const randomTopic = topics[Math.floor(Math.random() * topics.length)];
-        const url = `https://source.unsplash.com/daily?${randomTopic}`;
-        setBackground(url);
+    dailyBackground.addEventListener('click', async () => {
         localStorage.setItem('backgroundType', 'daily');
+        await fetchNewDailyBackground();
+        customizePopup.classList.remove('active');
     });
 
     customBackground.addEventListener('click', () => {
@@ -149,8 +204,11 @@ function initializeBackgroundControls() {
 
     resetBackground.addEventListener('click', () => {
         document.querySelector('.page-background').style.backgroundImage = '';
+        localStorage.removeItem('background');
         localStorage.removeItem('backgroundType');
         localStorage.removeItem('customBackground');
+        localStorage.removeItem('dailyBackground');
+        localStorage.removeItem('lastBackgroundUpdate');
     });
 }
 
@@ -188,8 +246,19 @@ function addDeleteButton(tile) {
 }
 
 function deleteTile(tile) {
+    const tileData = {
+        url: tile.dataset.url,
+        name: tile.querySelector('span').textContent
+    };
+    
     tile.remove();
-    saveQuickAccess();
+    
+    // Update localStorage
+    const savedTiles = JSON.parse(localStorage.getItem('quickAccessTiles') || '[]');
+    const updatedTiles = savedTiles.filter(saved => 
+        saved.url !== tileData.url || saved.name !== tileData.name
+    );
+    localStorage.setItem('quickAccessTiles', JSON.stringify(updatedTiles));
 }
 
 function loadSavedTiles() {
@@ -356,7 +425,7 @@ function dismissBanner() {
     banner.style.transition = 'all 0.3s ease';
     
     // Updated version number in storage key
-    localStorage.setItem('bannerDismissed_v2.3', 'true');
+    localStorage.setItem('bannerDismissed_v2.4', 'true');
     
     setTimeout(() => banner.remove(), 300);
 }
@@ -364,7 +433,7 @@ function dismissBanner() {
 // Check if banner should be shown
 function checkBanner() {
     // Updated version number in storage key
-    if (localStorage.getItem('bannerDismissed_v2.3')) {
+    if (localStorage.getItem('bannerDismissed_v2.4')) {
         const banner = document.getElementById('update-banner');
         if (banner) banner.remove();
     }
@@ -389,12 +458,9 @@ function initializeCustomizePopup() {
     const customBackground = document.querySelector('.popup-content #custom-background');
     const resetBackground = document.querySelector('.popup-content #reset-background');
 
-    dailyBackground.addEventListener('click', () => {
-        const topics = ['nature', 'landscape', 'architecture'];
-        const randomTopic = topics[Math.floor(Math.random() * topics.length)];
-        const url = `https://source.unsplash.com/daily?${randomTopic}`;
-        setBackground(url);
+    dailyBackground.addEventListener('click', async () => {
         localStorage.setItem('backgroundType', 'daily');
+        await fetchNewDailyBackground();
         customizePopup.classList.remove('active');
     });
 
@@ -454,6 +520,29 @@ function initializeCustomizePopup() {
     });
 }
 
+// Add a function to check for background updates periodically
+function startBackgroundUpdateCheck() {
+    // Calculate time until next day
+    const now = new Date();
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+    const timeUntilTomorrow = tomorrow - now;
+
+    // First check at midnight
+    setTimeout(() => {
+        if (localStorage.getItem('backgroundType') === 'daily') {
+            checkAndUpdateDailyBackground();
+        }
+        // Then check every 24 hours
+        setInterval(() => {
+            if (localStorage.getItem('backgroundType') === 'daily') {
+                checkAndUpdateDailyBackground();
+            }
+        }, 86400000); // 24 hours
+    }, timeUntilTomorrow);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     initAuth0();
     initializeEventListeners();
@@ -465,6 +554,7 @@ document.addEventListener('DOMContentLoaded', () => {
     checkBanner();
     initializeBackgroundControls();
     initializeCustomizePopup();
+    startBackgroundUpdateCheck();
     
     // Restore background settings
     const backgroundType = localStorage.getItem('backgroundType');

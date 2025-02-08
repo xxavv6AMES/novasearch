@@ -31,6 +31,7 @@
 
 <!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Wix+Madefor+Display:wght@400;600&family=Wix+Madefor+Text:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <!-- Preload Critical Resources -->
 <link rel="preload" href="https://d2zcpib8duehag.cloudfront.net/novasearch-preview.png" as="image">
@@ -44,7 +45,6 @@
     <meta name="mobile-web-app-capable" content="yes">
 
     <link rel="icon" href="https://d2zcpib8duehag.cloudfront.net/novasearchnotext.png">
-    <link href="https://fonts.googleapis.com/css2?family=Wix+Madefor+Display:wght@400;600&family=Wix+Madefor+Text:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script async src="https://cse.google.com/cse.js?cx=4776225bf1aee432e"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -72,23 +72,27 @@
                                 <img id="user-picture-large" alt="User profile" class="user-picture-large">
                                 <div class="user-details">
                                     <span id="user-name" class="user-name"></span>
-                                    <button id="logout-button" class="dropdown-button">Sign Out</button>
+                                    <span id="user-email" class="user-email"></span>
                                 </div>
                             </div>
                             <div class="dropdown-section">
-                                <h3>Appearance</h3>
-                                <div class="background-controls">
-                                    <button id="daily-background" class="dropdown-button">
-                                        <i class="fas fa-image"></i>
-                                        Use Daily Background
-                                    </button>
-                                    <button id="custom-background" class="dropdown-button">
-                                        <i class="fas fa-upload"></i>
-                                        Custom Background
-                                    </button>
-                                    <button id="reset-background" class="dropdown-button">
-                                        <i class="fas fa-undo"></i>
-                                        Reset Background
+                                <h3>Account Settings</h3>
+                                <div class="account-controls">
+                                    <a href="https://account.nova.xxavvgroup.com" class="dropdown-button">
+                                        <i class="fas fa-user-cog"></i>
+                                        Manage Nova ID
+                                    </a>
+                                    <a href="https://account.nova.xxavvgroup.com/security" class="dropdown-button">
+                                        <i class="fas fa-shield-alt"></i>
+                                        Security Settings
+                                    </a>
+                                    <a href="https://account.nova.xxavvgroup.com/privacy" class="dropdown-button">
+                                        <i class="fas fa-user-shield"></i>
+                                        Privacy Controls
+                                    </a>
+                                    <button id="logout-button" class="dropdown-button">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        Sign Out
                                     </button>
                                 </div>
                             </div>
@@ -102,7 +106,7 @@
     <div class="update-banner" id="update-banner">
         <div class="banner-content">
             <span class="banner-badge">New</span>
-            <p>Nova Search has been updated to version 2.3! Now with enhanced customization and persistent quick access.</p>
+            <p>Nova Search has been updated to version 2.4! Experience our completely redesigned interface.</p>
             <a href="corporate/changelog.html">See what's new</a>
         </div>
         <button class="banner-close" aria-label="Dismiss" onclick="dismissBanner()">
@@ -115,10 +119,7 @@
     <main class="main-content">
         <div class="search-container">
             <h1 class="welcome-text">Good <span id="timeOfDay">morning</span></h1>
-            <div class="search-box-wrapper">
                 <gcse:searchbox-only enableautocomplete="true"></gcse:searchbox-only>
-            </div>
-            
             <div class="quick-access">
             
                 <div class="quick-tile" id="add-tile">

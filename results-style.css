@@ -18,6 +18,9 @@
     --snippet-color: #4d5156;
     --font-heading: 'Space Grotesk', sans-serif;
     --font-body: 'Inter', sans-serif;
+    --results-max-width: 800px;
+    --sidebar-width: 280px;
+    --results-spacing: 24px;
 }
 
 /* Base Styles */
@@ -38,8 +41,8 @@ body {
 /* Layout */
 .page-wrapper {
     min-height: 100vh;
-    display: grid;
-    grid-template-rows: auto 1fr auto;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Header Styles */
@@ -482,4 +485,172 @@ body {
 
 .sidebar-link:hover {
     background: rgba(0,0,0,0.04);
+}
+
+.header-container {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 24px;
+    align-items: center;
+    padding: 0 24px;
+    height: 64px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* Search Container Improvements */
+.search-wrapper {
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Results Layout */
+.results-main {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) 1fr;
+    gap: 32px;
+    padding: 24px;
+    margin-top: 64px;
+    flex: 1;
+    background: var(--background);
+}
+
+/* Sidebar Styling */
+.results-sidebar {
+    position: sticky;
+    top: 88px;
+    height: calc(100vh - 88px);
+    padding: 24px;
+    background: var(--glass-background);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: var(--glass-shadow);
+}
+
+.filters-section h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+/* Results Container */
+.results-content {
+    min-width: 0;
+}
+
+.results-container {
+    background: var(--glass-background);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: var(--glass-shadow);
+    padding: 24px;
+}
+
+/* Quick Actions */
+.quick-actions {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.action-button {
+    width: 48px;
+    height: 48px;
+    border-radius: 24px;
+    background: var(--glass-background);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--glass-shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.action-button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--glass-shadow), 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Google CSE Customization */
+.gsc-control-cse {
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+}
+
+.gsc-result {
+    margin-bottom: 24px !important;
+    padding: 20px !important;
+    background: var(--surface-color) !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    transition: all 0.3s ease !important;
+}
+
+.gsc-result:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: var(--glass-shadow) !important;
+}
+
+.gs-title {
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-size: 1.2rem !important;
+    color: var(--primary-color) !important;
+    text-decoration: none !important;
+}
+
+.gs-snippet {
+    font-family: 'Inter', sans-serif !important;
+    color: var(--text-primary) !important;
+    line-height: 1.6 !important;
+}
+
+/* Dark Mode Adjustments */
+[data-theme="darkstyle"] .results-main {
+    background: var(--background);
+}
+
+[data-theme="darkstyle"] .results-sidebar,
+[data-theme="darkstyle"] .results-container,
+[data-theme="darkstyle"] .action-button {
+    background: var(--glass-bg);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .results-main {
+        grid-template-columns: 1fr;
+    }
+
+    .results-sidebar {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-container {
+        grid-template-columns: auto 1fr;
+        padding: 0 16px;
+    }
+
+    .results-main {
+        padding: 16px;
+    }
+
+    .search-wrapper {
+        max-width: none;
+    }
 }
