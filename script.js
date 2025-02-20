@@ -1,76 +1,109 @@
-let auth0Client;
-const UNSPLASH_ACCESS_KEY = 'Xo9yT7MRQzqOOFc0-VzykE1geqsTNIxb-iMYJkFgveM'; // You'll need to get this from Unsplash
+import { signIn, signInWithGoogle, signInWithGithub, signOutUser, onAuthStateChanged } from './services/auth.js';
+
+const UNSPLASH_ACCESS_KEY = 'Xo9yT7MRQzqOOFc0-VzykE1geqsTNIxb-iMYJkFgveM';
 const BACKGROUND_CATEGORIES = ['nature', 'landscape', 'architecture', 'minimal'];
 
-// Initialize Auth0
-async function initAuth0() {
-    try {
-        auth0Client = await auth0.createAuth0Client({
-            domain: 'auth.novawerks.xxavvgroup.com',
-            clientId: 'RGfDMp59V4UhqLIBZYwVZqHQwKly3lQ3',
-            authorizationParams: {
-                redirect_uri: window.location.origin
+// Authentication state management
+function initializeAuth() {
+    const loginButton = document.getElementById('login-button');
+    const logoutButton = document.getElementById('logout-button');
+    const userInfo = document.getElementById('user-info');
+    const loginDialog = document.getElementById('login-dialog');
+    const loginForm = document.getElementById('login-form');
+    const closeDialog = loginDialog.querySelector('.close-dialog');
+    const errorMessage = loginDialog.querySelector('.error-message');
+    const loginVideo = document.getElementById('login-video');
+
+    loginVideo.addEventListener('ended', () => {
+        loginVideo.classList.add('paused');
+    });
+
+    loginButton.addEventListener('click', () => {
+        loginDialog.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        // Reset video when opening dialog
+        loginVideo.classList.remove('paused');
+        loginVideo.currentTime = 0;
+        loginVideo.play();
+    });
+
+    closeDialog.addEventListener('click', () => {
+        loginDialog.classList.remove('active');
+        document.body.style.overflow = '';
+        errorMessage.style.display = 'none';
+    });
+
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        try {
+            await signIn(email, password);
+            loginDialog.classList.remove('active');
+            document.body.style.overflow = '';
+            loginForm.reset();
+            errorMessage.style.display = 'none';
+        } catch (error) {
+            if (error.code === 'auth/user-not-found') {
+                window.location.href = 'https://account.nova.xxavvgroup.com/signup.html';
+            } else {
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
             }
+        }
+    });
+
+    document.getElementById('google-login').addEventListener('click', async () => {
+        try {
+            await signInWithGoogle();
+            loginDialog.classList.remove('active');
+            document.body.style.overflow = '';
+            errorMessage.style.display = 'none';
+        } catch (error) {
+            errorMessage.textContent = error.message;
+            errorMessage.style.display = 'block';
+        }
+    });
+
+    document.getElementById('github-login').addEventListener('click', async () => {
+        try {
+            await signInWithGithub();
+            loginDialog.classList.remove('active');
+            document.body.style.overflow = '';
+            errorMessage.style.display = 'none';
+        } catch (error) {
+            errorMessage.textContent = error.message;
+            errorMessage.style.display = 'block';
+        }
+    });
+
+    logoutButton.addEventListener('click', () => {
+        signOutUser().catch(error => {
+            console.error('Logout failed:', error);
         });
-    } catch (error) {
-        console.error('Firebase initialization failed:', error);
-    }
-}
+    });
 
-// Show auth modal
-function showAuthModal() {
-    const modal = document.getElementById('auth-modal');
-    modal.style.display = 'block';
-}
-
-// Hide auth modal
-function hideAuthModal() {
-    const modal = document.getElementById('auth-modal');
-    modal.style.display = 'none';
-}
-
-// Handle Nova ID (Email) signin
-async function handleNovaIdSignIn() {
-    // Redirect to Nova account login
-    window.location.href = 'https://account.nova.xxavvgroup.com/signup.html?redirect=' + encodeURIComponent(window.location.href);
-}
-
-// Handle provider sign in (Google/GitHub)
-async function handleProviderSignIn(provider) {
-    try {
-        const result = await signInWithPopup(auth, provider);
-        hideAuthModal();
-        updateUIState(result.user);
-    } catch (error) {
-        console.error('Sign in failed:', error);
-        alert('Failed to sign in. Please try again.');
-    }
-}
-
-// Update UI based on authentication state
-async function updateUIState() {
-    try {
-        const isAuthenticated = await auth0Client.isAuthenticated();
-        const loginButton = document.getElementById('login-button');
-        const userInfo = document.getElementById('user-info');
-
-        if (isAuthenticated) {
-            const user = await auth0Client.getUser();
-            if (user) {
-                document.getElementById('user-picture').src = user.picture;
-                document.getElementById('user-picture-large').src = user.picture;
-                document.getElementById('user-name').textContent = user.name;
-                document.getElementById('user-email').textContent = user.email;
-            }
+    onAuthStateChanged((user) => {
+        if (user) {
+            // Update display name and avatars
+            const displayName = user.displayName || user.email.split('@')[0];
+            document.querySelector('.display-name').textContent = displayName;
+            document.querySelector('.user-name').textContent = displayName;
+            document.querySelector('.user-email').textContent = user.email;
+            
+            // Update avatar images
+            const avatarUrl = user.photoURL || 'https://d2zcpib8duehag.cloudfront.net/default-avatar.png';
+            document.querySelector('.avatar').src = avatarUrl;
+            document.querySelector('.dropdown-avatar').src = avatarUrl;
+            
             loginButton.style.display = 'none';
             userInfo.style.display = 'flex';
         } else {
             loginButton.style.display = 'flex';
             userInfo.style.display = 'none';
         }
-    } catch (error) {
-        console.error('Error updating UI state:', error);
-    }
+    });
 }
 
 function initializeEventListeners() {
@@ -91,24 +124,6 @@ function initializeEventListeners() {
         sidebar.classList.remove('open');
         overlay.classList.remove('active');
         document.body.style.overflow = '';
-    }
-
-    // Auth events
-    const loginButton = document.getElementById('login-button');
-    const logoutButton = document.getElementById('logout-button');
-    
-    if (loginButton) {
-        loginButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            login();
-        });
-    }
-    
-    if (logoutButton) {
-        logoutButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            logout();
-        });
     }
 
     // Theme handling
@@ -383,7 +398,7 @@ async function initializeWeather() {
         weatherWidget.innerHTML = `
             <div class="weather-permission">
                 <p>Would you like to see local weather information?</p>
-                <button class="auth-button" onclick="requestWeatherPermission()">Enable Weather</button>
+                <button class="button" onclick="requestWeatherPermission()">Enable Weather</button>
             </div>
         `;
         return;
@@ -461,7 +476,7 @@ function dismissBanner() {
     banner.style.transition = 'all 0.3s ease';
     
     // Updated version number in storage key
-    localStorage.setItem('bannerDismissed_v2.4', 'true');
+    localStorage.setItem('bannerDismissed_v2.5', 'true');
     
     setTimeout(() => banner.remove(), 300);
 }
@@ -469,7 +484,7 @@ function dismissBanner() {
 // Check if banner should be shown
 function checkBanner() {
     // Updated version number in storage key
-    if (localStorage.getItem('bannerDismissed_v2.4')) {
+    if (localStorage.getItem('bannerDismissed_v2.5')) {
         const banner = document.getElementById('update-banner');
         if (banner) banner.remove();
     }
@@ -580,32 +595,36 @@ function startBackgroundUpdateCheck() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    initFirebase().then(() => {
-        initializeEventListeners();
-        initializeAuthListeners();
-        // ... rest of your initialization code ...
-    });
+    const isHomePage = !window.location.pathname.includes('results.html');
+    
+    // Always initialize these features
+    initializeAuth();
+    initializeEventListeners();
     setTheme(localStorage.getItem('theme') || 'style');
-    initializeBackgrounds();
-    initializeQuickAccess();
-    updateWelcomeMessage();
-    initializeWeather();
-    checkBanner();
-    initializeBackgroundControls();
-    initializeCustomizePopup();
-    startBackgroundUpdateCheck();
     
-    // Restore background settings
-    const backgroundType = localStorage.getItem('backgroundType');
-    if (backgroundType === 'daily') {
-        document.getElementById('daily-background').click();
-    } else if (backgroundType === 'custom') {
-        const customBackground = localStorage.getItem('customBackground');
-        if (customBackground) {
-            setBackground(customBackground);
+    // Only initialize home page features if we're on the home page
+    if (isHomePage) {
+        initializeBackgrounds();
+        initializeQuickAccess();
+        updateWelcomeMessage();
+        initializeWeather();
+        checkBanner();
+        initializeBackgroundControls();
+        initializeCustomizePopup();
+        startBackgroundUpdateCheck();
+        
+        // Restore background settings
+        const backgroundType = localStorage.getItem('backgroundType');
+        if (backgroundType === 'daily') {
+            document.getElementById('daily-background').click();
+        } else if (backgroundType === 'custom') {
+            const customBackground = localStorage.getItem('customBackground');
+            if (customBackground) {
+                setBackground(customBackground);
+            }
         }
+        
+        // Update welcome message every hour
+        setInterval(updateWelcomeMessage, 3600000);
     }
-    
-    // Update welcome message every hour
-    setInterval(updateWelcomeMessage, 3600000);
 });
