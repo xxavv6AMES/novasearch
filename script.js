@@ -1,54 +1,132 @@
-let auth0Client;
-const UNSPLASH_ACCESS_KEY = 'Xo9yT7MRQzqOOFc0-VzykE1geqsTNIxb-iMYJkFgveM'; // You'll need to get this from Unsplash
-const BACKGROUND_CATEGORIES = ['nature', 'landscape', 'architecture', 'minimal'];
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+import { 
+    getAuth, 
+    signInWithPopup, 
+    GoogleAuthProvider, 
+    GithubAuthProvider,
+    signOut, 
+    onAuthStateChanged,
+    signInWithEmailAndPassword
+} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+import firebaseConfig from './firebase-config.js';
 
-// Initialize Auth0
-async function initAuth0() {
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+const githubProvider = new GithubAuthProvider();
+
+async function initFirebase() {
     try {
-        auth0Client = await auth0.createAuth0Client({
-            domain: 'auth.novawerks.xxavvgroup.com',
-            clientId: 'RGfDMp59V4UhqLIBZYwVZqHQwKly3lQ3',
-            authorizationParams: {
-                redirect_uri: window.location.origin
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                updateUIState(user);
+            } else {
+                updateUIState(null);
             }
         });
-
-        if (location.search.includes("code=") && location.search.includes("state=")) {
-            await auth0Client.handleRedirectCallback();
-            window.history.replaceState({}, document.title, window.location.pathname);
-        }
-
-        await updateUIState();
     } catch (error) {
-        console.error('Auth0 initialization failed:', error);
+        console.error('Firebase initialization failed:', error);
     }
 }
 
-// Update UI based on authentication state
-async function updateUIState() {
+// Show auth modal
+function showAuthModal() {
+    const modal = document.getElementById('auth-modal');
+    modal.style.display = 'block';
+}
+
+// Hide auth modal
+function hideAuthModal() {
+    const modal = document.getElementById('auth-modal');
+    modal.style.display = 'none';
+}
+
+// Handle Nova ID (Email) signin
+async function handleNovaIdSignIn() {
+    // Redirect to Nova account login
+    window.location.href = 'https://account.nova.xxavvgroup.com/signup.html?redirect=' + encodeURIComponent(window.location.href);
+}
+
+// Handle provider sign in (Google/GitHub)
+async function handleProviderSignIn(provider) {
     try {
-        const isAuthenticated = await auth0Client.isAuthenticated();
-        const loginButton = document.getElementById('login-button');
-        const userInfo = document.getElementById('user-info');
-
-        if (isAuthenticated) {
-            const user = await auth0Client.getUser();
-            if (user) {
-                document.getElementById('user-picture').src = user.picture;
-                document.getElementById('user-picture-large').src = user.picture;
-                document.getElementById('user-name').textContent = user.name;
-                document.getElementById('user-email').textContent = user.email;
-            }
-            loginButton.style.display = 'none';
-            userInfo.style.display = 'flex';
-        } else {
-            loginButton.style.display = 'flex';
-            userInfo.style.display = 'none';
-        }
+        const result = await signInWithPopup(auth, provider);
+        hideAuthModal();
+        updateUIState(result.user);
     } catch (error) {
-        console.error('Error updating UI state:', error);
+        console.error('Sign in failed:', error);
+        alert('Failed to sign in. Please try again.');
     }
 }
+
+// Remove or comment out the old login function
+// async function login() { ... }
+
+async function logout() {
+    try {
+        await signOut(auth);
+        updateUIState(null);
+        // Optional: Reload the page or redirect
+        window.location.reload();
+    } catch (error) {
+        console.error('Logout failed:', error);
+        alert('Failed to sign out. Please try again.');
+    }
+}
+
+function updateUIState(user) {
+    const loginButton = document.getElementById('login-button');
+    const userInfo = document.getElementById('user-info');
+    const userPicture = document.getElementById('user-picture');
+    const userPictureLarge = document.getElementById('user-picture-large');
+    const userName = document.getElementById('user-name');
+    const userEmail = document.getElementById('user-email');
+
+    if (user) {
+        // Update profile pictures
+        if (userPicture) userPicture.src = user.photoURL;
+        if (userPictureLarge) userPictureLarge.src = user.photoURL;
+        
+        // Update name and email
+        if (userName) userName.textContent = user.displayName;
+        if (userEmail) userEmail.textContent = user.email;
+        
+        // Show/hide elements
+        if (loginButton) loginButton.style.display = 'none';
+        if (userInfo) userInfo.style.display = 'flex';
+        
+        // Add hover functionality for dropdown
+        const userProfile = document.querySelector('.user-profile');
+        const userDropdown = document.querySelector('.user-dropdown');
+        
+        if (userProfile && userDropdown) {
+            userProfile.addEventListener('mouseenter', () => {
+                userDropdown.style.opacity = '1';
+                userDropdown.style.visibility = 'visible';
+                userDropdown.style.transform = 'translateY(0)';
+            });
+            
+            userProfile.addEventListener('mouseleave', () => {
+                userDropdown.style.opacity = '0';
+                userDropdown.style.visibility = 'hidden';
+                userDropdown.style.transform = 'translateY(-8px)';
+            });
+        }
+    } else {
+        // Reset to initial state
+        if (loginButton) loginButton.style.display = 'flex';
+        if (userInfo) userInfo.style.display = 'none';
+        
+        // Clear user data
+        if (userPicture) userPicture.src = '';
+        if (userPictureLarge) userPictureLarge.src = '';
+        if (userName) userName.textContent = '';
+        if (userEmail) userEmail.textContent = '';
+    }
+}
+
+const UNSPLASH_ACCESS_KEY = 'Xo9yT7MRQzqOOFc0-VzykE1geqsTNIxb-iMYJkFgveM'; // You'll need to get this from Unsplash
+const BACKGROUND_CATEGORIES = ['nature', 'landscape', 'architecture', 'minimal'];
 
 function initializeEventListeners() {
     // Sidebar toggle
@@ -71,9 +149,22 @@ function initializeEventListeners() {
     }
 
     // Auth events
-    document.getElementById('login-button').addEventListener('click', () => auth0Client.loginWithRedirect());
-    document.getElementById('logout-button').addEventListener('click', () => 
-        auth0Client.logout({ logoutParams: { returnTo: window.location.origin } }));
+    const loginButton = document.getElementById('login-button');
+    const logoutButton = document.getElementById('logout-button');
+    
+    if (loginButton) {
+        loginButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            login();
+        });
+    }
+    
+    if (logoutButton) {
+        logoutButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            logout();
+        });
+    }
 
     // Theme handling
     const themeToggle = document.getElementById('theme-toggle');
@@ -543,9 +634,80 @@ function startBackgroundUpdateCheck() {
     }, timeUntilTomorrow);
 }
 
+// Update the event listeners
+function initializeAuthListeners() {
+    // Login button should show modal instead of direct login
+    const loginButton = document.getElementById('login-button');
+    if (loginButton) {
+        loginButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            showAuthModal();
+        });
+    }
+
+    // Close modal button
+    const closeModal = document.getElementById('close-auth-modal');
+    if (closeModal) {
+        closeModal.addEventListener('click', hideAuthModal);
+    }
+
+    // Modal overlay click to close
+    const modal = document.getElementById('auth-modal');
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                hideAuthModal();
+            }
+        });
+    }
+
+    // Auth provider buttons
+    const emailSignin = document.getElementById('email-signin');
+    const googleSignin = document.getElementById('google-signin');
+    const githubSignin = document.getElementById('github-signin');
+
+    if (emailSignin) {
+        emailSignin.addEventListener('click', handleNovaIdSignIn);
+    }
+    if (googleSignin) {
+        googleSignin.addEventListener('click', () => handleProviderSignIn(googleProvider));
+    }
+    if (githubSignin) {
+        githubSignin.addEventListener('click', () => handleProviderSignIn(githubProvider));
+    }
+
+    // Logout button
+    const logoutButton = document.getElementById('logout-button');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', logout);
+    }
+
+    const emailPasswordForm = document.getElementById('email-password-form');
+    if (emailPasswordForm) {
+        emailPasswordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorElement = document.getElementById('auth-error');
+            
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                hideAuthModal();
+            } catch (error) {
+                errorElement.textContent = error.message.includes('auth/') 
+                    ? 'Invalid email or password'
+                    : 'Failed to sign in. Please try again.';
+            }
+        });
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    initAuth0();
-    initializeEventListeners();
+    initFirebase().then(() => {
+        initializeEventListeners();
+        initializeAuthListeners();
+        // ... rest of your initialization code ...
+    });
     setTheme(localStorage.getItem('theme') || 'style');
     initializeBackgrounds();
     initializeQuickAccess();

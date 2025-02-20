@@ -848,3 +848,65 @@ table.gssb_c > tbody > tr:hover {
 .gsst_a:hover .gscb_a {
     opacity: 1 !important;
 }
+
+.auth-form {
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.auth-submit {
+    width: 100%;
+    padding: 0.75rem;
+    background: #0078d4;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.auth-submit:hover {
+    background: #006cbd;
+}
+
+.form-error {
+    color: #d83025;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    min-height: 1.2em;
+}
+
+/* Fix visual issues */
+.auth-modal {
+    background: #fff;
+    color: #333;
+}
+
+[data-theme="darkstyle"] .auth-modal {
+    background: #2d2d2d;
+    color: #fff;
+}
+
+[data-theme="darkstyle"] .form-group input {
+    background: #1f1f1f;
+    border-color: #444;
+    color: #fff;
+}
+
+[data-theme="darkstyle"] .auth-button {
+    background: #1f1f1f;
+    border-color: #444;
+    color: #fff;
+}

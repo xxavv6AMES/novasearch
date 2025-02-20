@@ -48,7 +48,13 @@
     <link rel="stylesheet" href="style.css">
     <script async src="https://cse.google.com/cse.js?cx=4776225bf1aee432e"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
+    <!-- Replace Auth0 script with Firebase scripts -->
+    <script type="module">
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+      import { getAuth } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+      window.initializeApp = initializeApp;
+      window.getAuth = getAuth;
+    </script>
 </head>
 <body>
     <header class="main-header">
@@ -81,14 +87,6 @@
                                     <a href="https://account.nova.xxavvgroup.com" class="dropdown-button">
                                         <i class="fas fa-user-cog"></i>
                                         Manage Nova ID
-                                    </a>
-                                    <a href="https://account.nova.xxavvgroup.com/security" class="dropdown-button">
-                                        <i class="fas fa-shield-alt"></i>
-                                        Security Settings
-                                    </a>
-                                    <a href="https://account.nova.xxavvgroup.com/privacy" class="dropdown-button">
-                                        <i class="fas fa-user-shield"></i>
-                                        Privacy Controls
                                     </a>
                                     <button id="logout-button" class="dropdown-button">
                                         <i class="fas fa-sign-out-alt"></i>
@@ -227,6 +225,39 @@
     </footer>
 
     <div class="overlay" id="overlay"></div>
-    <script src="script.js"></script>
+    <div class="auth-modal-overlay" id="auth-modal">
+        <div class="auth-modal">
+            <button class="close-modal" id="close-auth-modal">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2>Sign in to Nova Search</h2>
+            <form id="email-password-form" class="auth-form">
+                <div class="form-group">
+                    <input type="email" id="email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="auth-submit">Sign In</button>
+                <div class="form-error" id="auth-error"></div>
+            </form>
+            <div class="auth-divider">or</div>
+            <div class="auth-options">
+                <button class="auth-button" id="google-signin">
+                    <i class="fab fa-google"></i>
+                    Continue with Google
+                </button>
+                <button class="auth-button" id="github-signin">
+                    <i class="fab fa-github"></i>
+                    Continue with GitHub
+                </button>
+            </div>
+            <div class="signup-link">
+                Don't have an account? 
+                <a href="https://account.nova.xxavvgroup.com/signup.html">Create one</a>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
