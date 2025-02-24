@@ -1,9 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="style">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Nova Search</title>
+    
+    <!-- Add iOS meta tags for PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#ffffff">
 
     <!-- Primary SEO Meta Tags -->
 <title>Nova Search</title>
@@ -31,11 +36,6 @@
 
 <!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Wix+Madefor+Display:wght@400;600&family=Wix+Madefor+Text:wght@400;600;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-<!-- Preload Critical Resources -->
-<link rel="preload" href="https://d2zcpib8duehag.cloudfront.net/novasearch-preview.png" as="image">
-
 <!-- Robots Meta Tag -->
 <meta name="robots" content="index, follow">
 
@@ -103,10 +103,33 @@
         </div>
     </header>
 
+    <div class="mobile-nav">
+        <a href="/" class="nav-item active">
+            <i class="fas fa-search"></i>
+            <span>Search</span>
+        </a>
+        <a href="javascript:void(0)" class="nav-item" id="mobile-apps">
+            <i class="fas fa-th"></i>
+            <span>Apps</span>
+        </a>
+        <a href="https://account.nova.xxavvgroup.com" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Account</span>
+        </a>
+        <button class="nav-item" id="mobile-theme">
+            <i class="fas fa-moon"></i>
+            <span>Theme</span>
+        </button>
+    </div>
+
+    <div class="pull-indicator">
+        <i class="fas fa-sync-alt"></i>
+    </div>
+
     <div class="update-banner" id="update-banner">
         <div class="banner-content">
             <span class="banner-badge">New</span>
-            <p>Nova Search has been updated to version 2.5! Experience our new account system and authentication features.</p>
+            <p>Nova Search has been updated to version 2.5.2! The new Discover section and mobile improvements.</p>
             <a href="corporate/changelog.html">See what's new</a>
         </div>
         <button class="banner-close" aria-label="Dismiss" onclick="dismissBanner()">
@@ -119,22 +142,46 @@
     <main class="main-content">
         <div class="search-container">
             <h1 class="welcome-text">Good <span id="timeOfDay">morning</span></h1>
-                <gcse:searchbox-only enableautocomplete="true"></gcse:searchbox-only>
-            <div class="quick-access">
+            <gcse:searchbox-only enableautocomplete="true"></gcse:searchbox-only>
             
-                <div class="quick-tile" id="add-tile">
-                    <i class="fas fa-plus"></i>
-                    <span>Add</span>
+            <div class="content-section">
+                <div class="quick-access">
+                    <div class="quick-tile" id="add-tile">
+                        <i class="fas fa-plus"></i>
+                        <span>Add</span>
+                    </div>
+                </div>
+                
+                <div class="weather-widget">
+                    <div id="weather-content"></div>
+                </div>
+            </div>
+
+            <!-- New Discover Section -->
+            <div class="discover-section">
+                <div class="discover-header">
+                    <h2>Discover</h2>
+                    <div class="discover-tabs">
+                        <button class="tab-button active" data-tab="news">News</button>
+                        <button class="tab-button" data-tab="videos">Videos</button>
+                        <button class="tab-button" data-tab="topics">Topics</button>
+                    </div>
+                </div>
+
+                <div class="discover-content">
+                    <div class="tab-content active" id="news-content">
+                        <div class="content-grid news-grid"></div>
+                    </div>
+                    <div class="tab-content" id="videos-content">
+                        <div class="content-grid video-grid"></div>
+                    </div>
+                    <div class="tab-content" id="topics-content">
+                        <div class="topics-grid"></div>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div class="weather-widget">
-            <div id="weather-content">
-                <!-- Weather data will be inserted here via JS -->
-            </div>
-        </div>
-
+        
         <button class="customize-toggle" aria-label="Customize">
             <i class="fas fa-paint-brush"></i>
             <span>Customize</span>

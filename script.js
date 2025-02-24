@@ -93,7 +93,7 @@ function initializeAuth() {
             document.querySelector('.user-email').textContent = user.email;
             
             // Update avatar images
-            const avatarUrl = user.photoURL || 'https://d2zcpib8duehag.cloudfront.net/default-avatar.png';
+            const avatarUrl = user.photoURL || 'https://d2zcpib8duehag.cloudfront.net/accountuser.png';
             document.querySelector('.avatar').src = avatarUrl;
             document.querySelector('.dropdown-avatar').src = avatarUrl;
             
@@ -427,7 +427,8 @@ function getCurrentPosition() {
     });
 }
 
-async function requestWeatherPermission() {
+// Expose requestWeatherPermission to global scope
+window.requestWeatherPermission = async function() {
     try {
         const position = await getCurrentPosition();
         localStorage.setItem('weatherPermission', 'granted');
@@ -436,7 +437,7 @@ async function requestWeatherPermission() {
         localStorage.setItem('weatherPermission', 'denied');
         document.getElementById('weather-content').innerHTML = '<p>Weather access denied</p>';
     }
-}
+};
 
 async function updateWeather(lat, lon) {
     try {
@@ -476,7 +477,7 @@ function dismissBanner() {
     banner.style.transition = 'all 0.3s ease';
     
     // Updated version number in storage key
-    localStorage.setItem('bannerDismissed_v2.5', 'true');
+    localStorage.setItem('bannerDismissed_v2.5.2', 'true');
     
     setTimeout(() => banner.remove(), 300);
 }
@@ -484,7 +485,7 @@ function dismissBanner() {
 // Check if banner should be shown
 function checkBanner() {
     // Updated version number in storage key
-    if (localStorage.getItem('bannerDismissed_v2.5')) {
+    if (localStorage.getItem('bannerDismissed_v2.5.2')) {
         const banner = document.getElementById('update-banner');
         if (banner) banner.remove();
     }
@@ -594,6 +595,186 @@ function startBackgroundUpdateCheck() {
     }, timeUntilTomorrow);
 }
 
+function initializeMobileFeatures() {
+    if (window.innerWidth > 768) return;
+
+    // Mobile navigation handlers
+    document.getElementById('mobile-apps')?.addEventListener('click', () => {
+        document.getElementById('sidebar-menu').classList.add('open');
+        document.getElementById('overlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    });
+
+    document.getElementById('mobile-theme')?.addEventListener('click', () => {
+        const newTheme = document.documentElement.dataset.theme === 'style' ? 'darkstyle' : 'style';
+        setTheme(newTheme);
+        const icon = document.querySelector('#mobile-theme i');
+        icon.className = newTheme === 'darkstyle' ? 'fas fa-sun' : 'fas fa-moon';
+    });
+
+    // Pull to refresh
+    let touchStart = 0;
+    let touchY = 0;
+    const pullIndicator = document.querySelector('.pull-indicator');
+    const mainContent = document.querySelector('.main-content');
+
+    document.addEventListener('touchstart', (e) => {
+        touchStart = e.touches[0].clientY;
+    }, { passive: true });
+
+    document.addEventListener('touchmove', (e) => {
+        if (window.scrollY === 0) {
+            touchY = e.touches[0].clientY - touchStart;
+            if (touchY > 0 && touchY < 120) {
+                pullIndicator.style.transform = `translateY(${Math.min(touchY - 60, 0)}px)`;
+                e.preventDefault();
+            }
+        }
+    }, { passive: false });
+
+    document.addEventListener('touchend', () => {
+        if (touchY > 60) {
+            pullIndicator.style.transform = 'translateY(0)';
+            // Add loading animation
+            pullIndicator.querySelector('i').style.animation = 'spin 1s linear infinite';
+            // Refresh after animation
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
+        } else {
+            pullIndicator.style.transform = 'translateY(-100%)';
+        }
+        touchY = 0;
+    });
+
+    // Active states for touch elements
+    const touchElements = document.querySelectorAll('.quick-tile, .sidebar-link, .auth-button, .dropdown-item, .nav-item');
+    touchElements.forEach(element => {
+        element.addEventListener('touchstart', () => element.classList.add('active'), { passive: true });
+        element.addEventListener('touchend', () => element.classList.remove('active'), { passive: true });
+        element.addEventListener('touchcancel', () => element.classList.remove('active'), { passive: true });
+    });
+
+    // Handle bottom nav active states
+    const pathname = window.location.pathname;
+    document.querySelectorAll('.nav-item').forEach(item => {
+        if (item.getAttribute('href') === pathname) {
+            item.classList.add('active');
+        }
+    });
+}
+
+// News API key (you'll need to sign up for one)
+const NEWS_API_KEY = '269a9039f5d945f49d0b1bd8aaca3e73';
+const YOUTUBE_API_KEY = 'AIzaSyC9Sdcw7_34F02AaqgM_0K6ZfquDDDOlQk';
+
+async function initializeDiscover() {
+    // Tab switching
+    const tabs = document.querySelectorAll('.tab-button');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = tab.dataset.tab;
+            
+            // Update active tab
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            // Show correct content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${target}-content`).classList.add('active');
+            
+            // Load content if needed
+            if (target === 'news' && !document.querySelector('.news-card')) {
+                loadNews();
+            } else if (target === 'videos' && !document.querySelector('.video-card')) {
+                loadVideos();
+            } else if (target === 'topics' && !document.querySelector('.topic-card')) {
+                loadTopics();
+            }
+        });
+    });
+
+    // Load initial news
+    loadNews();
+}
+
+async function loadNews() {
+    try {
+        const response = await fetch(`https://newsapi.org/v2/top-headlines?country=us&apiKey=${NEWS_API_KEY}`);
+        const data = await response.json();
+        
+        const newsGrid = document.querySelector('.news-grid');
+        newsGrid.innerHTML = data.articles.slice(0, 6).map(article => `
+            <article class="news-card">
+                <img src="${article.urlToImage || 'default-news.jpg'}" alt="${article.title}" class="news-image">
+                <div class="news-content">
+                    <div class="news-source">${article.source.name}</div>
+                    <h3 class="news-title">${article.title}</h3>
+                    <time class="news-date">${new Date(article.publishedAt).toLocaleDateString()}</time>
+                </div>
+            </article>
+        `).join('');
+    } catch (error) {
+        console.error('Failed to load news:', error);
+    }
+}
+
+async function loadVideos() {
+    try {
+        const response = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&chart=mostPopular&maxResults=6&key=${YOUTUBE_API_KEY}`);
+        const data = await response.json();
+        
+        const videoGrid = document.querySelector('.video-grid');
+        videoGrid.innerHTML = data.items.map(video => `
+            <article class="video-card">
+                <img src="${video.snippet.thumbnails.medium.url}" alt="${video.snippet.title}" class="video-thumbnail">
+                <span class="video-duration">${formatDuration(video.contentDetails.duration)}</span>
+                <div class="video-info">
+                    <h3 class="video-title">${video.snippet.title}</h3>
+                    <div class="video-channel">${video.snippet.channelTitle}</div>
+                </div>
+            </article>
+        `).join('');
+    } catch (error) {
+        console.error('Failed to load videos:', error);
+    }
+}
+
+function loadTopics() {
+    const topics = [
+        { icon: '🌍', name: 'World' },
+        { icon: '💻', name: 'Technology' },
+        { icon: '🎮', name: 'Gaming' },
+        { icon: '🎬', name: 'Entertainment' },
+        { icon: '📈', name: 'Business' },
+        { icon: '🔬', name: 'Science' },
+        { icon: '⚽', name: 'Sports' },
+        { icon: '🎨', name: 'Arts' }
+    ];
+    
+    const topicsGrid = document.querySelector('.topics-grid');
+    topicsGrid.innerHTML = topics.map(topic => `
+        <div class="topic-card">
+            <div class="topic-icon">${topic.icon}</div>
+            <div class="topic-name">${topic.name}</div>
+        </div>
+    `).join('');
+}
+
+function formatDuration(duration) {
+    const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+    const hours = match[1] ? match[1].replace('H', '') : 0;
+    const minutes = match[2] ? match[2].replace('M', '') : 0;
+    const seconds = match[3] ? match[3].replace('S', '') : 0;
+    
+    if (hours > 0) {
+        return `${hours}:${minutes.padStart(2, '0')}:${seconds.padStart(2, '0')}`;
+    }
+    return `${minutes}:${seconds.padStart(2, '0')}`;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const isHomePage = !window.location.pathname.includes('results.html');
     
@@ -627,4 +808,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update welcome message every hour
         setInterval(updateWelcomeMessage, 3600000);
     }
+
+    initializeMobileFeatures();
+    initializeDiscover();
 });

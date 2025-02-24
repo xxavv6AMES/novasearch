@@ -21,6 +21,12 @@
     --results-max-width: 800px;
     --sidebar-width: 280px;
     --results-spacing: 24px;
+    --header-height: 60px;
+    --search-height: 48px;
+    --spacing: 16px;
+    --max-width: 800px;
+    --border-radius: 8px;
+    --transition: 0.2s ease;
 }
 
 /* Base Styles */
@@ -1110,4 +1116,194 @@ body {
 
 [data-theme="darkstyle"] .did-you-mean {
     background: rgba(255, 255, 255, 0.05);
+}
+
+/* Base Layout */
+.results-page {
+  padding-top: var(--header-height);
+  min-height: 100vh;
+}
+
+/* Header */
+.results-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
+  background: var(--surface-color);
+  border-bottom: 1px solid var(--border-color);
+  z-index: 100;
+}
+
+.header-content {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--spacing);
+  height: 100%;
+  padding: 0 var(--spacing);
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.header-logo img {
+  height: 32px;
+  width: auto;
+}
+
+/* Search Box */
+.search-container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--spacing);
+}
+
+.gsc-control-cse {
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+.gsc-search-box {
+  margin-bottom: var(--spacing) !important;
+}
+
+.gsc-input-box {
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--border-radius) !important;
+  padding: 6px 12px !important;
+  background: var(--surface-color) !important;
+}
+
+/* Results */
+.results-container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--spacing);
+}
+
+.gsc-result {
+  margin-bottom: var(--spacing) !important;
+  padding: var(--spacing) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--border-radius) !important;
+  background: var(--surface-color) !important;
+}
+
+.gs-title {
+  color: var(--primary-color) !important;
+  font-size: 18px !important;
+  line-height: 1.4 !important;
+  margin-bottom: 8px !important;
+  text-decoration: none !important;
+}
+
+.gs-snippet {
+  color: var(--text-primary) !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  margin: 8px 0 !important;
+}
+
+.gs-visibleUrl {
+  color: var(--text-secondary) !important;
+  font-size: 13px !important;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  :root {
+    --spacing: 12px;
+  }
+
+  .header-content {
+    grid-template-columns: 32px 1fr 32px;
+  }
+
+  .header-logo span {
+    display: none;
+  }
+
+  .gsc-result {
+    padding: 12px !important;
+  }
+
+  .gs-title {
+    font-size: 16px !important;
+  }
+
+  .gs-snippet {
+    font-size: 13px !important;
+  }
+}
+
+/* Dark Mode */
+[data-theme="darkstyle"] .results-header {
+  background: var(--surface-color);
+  border-color: var(--border-color);
+}
+
+[data-theme="darkstyle"] .gsc-result {
+  background: var(--surface-color) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* Remove unwanted Google elements */
+.gsc-adBlock,
+.gcsc-find-more-on-google,
+.gcsc-more-maybe-branding-root {
+  display: none !important;
+}
+
+/* Clean up pagination */
+.gsc-cursor-box {
+  margin-top: 24px !important;
+  text-align: center !important;
+}
+
+.gsc-cursor-page {
+  padding: 8px 12px !important;
+  margin: 0 4px !important;
+  border-radius: var(--border-radius) !important;
+  background: transparent !important;
+  color: var(--text-primary) !important;
+}
+
+.gsc-cursor-current-page {
+  background: var(--primary-color) !important;
+  color: white !important;
+}
+
+/* Loading State */
+.gsc-loading-resultsRoot {
+  text-align: center !important;
+  padding: var(--spacing) !important;
+}
+
+/* Refinements/Filters */
+.gsc-refinementsArea {
+  padding: 0 var(--spacing) !important;
+  margin-bottom: var(--spacing) !important;
+  border: none !important;
+}
+
+.gsc-refinementHeader {
+  padding: 8px 12px !important;
+  margin: 0 8px 8px 0 !important;
+  border-radius: var(--border-radius) !important;
+  background: transparent !important;
+  color: var(--text-secondary) !important;
+}
+
+.gsc-refinementHeader.gsc-refinementhActive {
+  background: var(--primary-color) !important;
+  color: white !important;
 }
