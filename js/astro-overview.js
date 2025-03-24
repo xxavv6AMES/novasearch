@@ -5,37 +5,58 @@ const userId = localStorage.getItem('userId') || 'anonymous';
 
 export async function generateOverview(query) {
     try {
-        // Check local quota tracking
-        const today = new Date().toISOString().split('T')[0];
-        const quotaKey = `${QUOTA_KEY}:${today}`;
-        const usageCount = parseInt(localStorage.getItem(quotaKey) || '0');
-
-        if (usageCount >= 20) {
-            console.log('Daily quota exceeded');
+        const now = new Date();
+        const quotaKey = `${QUOTA_KEY}`;
+        const usageData = JSON.parse(localStorage.getItem(quotaKey) || '{"count": 0, "timestamp": 0}');
+        
+        // Check if 2.5 weeks (17.5 days) have passed since last reset
+        const resetPeriod = 17.5 * 24 * 60 * 60 * 1000; // 2.5 weeks in milliseconds
+        if (now.getTime() - usageData.timestamp > resetPeriod) {
+            usageData.count = 0;
+            usageData.timestamp = now.getTime();
+        }
+        
+        if (usageData.count >= 20) {
+            console.log('Quota exceeded. Resets in ' + formatTimeRemaining(usageData.timestamp + resetPeriod - now.getTime()));
             return null;
         }
 
-        const response = await fetch('/.netlify/functions/astro-query', {
+        const response = await fetch('/api/astro-query', {  // Updated endpoint
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ query, userId })
         });
 
-        if (response.status === 429) {
-            console.log('Server quota exceeded');
-            return null;
+        if (!response.ok) {
+            if (response.status === 429) {
+                console.log('Server quota exceeded');
+                return null;
+            }
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
+        if (data.error) {
+            console.error('API error:', data.error);
+            return null;
+        }
         
         // Update local quota
-        localStorage.setItem(quotaKey, (usageCount + 1).toString());
+        usageData.count++;
+        usageData.timestamp = new Date().getTime();
+        localStorage.setItem(quotaKey, JSON.stringify(usageData));
         
         return data;
     } catch (error) {
         console.error('Failed to generate overview:', error);
         return null;
     }
+}
+
+function formatTimeRemaining(ms) {
+    const days = Math.floor(ms / (24 * 60 * 60 * 1000));
+    const hours = Math.floor((ms % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+    return `${days} days and ${hours} hours`;
 }
 
 function generateRelatedQuestions(context) {
@@ -55,29 +76,47 @@ export function displayOverview(data) {
     const contentElement = overviewElement.querySelector('.overview-content');
     
     if (data) {
-        contentElement.innerHTML = `<p>${data.overview}</p>`;
+        // Add loading state
         overviewElement.classList.remove('hidden');
+        contentElement.innerHTML = '<div class="astro-loading"></div>';
         
-        // Update related questions
-        const questionsContainer = document.querySelector('.related-questions');
-        questionsContainer.innerHTML = data.relatedQuestions
-            .map(q => `
-                <div class="question-item">
-                    <div class="question">${q.question}</div>
-                    <div class="answer">${q.answer}</div>
-                </div>
-            `)
-            .join('');
+        // Simulate API processing time for smooth animation
+        setTimeout(() => {
+            contentElement.innerHTML = `
+                <p class="overview-text">${data.overview}</p>
+            `;
             
-        // Update related searches
-        const searchesContainer = document.querySelector('.related-terms');
-        searchesContainer.innerHTML = data.relatedSearches
-            .map(term => `
-                <a href="?q=${encodeURIComponent(term)}" class="related-term">
-                    ${term}
-                </a>
-            `)
-            .join('');
+            // Update related questions with staggered animation
+            const questionsContainer = document.querySelector('.related-questions');
+            questionsContainer.innerHTML = '';
+            data.relatedQuestions.forEach((q, index) => {
+                const questionEl = document.createElement('div');
+                questionEl.className = 'question-item';
+                questionEl.style.animation = `slideIn 0.3s ease-out ${index * 0.1}s forwards`;
+                questionEl.style.opacity = '0';
+                questionEl.innerHTML = `
+                    <div class="question">
+                        <span>${q.question}</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="answer">${q.answer || 'Loading answer...'}</div>
+                `;
+                questionsContainer.appendChild(questionEl);
+            });
+            
+            // Update related searches with grid animation
+            const searchesContainer = document.querySelector('.related-terms');
+            searchesContainer.innerHTML = '';
+            data.relatedSearches.forEach((term, index) => {
+                const termEl = document.createElement('a');
+                termEl.href = `?q=${encodeURIComponent(term)}`;
+                termEl.className = 'related-term';
+                termEl.style.animation = `slideIn 0.3s ease-out ${index * 0.05}s forwards`;
+                termEl.style.opacity = '0';
+                termEl.textContent = term;
+                searchesContainer.appendChild(termEl);
+            });
+        }, 500);
     } else {
         overviewElement.classList.add('hidden');
     }
@@ -89,11 +128,19 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('.related-questions').addEventListener('click', async (e) => {
         const questionItem = e.target.closest('.question-item');
         if (questionItem) {
+            const answer = questionItem.querySelector('.answer');
+            const icon = questionItem.querySelector('.fa-chevron-down');
+            
             questionItem.classList.toggle('expanded');
-            if (questionItem.classList.contains('expanded')) {
-                const question = questionItem.querySelector('.question').textContent;
-                const answer = await getQuestionAnswer(question);
-                questionItem.querySelector('.answer').textContent = answer || 'No answer available';
+            icon.style.transform = questionItem.classList.contains('expanded') 
+                ? 'rotate(180deg)' 
+                : 'rotate(0)';
+            
+            if (questionItem.classList.contains('expanded') && !answer.textContent.trim()) {
+                answer.innerHTML = '<div class="astro-loading"></div>';
+                const question = questionItem.querySelector('.question span').textContent;
+                const answerText = await getQuestionAnswer(question);
+                answer.textContent = answerText || 'No answer available';
             }
         }
     });

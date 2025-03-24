@@ -1,4 +1,5 @@
 import { signIn, signInWithGoogle, signInWithGithub, signOutUser, onAuthStateChanged } from './services/auth.js';
+import { generateOverview, displayOverview } from './js/astro-overview.js';
 
 const UNSPLASH_ACCESS_KEY = 'Xo9yT7MRQzqOOFc0-VzykE1geqsTNIxb-iMYJkFgveM';
 const BACKGROUND_CATEGORIES = ['nature', 'landscape', 'architecture', 'minimal'];
@@ -1079,6 +1080,71 @@ function showToast(message, duration = 3000) {
     }, duration);
 }
 
+// Initialize search filters
+function initializeSearchFilters() {
+    const filters = document.querySelectorAll('.filter-option');
+    const searchForm = document.querySelector('.search-form');
+
+    filters.forEach(filter => {
+        filter.addEventListener('click', () => {
+            // Update active state
+            filters.forEach(f => f.classList.remove('active'));
+            filter.classList.add('active');
+
+            // Get current search query
+            const urlParams = new URLSearchParams(window.location.search);
+            const query = urlParams.get('q');
+            if (!query) return;
+
+            const searchType = filter.dataset.type;
+            handleFilteredSearch(query, searchType);
+        });
+    });
+}
+
+async function handleFilteredSearch(query, searchType) {
+    const resultsContainer = document.querySelector('.results-container');
+    resultsContainer.innerHTML = '<div class="loading">Searching...</div>';
+
+    try {
+        const results = await performSearch(query, 1, searchType);
+        
+        // Update URL without reload
+        const url = new URL(window.location);
+        url.searchParams.set('type', searchType);
+        window.history.pushState({}, '', url);
+
+        let searchHTML = `
+            <div class="search-stats">
+                About ${results.searchInformation.formattedTotalResults} results 
+                (${results.searchInformation.formattedSearchTime} seconds)
+            </div>
+            <div class="search-results">
+                ${results.items.map(createSearchResult).join('')}
+            </div>
+            ${createPagination(results.queries)}
+        `;
+        
+        resultsContainer.innerHTML = searchHTML;
+        
+        // Add pagination event listeners
+        document.querySelectorAll('.page-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const startIndex = parseInt(e.currentTarget.dataset.start);
+                handleFilteredSearch(query, searchType, startIndex);
+                window.scrollTo(0, 0);
+            });
+        });
+    } catch (error) {
+        resultsContainer.innerHTML = `
+            <div class="error-message">
+                <p>Sorry, something went wrong with the search.</p>
+                <p>${error.message}</p>
+            </div>
+        `;
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const isHomePage = !window.location.pathname.includes('results.html');
     
@@ -1087,6 +1153,49 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeEventListeners();
     setTheme(localStorage.getItem('theme') || 'style');
     
+    // Initialize search with Astro support
+    if (!isHomePage) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const query = urlParams.get('q');
+        
+        if (query) {
+            // Handle Astro overview generation
+            generateOverview(query).then(data => {
+                if (data) {
+                    displayOverview(data);
+                }
+            });
+        }
+
+        // Add event listener for new searches
+        document.querySelector('.search-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const searchQuery = e.target.querySelector('input[name="q"]').value;
+            
+            // Update URL
+            const url = new URL(window.location);
+            url.searchParams.set('q', searchQuery);
+            window.history.pushState({}, '', url);
+
+            // Generate new Astro overview
+            const data = await generateOverview(searchQuery);
+            if (data) {
+                displayOverview(data);
+            }
+
+            // Trigger Google CSE search
+            const gsc = document.querySelector('.gsc-control-cse');
+            if (gsc) {
+                const gscInput = gsc.querySelector('.gsc-input-box input');
+                const gscButton = gsc.querySelector('.gsc-search-button');
+                if (gscInput && gscButton) {
+                    gscInput.value = searchQuery;
+                    gscButton.click();
+                }
+            }
+        });
+    }
+
     // Only initialize home page features if we're on the home page
     if (isHomePage) {
         initializeBackgrounds();
@@ -1116,4 +1225,13 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeMobileFeatures();
     initializeDiscover();
     initializeGeneralFeatures();
+    
+    if (!isHomePage) {
+        initializeSearchFilters();
+        
+        // Set initial active filter based on URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchType = urlParams.get('type') || 'all';
+        document.querySelector(`.filter-option[data-type="${searchType}"]`)?.classList.add('active');
+    }
 });

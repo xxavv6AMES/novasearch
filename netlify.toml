@@ -1,0 +1,16 @@
+[build]
+  functions = "netlify/functions"
+  publish = "."
+
+[functions]
+  external_node_modules = ["axios", "ioredis"]
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+[dev]
+  functions = "netlify/functions"
+  publish = "."

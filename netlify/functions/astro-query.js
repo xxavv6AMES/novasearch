@@ -2,91 +2,97 @@ const axios = require('axios');
 
 const NLP_API_ENDPOINT = 'https://api.nlpcloud.io/v1/gpu/finetuned-llama-2-70b/generation';
 const NLP_API_KEY = process.env.NLP_API_KEY;
-const REDIS_URL = process.env.REDIS_URL;
-
-const Redis = require('ioredis');
-const redis = new Redis(REDIS_URL);
 
 exports.handler = async (event) => {
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
-  }
+    const headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+    };
 
-  try {
-    const { query, userId } = JSON.parse(event.body);
-    
-    // Check user's daily quota
-    const today = new Date().toISOString().split('T')[0];
-    const quotaKey = `astro:quota:${userId}:${today}`;
-    const usageCount = await redis.get(quotaKey) || 0;
-
-    if (usageCount >= 20) {
-      return {
-        statusCode: 429,
-        body: JSON.stringify({
-          error: 'Daily quota exceeded'
-        })
-      };
+    if (event.httpMethod === 'OPTIONS') {
+        return { statusCode: 200, headers };
     }
 
-    // Generate content
-    const response = await axios.post(NLP_API_ENDPOINT, {
-      text: `Analyze this search query and provide:
-      1. A concise overview (2-3 sentences)
-      2. 3-4 related questions people might ask
-      3. 4-5 related search terms
-      
-      Query: ${query}`,
-      max_length: 500,
-      temperature: 0.3
-    }, {
-      headers: {
-        'Authorization': `Bearer ${NLP_API_KEY}`,
-        'Content-Type': 'application/json'
-      }
-    });
+    if (event.httpMethod !== 'POST') {
+        return { 
+            statusCode: 405, 
+            headers,
+            body: JSON.stringify({ error: 'Method Not Allowed' })
+        };
+    }
 
-    // Process the response
-    const content = response.data.generated_text;
-    const sections = content.split('\n\n');
-    
-    const result = {
-      overview: sections[0].trim(),
-      relatedQuestions: extractQuestions(sections[1]),
-      relatedSearches: extractSearchTerms(sections[2])
-    };
+    try {
+        const { query } = JSON.parse(event.body);
+        
+        if (!query) {
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({ error: 'Query is required' })
+            };
+        }
 
-    // Increment usage count
-    await redis.incr(quotaKey);
-    // Set expiry for quota key (24 hours)
-    await redis.expire(quotaKey, 86400);
+        const response = await axios.post(NLP_API_ENDPOINT, {
+            text: `You are an AI search assistant. For this query, provide THREE separate sections:
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify(result)
-    };
-  } catch (error) {
-    console.error('Astro query error:', error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'Internal Server Error' })
-    };
-  }
+            1. OVERVIEW: A detailed but concise analysis (2-3 sentences)
+            2. QUESTIONS: Generate 4 insightful questions that explore different aspects, each with a complete answer
+            3. RELATED: List 6 carefully selected related search terms that cover different angles
+            
+            Make each section highly informative and distinct.
+            Query: ${query}`,
+            max_length: 1000,
+            temperature: 0.7
+        }, {
+            headers: {
+                'Authorization': `Bearer ${NLP_API_KEY}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        // Split response into cleaner sections
+        const content = response.data.generated_text;
+        const sections = content.split(/OVERVIEW:|QUESTIONS:|RELATED:/i)
+            .filter(section => section.trim().length > 0);
+
+        const result = {
+            overview: sections[0].trim(),
+            relatedQuestions: extractQuestions(sections[1]),
+            relatedSearches: extractSearchTerms(sections[2])
+        };
+
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify(result)
+        };
+    } catch (error) {
+        console.error('Astro query error:', error);
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({ 
+                error: 'Internal Server Error',
+                message: error.message 
+            })
+        };
+    }
 };
 
 function extractQuestions(text) {
-  return text
-    .split('\n')
-    .filter(line => line.trim().endsWith('?'))
-    .map(question => ({ 
-      question: question.trim(),
-      answer: '' // Will be populated when user expands the question
-    }));
+    return text
+        .split('\n')
+        .filter(line => line.trim().endsWith('?'))
+        .map(question => ({ 
+            question: question.trim(),
+            answer: '' // Will be populated when user expands the question
+        }));
 }
 
 function extractSearchTerms(text) {
-  return text
-    .split('\n')
-    .map(term => term.trim())
-    .filter(term => term.length > 0);
+    return text
+        .split('\n')
+        .map(term => term.trim())
+        .filter(term => term.length > 0);
 }
