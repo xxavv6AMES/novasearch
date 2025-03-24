@@ -14,3 +14,10 @@
 [dev]
   functions = "netlify/functions"
   publish = "."
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self' https: 'unsafe-inline' 'unsafe-eval'; img-src 'self' https: data: blob:; connect-src 'self' https:;"
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"

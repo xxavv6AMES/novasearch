@@ -266,12 +266,19 @@ function initializeBackgroundControls() {
 
 // Quick access tiles
 function initializeQuickAccess() {
+    const quickAccess = document.querySelector('.quick-access');
+    const addTile = document.getElementById('add-tile');
+    
+    if (!quickAccess || !addTile) {
+        console.log('Quick access elements not found');
+        return;
+    }
+
     loadSavedTiles();
     
     const tiles = document.querySelectorAll('.quick-tile');
     tiles.forEach(tile => {
         if (tile.dataset.url) {
-            // Add delete button to existing tiles
             addDeleteButton(tile);
             tile.addEventListener('click', (e) => {
                 if (!e.target.closest('.delete-tile')) {
@@ -281,7 +288,7 @@ function initializeQuickAccess() {
         }
     });
 
-    document.getElementById('add-tile').addEventListener('click', addNewTile);
+    addTile.addEventListener('click', addNewTile);
 }
 
 function addDeleteButton(tile) {
@@ -329,11 +336,13 @@ function createTile(url, name) {
     tile.className = 'quick-tile';
     tile.dataset.url = url;
 
+    // Set default icon in case the domain's icon fails
     const domain = new URL(url).hostname;
-    const favicon = `https://icons.duckduckgo.com/ip3/${domain}.ico`;
-
     tile.innerHTML = `
-        <img src="${favicon}" alt="${name}" class="nova-icon" onerror="this.onerror=null; this.src='https://icons.duckduckgo.com/ip3/nova.xxavvgroup.com.ico';">
+        <img src="https://icons.duckduckgo.com/ip3/${domain}.ico" 
+             alt="${name}" 
+             class="nova-icon"
+             onerror="this.src='https://d2zcpib8duehag.cloudfront.net/default-icon.png';">
         <span>${name}</span>
     `;
 

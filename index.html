@@ -10,6 +10,11 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#ffffff">
 
+    <!-- Add CSP header -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: 'unsafe-inline' 'unsafe-eval'; img-src 'self' https: data: blob:; connect-src 'self' https:;">
+    <!-- Add SameSite cookie attribute -->
+    <meta http-equiv="Set-Cookie" content="Path=/; SameSite=Strict; Secure">
+
     <!-- Primary SEO Meta Tags -->
 <title>Nova Search</title>
 <meta name="description" content="Nova Search: A powerful, easy-to-use platform for finding resources, answers, and tools to get things done. Explore documentation, guides, and helpful tools all in one place.">
