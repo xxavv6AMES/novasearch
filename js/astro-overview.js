@@ -73,52 +73,70 @@ function generateRelatedSearches(context) {
 
 export function displayOverview(data) {
     const overviewElement = document.getElementById('astro-overview');
+    if (!overviewElement) {
+        console.error('Astro overview element not found');
+        return;
+    }
+
     const contentElement = overviewElement.querySelector('.overview-content');
+    if (!contentElement) {
+        console.error('Overview content element not found');
+        return;
+    }
     
     if (data) {
-        // Add loading state
+        // Show loading animation first
         overviewElement.classList.remove('hidden');
         contentElement.innerHTML = '<div class="astro-loading"></div>';
         
-        // Simulate API processing time for smooth animation
+        // Add a small delay for smooth animation
         setTimeout(() => {
+            // Overview section
             contentElement.innerHTML = `
                 <p class="overview-text">${data.overview}</p>
             `;
             
-            // Update related questions with staggered animation
+            // Questions section
             const questionsContainer = document.querySelector('.related-questions');
-            questionsContainer.innerHTML = '';
-            data.relatedQuestions.forEach((q, index) => {
-                const questionEl = document.createElement('div');
-                questionEl.className = 'question-item';
-                questionEl.style.animation = `slideIn 0.3s ease-out ${index * 0.1}s forwards`;
-                questionEl.style.opacity = '0';
-                questionEl.innerHTML = `
-                    <div class="question">
-                        <span>${q.question}</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="answer">${q.answer || 'Loading answer...'}</div>
-                `;
-                questionsContainer.appendChild(questionEl);
-            });
+            if (questionsContainer) {
+                questionsContainer.innerHTML = '';
+                data.relatedQuestions.forEach((q, index) => {
+                    const questionEl = document.createElement('div');
+                    questionEl.className = 'question-item';
+                    questionEl.style.animation = `slideIn 0.3s ease-out ${index * 0.1}s forwards`;
+                    questionEl.style.opacity = '0';
+                    questionEl.innerHTML = `
+                        <div class="question">
+                            <span>${q.question}</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="answer">${q.answer || 'Loading answer...'}</div>
+                    `;
+                    questionsContainer.appendChild(questionEl);
+                });
+            }
             
-            // Update related searches with grid animation
+            // Related searches section
             const searchesContainer = document.querySelector('.related-terms');
-            searchesContainer.innerHTML = '';
-            data.relatedSearches.forEach((term, index) => {
-                const termEl = document.createElement('a');
-                termEl.href = `?q=${encodeURIComponent(term)}`;
-                termEl.className = 'related-term';
-                termEl.style.animation = `slideIn 0.3s ease-out ${index * 0.05}s forwards`;
-                termEl.style.opacity = '0';
-                termEl.textContent = term;
-                searchesContainer.appendChild(termEl);
-            });
+            if (searchesContainer) {
+                searchesContainer.innerHTML = '';
+                data.relatedSearches.forEach((term, index) => {
+                    const termEl = document.createElement('a');
+                    termEl.href = `?q=${encodeURIComponent(term)}`;
+                    termEl.className = 'related-term';
+                    termEl.style.animation = `slideIn 0.3s ease-out ${index * 0.05}s forwards`;
+                    termEl.style.opacity = '0';
+                    termEl.textContent = term;
+                    searchesContainer.appendChild(termEl);
+                });
+            }
+
+            // Log success
+            console.log('Astro overview displayed successfully');
         }, 500);
     } else {
         overviewElement.classList.add('hidden');
+        console.log('No data available for Astro overview');
     }
 }
 

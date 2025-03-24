@@ -828,35 +828,30 @@ async function initializeDiscover() {
 
 async function loadNews() {
     try {
-        // Using Reuters RSS feed as an example - you can add more sources
-        const response = await fetch('https://cors-anywhere.herokuapp.com/https://www.reutersagency.com/feed/?best-topics=tech&post_type=best');
-        const text = await response.text();
-        const parser = new DOMParser();
-        const xml = parser.parseFromString(text, 'text/xml');
-        const items = xml.querySelectorAll('item');
-        
+        // Replace Reuters with a CORS-friendly news API
         const newsGrid = document.querySelector('.news-grid');
-        newsGrid.innerHTML = Array.from(items).slice(0, 6).map(item => {
-            const title = item.querySelector('title').textContent;
-            const description = item.querySelector('description').textContent;
-            // Extract image from description if available, or use default
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = description;
-            const image = tempDiv.querySelector('img')?.src || 'https://d2zcpib8duehag.cloudfront.net/default-news.jpg';
-            
-            return `
-                <article class="news-card">
-                    <img src="${image}" alt="${title}" class="news-image">
-                    <div class="news-content">
-                        <div class="news-source">Reuters</div>
-                        <h3 class="news-title">${title}</h3>
-                        <time class="news-date">${new Date(item.querySelector('pubDate').textContent).toLocaleDateString()}</time>
-                    </div>
-                </article>
-            `;
-        }).join('');
+        if (!newsGrid) return;
+
+        const response = await fetch('https://api.nytimes.com/svc/topstories/v2/technology.json?api-key=YOUR_NYT_API_KEY');
+        const data = await response.json();
+        
+        newsGrid.innerHTML = data.results.slice(0, 6).map(article => `
+            <article class="news-card">
+                <img src="${article.multimedia?.[0]?.url || 'https://d2zcpib8duehag.cloudfront.net/default-news.jpg'}" 
+                     alt="${article.title}" class="news-image">
+                <div class="news-content">
+                    <div class="news-source">New York Times</div>
+                    <h3 class="news-title">${article.title}</h3>
+                    <time class="news-date">${new Date(article.published_date).toLocaleDateString()}</time>
+                </div>
+            </article>
+        `).join('');
     } catch (error) {
         console.error('Failed to load news:', error);
+        const newsGrid = document.querySelector('.news-grid');
+        if (newsGrid) {
+            newsGrid.innerHTML = '<div class="error-message">Unable to load news at this time</div>';
+        }
     }
 }
 
