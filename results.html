@@ -30,12 +30,23 @@
                         <i class="fas fa-bars"></i>
                     </button>
                     <a href="/" class="logo-link">
-                        <img src="https://d2zcpib8duehag.cloudfront.net/novasearchnotext.png" alt="Nova Search" width="40" height="40">
+                        <img src="https://d2zcpib8duehag.cloudfront.net/novasearchnotext.png" alt="Nova Search" width="32" height="32">
                     </a>
+                    <form class="search-form">
+                        <div class="search-box">
+                            <input type="text" name="q" placeholder="Search the web..." autocomplete="off">
+                            <div class="search-actions">
+                                <button type="button" class="voice-search-btn" aria-label="Voice search">
+                                    <i class="fas fa-microphone"></i>
+                                </button>
+                                <button type="submit" aria-label="Search">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-
-                <gcse:searchbox-only enableautocomplete="true"></gcse:searchbox-only>
-
+                
                 <div class="header-right">
                     <div class="auth-container">
                         <button id="login-button" class="auth-button">
@@ -77,23 +88,67 @@
                     </div>
                 </div>
             </div>
+
+            <nav class="search-filters">
+                <div class="filter-option active" data-type="all">
+                    <i class="fas fa-search"></i>
+                    All
+                </div>
+                <div class="filter-option" data-type="image">
+                    <i class="fas fa-image"></i>
+                    Images
+                </div>
+                <div class="filter-option" data-type="video">
+                    <i class="fas fa-video"></i>
+                    Videos
+                </div>
+                <div class="filter-option" data-type="news">
+                    <i class="fas fa-newspaper"></i>
+                    News
+                </div>
+            </nav>
         </header>
 
         <main class="results-main">
-            <div class="results-sidebar">
-                <div class="filters-section">
-                    <h3>Filters</h3>
-                    <div class="filter-options">
-                        <!-- Filters will be added dynamically -->
-                    </div>
-                </div>
-            </div>
-
             <div class="results-content">
                 <div class="results-container">
                     <gcse:searchresults-only></gcse:searchresults-only>
                 </div>
             </div>
+
+            <aside class="astro-sidebar">
+                <div id="astro-overview" class="astro-overview hidden">
+                    <div class="overview-header">
+                        <h2>Astro Overview</h2>
+                        <span class="ai-badge">AI-Powered</span>
+                    </div>
+                    <div class="overview-content">
+                        <!-- AI content will be inserted here -->
+                    </div>
+                    <div class="overview-footer">
+                        <button class="feedback-btn" data-action="helpful">
+                            <i class="fas fa-thumbs-up"></i> Helpful
+                        </button>
+                        <button class="feedback-btn" data-action="not-helpful">
+                            <i class="fas fa-thumbs-down"></i> Not helpful
+                        </button>
+                    </div>
+                </div>
+
+                <div class="people-also-ask">
+                    <h3>People also ask</h3>
+                    <div class="related-questions">
+                        <!-- Questions will be dynamically inserted -->
+                    </div>
+                </div>
+
+                <div class="related-searches">
+                    <h3>Related searches</h3>
+                    <div class="related-terms">
+                        <!-- Related terms will be dynamically inserted -->
+                    </div>
+                </div>
+            </aside>
 
             <div class="quick-actions">
                 <button class="action-button" id="theme-toggle">

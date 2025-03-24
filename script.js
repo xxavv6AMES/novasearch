@@ -662,10 +662,135 @@ function initializeMobileFeatures() {
             item.classList.add('active');
         }
     });
+
+    // Add voice search functionality
+    if ('webkitSpeechRecognition' in window) {
+        const voiceSearchBtn = document.createElement('button');
+        voiceSearchBtn.className = 'voice-search-btn';
+        voiceSearchBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+        document.querySelector('.search-box').appendChild(voiceSearchBtn);
+
+        const recognition = new webkitSpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        voiceSearchBtn.addEventListener('click', () => {
+            recognition.start();
+            voiceSearchBtn.classList.add('listening');
+        });
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            document.querySelector('input[name="q"]').value = transcript;
+            if (!window.location.pathname.includes('results.html')) {
+                window.location.href = `results.html?q=${encodeURIComponent(transcript)}`;
+            } else {
+                document.querySelector('.search-form').submit();
+            }
+        };
+
+        recognition.onend = () => {
+            voiceSearchBtn.classList.remove('listening');
+        };
+    }
+
+    // Add swipe navigation for results page
+    if (window.location.pathname.includes('results.html')) {
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.touches[0].clientX;
+        }, { passive: true });
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].clientX;
+            handleSwipe();
+        }, { passive: true });
+
+        function handleSwipe() {
+            const swipeDistance = touchEndX - touchStartX;
+            if (Math.abs(swipeDistance) > 100) {
+                const nextBtn = document.querySelector('.next-page');
+                const prevBtn = document.querySelector('.prev-page');
+                if (swipeDistance > 0 && prevBtn) {
+                    prevBtn.click();
+                } else if (swipeDistance < 0 && nextBtn) {
+                    nextBtn.click();
+                }
+            }
+        }
+    }
+
+    // Add bottom sheet for filters on mobile
+    if (window.location.pathname.includes('results.html')) {
+        const filtersBtn = document.createElement('button');
+        filtersBtn.className = 'mobile-filters-btn';
+        filtersBtn.innerHTML = '<i class="fas fa-filter"></i>';
+        document.querySelector('.header-right').appendChild(filtersBtn);
+
+        const filterSheet = document.createElement('div');
+        filterSheet.className = 'filter-sheet';
+        filterSheet.innerHTML = `
+            <div class="filter-sheet-content">
+                <div class="filter-sheet-header">
+                    <h3>Filters</h3>
+                    <button class="close-sheet"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="filter-options">
+                    <!-- Filters will be moved here -->
+                </div>
+            </div>
+        `;
+        document.body.appendChild(filterSheet);
+
+        filtersBtn.addEventListener('click', () => {
+            filterSheet.classList.add('active');
+        });
+
+        filterSheet.querySelector('.close-sheet').addEventListener('click', () => {
+            filterSheet.classList.remove('active');
+        });
+
+        // Move filters to sheet on mobile
+        const filters = document.querySelector('.search-filters');
+        if (filters) {
+            filterSheet.querySelector('.filter-options').appendChild(filters.cloneNode(true));
+            filters.style.display = 'none';
+        }
+    }
+
+    // Add loading skeleton for results
+    if (window.location.pathname.includes('results.html')) {
+        const resultsContainer = document.querySelector('.results-container');
+        const loadingSkeleton = `
+            <div class="skeleton-loader">
+                ${Array(5).fill(`
+                    <div class="skeleton-result">
+                        <div class="skeleton-title"></div>
+                        <div class="skeleton-url"></div>
+                        <div class="skeleton-snippet"></div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.addedNodes.length) {
+                    const loading = mutation.addedNodes[0];
+                    if (loading.className === 'loading') {
+                        loading.innerHTML = loadingSkeleton;
+                    }
+                }
+            });
+        });
+
+        observer.observe(resultsContainer, { childList: true });
+    }
 }
 
 // News API key (you'll need to sign up for one)
-const NEWS_API_KEY = '269a9039f5d945f49d0b1bd8aaca3e73';
 const YOUTUBE_API_KEY = 'AIzaSyC9Sdcw7_34F02AaqgM_0K6ZfquDDDOlQk';
 
 async function initializeDiscover() {
@@ -702,20 +827,33 @@ async function initializeDiscover() {
 
 async function loadNews() {
     try {
-        const response = await fetch(`https://newsapi.org/v2/top-headlines?country=us&apiKey=${NEWS_API_KEY}`);
-        const data = await response.json();
+        // Using Reuters RSS feed as an example - you can add more sources
+        const response = await fetch('https://cors-anywhere.herokuapp.com/https://www.reutersagency.com/feed/?best-topics=tech&post_type=best');
+        const text = await response.text();
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(text, 'text/xml');
+        const items = xml.querySelectorAll('item');
         
         const newsGrid = document.querySelector('.news-grid');
-        newsGrid.innerHTML = data.articles.slice(0, 6).map(article => `
-            <article class="news-card">
-                <img src="${article.urlToImage || 'default-news.jpg'}" alt="${article.title}" class="news-image">
-                <div class="news-content">
-                    <div class="news-source">${article.source.name}</div>
-                    <h3 class="news-title">${article.title}</h3>
-                    <time class="news-date">${new Date(article.publishedAt).toLocaleDateString()}</time>
-                </div>
-            </article>
-        `).join('');
+        newsGrid.innerHTML = Array.from(items).slice(0, 6).map(item => {
+            const title = item.querySelector('title').textContent;
+            const description = item.querySelector('description').textContent;
+            // Extract image from description if available, or use default
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = description;
+            const image = tempDiv.querySelector('img')?.src || 'https://d2zcpib8duehag.cloudfront.net/default-news.jpg';
+            
+            return `
+                <article class="news-card">
+                    <img src="${image}" alt="${title}" class="news-image">
+                    <div class="news-content">
+                        <div class="news-source">Reuters</div>
+                        <h3 class="news-title">${title}</h3>
+                        <time class="news-date">${new Date(item.querySelector('pubDate').textContent).toLocaleDateString()}</time>
+                    </div>
+                </article>
+            `;
+        }).join('');
     } catch (error) {
         console.error('Failed to load news:', error);
     }
@@ -775,6 +913,172 @@ function formatDuration(duration) {
     return `${minutes}:${seconds.padStart(2, '0')}`;
 }
 
+// Initialize general features
+function initializeGeneralFeatures() {
+    initializeTooltips();
+    initializeKeyboardShortcuts();
+    initializeA11y();
+    initializeClipboard();
+    initializeScrollProgress();
+    initializeOfflineMode();
+}
+
+function initializeTooltips() {
+    const tooltips = document.querySelectorAll('[data-tooltip]');
+    tooltips.forEach(element => {
+        const tooltip = document.createElement('div');
+        tooltip.className = 'tooltip';
+        tooltip.textContent = element.dataset.tooltip;
+        
+        element.addEventListener('mouseenter', () => {
+            document.body.appendChild(tooltip);
+            const rect = element.getBoundingClientRect();
+            tooltip.style.top = `${rect.bottom + 10}px`;
+            tooltip.style.left = `${rect.left + (rect.width/2) - (tooltip.offsetWidth/2)}px`;
+            setTimeout(() => tooltip.classList.add('visible'), 10);
+        });
+
+        element.addEventListener('mouseleave', () => {
+            tooltip.classList.remove('visible');
+            setTimeout(() => tooltip.remove(), 200);
+        });
+    });
+}
+
+function initializeKeyboardShortcuts() {
+    const shortcuts = {
+        '/': () => document.querySelector('.search-input').focus(),
+        'g h': () => window.location.href = 'index.html',
+        'g r': () => window.location.href = 'results.html',
+        'g s': () => document.querySelector('.search-filters').focus(),
+        'Escape': () => document.activeElement.blur()
+    };
+
+    let keys = [];
+    document.addEventListener('keydown', (e) => {
+        if (e.target.matches('input, textarea')) return;
+        
+        keys.push(e.key);
+        const combo = keys.join(' ');
+        
+        if (shortcuts[combo]) {
+            e.preventDefault();
+            shortcuts[combo]();
+        }
+        
+        setTimeout(() => keys = [], 1000);
+    });
+}
+
+function initializeA11y() {
+    // Add ARIA labels and roles
+    document.querySelectorAll('.search-result').forEach(result => {
+        result.setAttribute('role', 'article');
+    });
+
+    document.querySelectorAll('.filter-option').forEach(filter => {
+        filter.setAttribute('role', 'tab');
+        filter.setAttribute('tabindex', '0');
+    });
+
+    // Add keyboard navigation for filter options
+    const filterOptions = document.querySelectorAll('.filter-option');
+    filterOptions.forEach(option => {
+        option.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                option.click();
+            }
+        });
+    });
+}
+
+function initializeClipboard() {
+    document.querySelectorAll('.result-url').forEach(url => {
+        url.style.cursor = 'pointer';
+        url.setAttribute('role', 'button');
+        url.setAttribute('tabindex', '0');
+        url.setAttribute('data-tooltip', 'Click to copy URL');
+        
+        url.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(url.textContent);
+                showToast('URL copied to clipboard');
+            } catch (err) {
+                showToast('Failed to copy URL');
+            }
+        });
+    });
+}
+
+function initializeScrollProgress() {
+    const progress = document.createElement('div');
+    progress.className = 'scroll-progress';
+    document.body.appendChild(progress);
+
+    window.addEventListener('scroll', () => {
+        const winScroll = document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        progress.style.width = scrolled + '%';
+    });
+}
+
+function initializeOfflineMode() {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js')
+            .then(registration => {
+                console.log('ServiceWorker registered');
+            })
+            .catch(error => {
+                console.error('ServiceWorker registration failed:', error);
+            });
+    }
+
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+}
+
+function updateOnlineStatus() {
+    const status = navigator.onLine;
+    const offlineBanner = document.querySelector('.offline-banner') || createOfflineBanner();
+    
+    if (!status) {
+        document.body.appendChild(offlineBanner);
+        document.body.classList.add('offline');
+    } else {
+        offlineBanner.remove();
+        document.body.classList.remove('offline');
+    }
+}
+
+function createOfflineBanner() {
+    const banner = document.createElement('div');
+    banner.className = 'offline-banner';
+    banner.innerHTML = `
+        <i class="fas fa-wifi-slash"></i>
+        <span>You are currently offline</span>
+        <button onclick="location.reload()">Retry</button>
+    `;
+    return banner;
+}
+
+function showToast(message, duration = 3000) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.classList.add('visible');
+    }, 10);
+    
+    setTimeout(() => {
+        toast.classList.remove('visible');
+        setTimeout(() => toast.remove(), 200);
+    }, duration);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const isHomePage = !window.location.pathname.includes('results.html');
     
@@ -811,4 +1115,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initializeMobileFeatures();
     initializeDiscover();
+    initializeGeneralFeatures();
 });
