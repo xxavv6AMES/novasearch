@@ -112,7 +112,13 @@
         <main class="results-main">
             <div class="results-content">
                 <div class="results-container">
-                    <gcse:searchresults-only></gcse:searchresults-only>
+                    <div id="search-results">
+                        <gcse:searchresults-only></gcse:searchresults-only>
+                    </div>
+                    <!-- Fallback for when GSE fails to load -->
+                    <div id="search-fallback" style="display: none;">
+                        <div class="loading">Loading search results...</div>
+                    </div>
                 </div>
             </div>
 

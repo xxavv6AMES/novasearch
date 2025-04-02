@@ -1150,6 +1150,21 @@ async function handleFilteredSearch(query, searchType) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Check if Google CSE is loaded
+    if (!document.querySelector('.gsc-control-cse')) {
+        const fallback = document.getElementById('search-fallback');
+        if (fallback) {
+            fallback.style.display = 'block';
+        }
+        
+        // Try to reinitialize after a delay
+        setTimeout(() => {
+            if (window.__gcse) {
+                window.__gcse.render();
+            }
+        }, 1000);
+    }
+
     const isHomePage = !window.location.pathname.includes('results.html');
     
     // Always initialize these features

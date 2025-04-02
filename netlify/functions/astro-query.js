@@ -1,4 +1,5 @@
-const fetch = require('node-fetch');
+// Import fetch with require syntax for Node.js environment
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -87,9 +88,6 @@ exports.handler = async (event) => {
                 max_length: type === 'answer' ? 500 : 1000,
                 temperature: 0.7
             })
-        }).catch(error => {
-            console.error('NLP API error:', error);
-            throw new Error('External API error');
         });
 
         if (!response.ok) {
