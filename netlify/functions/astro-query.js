@@ -2,6 +2,8 @@ const fetch = require('node-fetch');
 
 const headers = {
     'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json'
 };
 
@@ -10,13 +12,36 @@ const RATE_LIMIT = 50; // Requests per day
 const quotaStore = new Map();
 
 exports.handler = async (event) => {
+    // Handle preflight requests
+    if (event.httpMethod === 'OPTIONS') {
+        return {
+            statusCode: 200,
+            headers
+        };
+    }
+
     if (event.httpMethod !== 'POST') {
-        return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
+        return {
+            statusCode: 405,
+            headers,
+            body: JSON.stringify({ 
+                error: 'Method not allowed',
+                message: 'Only POST requests are allowed'
+            })
+        };
     }
 
     try {
         const { query, type = 'overview', userId } = JSON.parse(event.body);
         
+        if (!query) {
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({ error: 'Query is required' })
+            };
+        }
+
         // Check quota
         const today = new Date().toDateString();
         const userQuota = quotaStore.get(userId) || { date: today, count: 0 };
@@ -40,7 +65,7 @@ exports.handler = async (event) => {
         const NLP_API_KEY = process.env.NLP_API_KEY;
 
         if (!NLP_API_KEY) {
-            throw new Error('API key not configured');
+            throw new Error('API configuration error');
         }
 
         const promptText = type === 'answer' 
@@ -62,13 +87,22 @@ exports.handler = async (event) => {
                 max_length: type === 'answer' ? 500 : 1000,
                 temperature: 0.7
             })
+        }).catch(error => {
+            console.error('NLP API error:', error);
+            throw new Error('External API error');
         });
 
         if (!response.ok) {
-            throw new Error('NLP API request failed');
+            console.error('NLP API response:', response.status, await response.text());
+            throw new Error('External service error');
         }
 
         const data = await response.json();
+        
+        if (!data || !data.generated_text) {
+            throw new Error('Invalid API response');
+        }
+
         const content = data.generated_text;
 
         // Update quota
@@ -106,7 +140,8 @@ exports.handler = async (event) => {
             headers,
             body: JSON.stringify({ 
                 error: 'Internal Server Error',
-                message: error.message 
+                message: error.message || 'An unexpected error occurred',
+                retry: true
             })
         };
     }

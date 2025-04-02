@@ -16,10 +16,18 @@ export async function generateOverview(query) {
 
         const response = await fetch(NLP_API_ENDPOINT, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
             body: JSON.stringify({ query, userId })
         });
 
+        if (response.status === 405) {
+            throw new Error('API endpoint configuration error. Please check server settings.');
+        }
+
+        // Handle specific error cases
         if (response.status === 429) {
             const data = await response.json();
             localStorage.setItem(QUOTA_KEY, JSON.stringify({
@@ -27,14 +35,22 @@ export async function generateOverview(query) {
                 remaining: 0,
                 resetTime: data.resetTime
             }));
-            throw new Error('Rate limit exceeded');
+            throw new Error('Rate limit exceeded. Try again tomorrow.');
+        }
+
+        if (response.status === 500) {
+            throw new Error('Astro AI is temporarily unavailable. Please try again later.');
         }
 
         if (!response.ok) {
-            throw new Error('Failed to generate overview');
+            throw new Error(`Service error (${response.status}). Please try again.`);
         }
 
         const data = await response.json();
+        
+        if (!data || !data.overview) {
+            throw new Error('Invalid response from Astro AI. Please try again.');
+        }
         
         // Update quota
         localStorage.setItem(QUOTA_KEY, JSON.stringify({
@@ -49,8 +65,9 @@ export async function generateOverview(query) {
         };
     } catch (error) {
         console.error('Failed to generate overview:', error);
-        showToast(error.message);
-        return null;
+        const message = error.message || 'Failed to generate overview. Please try again.';
+        showToast(message);
+        throw error; // Re-throw to allow handling upstream
     }
 }
 
@@ -167,60 +184,70 @@ export function displayOverview(data) {
         return;
     }
     
-    if (data) {
-        // Show loading animation first
+    if (!data) {
+        // Show error state with retry button
+        contentElement.innerHTML = `
+            <div class="astro-error">
+                <i class="fas fa-exclamation-circle"></i>
+                <p>Unable to generate AI overview</p>
+                <button class="retry-btn" onclick="window.location.reload()">
+                    <i class="fas fa-redo"></i> Try Again
+                </button>
+            </div>
+        `;
         overviewElement.classList.remove('hidden');
-        contentElement.innerHTML = '<div class="astro-loading"></div>';
-        
-        // Add a small delay for smooth animation
-        setTimeout(() => {
-            // Overview section
-            contentElement.innerHTML = `
-                <p class="overview-text">${data.overview}</p>
-            `;
-            
-            // Questions section
-            const questionsContainer = document.querySelector('.related-questions');
-            if (questionsContainer) {
-                questionsContainer.innerHTML = '';
-                data.relatedQuestions.forEach((q, index) => {
-                    const questionEl = document.createElement('div');
-                    questionEl.className = 'question-item';
-                    questionEl.style.animation = `slideIn 0.3s ease-out ${index * 0.1}s forwards`;
-                    questionEl.style.opacity = '0';
-                    questionEl.innerHTML = `
-                        <div class="question">
-                            <span>${q.question}</span>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="answer">${q.answer || 'Loading answer...'}</div>
-                    `;
-                    questionsContainer.appendChild(questionEl);
-                });
-            }
-            
-            // Related searches section
-            const searchesContainer = document.querySelector('.related-terms');
-            if (searchesContainer) {
-                searchesContainer.innerHTML = '';
-                data.relatedSearches.forEach((term, index) => {
-                    const termEl = document.createElement('a');
-                    termEl.href = `?q=${encodeURIComponent(term)}`;
-                    termEl.className = 'related-term';
-                    termEl.style.animation = `slideIn 0.3s ease-out ${index * 0.05}s forwards`;
-                    termEl.style.opacity = '0';
-                    termEl.textContent = term;
-                    searchesContainer.appendChild(termEl);
-                });
-            }
-
-            // Log success
-            console.log('Astro overview displayed successfully');
-        }, 500);
-    } else {
-        overviewElement.classList.add('hidden');
-        console.log('No data available for Astro overview');
+        return;
     }
+
+    // Show loading animation first
+    overviewElement.classList.remove('hidden');
+    contentElement.innerHTML = '<div class="astro-loading"></div>';
+    
+    // Add a small delay for smooth animation
+    setTimeout(() => {
+        // Overview section
+        contentElement.innerHTML = `
+            <p class="overview-text">${data.overview}</p>
+        `;
+        
+        // Questions section
+        const questionsContainer = document.querySelector('.related-questions');
+        if (questionsContainer) {
+            questionsContainer.innerHTML = '';
+            data.relatedQuestions.forEach((q, index) => {
+                const questionEl = document.createElement('div');
+                questionEl.className = 'question-item';
+                questionEl.style.animation = `slideIn 0.3s ease-out ${index * 0.1}s forwards`;
+                questionEl.style.opacity = '0';
+                questionEl.innerHTML = `
+                    <div class="question">
+                        <span>${q.question}</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="answer">${q.answer || 'Loading answer...'}</div>
+                `;
+                questionsContainer.appendChild(questionEl);
+            });
+        }
+        
+        // Related searches section
+        const searchesContainer = document.querySelector('.related-terms');
+        if (searchesContainer) {
+            searchesContainer.innerHTML = '';
+            data.relatedSearches.forEach((term, index) => {
+                const termEl = document.createElement('a');
+                termEl.href = `?q=${encodeURIComponent(term)}`;
+                termEl.className = 'related-term';
+                termEl.style.animation = `slideIn 0.3s ease-out ${index * 0.05}s forwards`;
+                termEl.style.opacity = '0';
+                termEl.textContent = term;
+                searchesContainer.appendChild(termEl);
+            });
+        }
+
+        // Log success
+        console.log('Astro overview displayed successfully');
+    }, 500);
 }
 
 // Add toast notification
@@ -242,26 +269,31 @@ function showToast(message, duration = 3000) {
 
 // Initialize event listeners
 document.addEventListener('DOMContentLoaded', () => {
-    // Handle question expansion
-    document.querySelector('.related-questions').addEventListener('click', async (e) => {
-        const questionItem = e.target.closest('.question-item');
-        if (questionItem) {
-            const answer = questionItem.querySelector('.answer');
-            const icon = questionItem.querySelector('.fa-chevron-down');
-            
-            questionItem.classList.toggle('expanded');
-            icon.style.transform = questionItem.classList.contains('expanded') 
-                ? 'rotate(180deg)' 
-                : 'rotate(0)';
-            
-            if (questionItem.classList.contains('expanded') && !answer.textContent.trim()) {
-                answer.innerHTML = '<div class="astro-loading"></div>';
-                const question = questionItem.querySelector('.question span').textContent;
-                const answerText = await getQuestionAnswer(question);
-                answer.textContent = answerText || 'No answer available';
+    // Safely get elements and add listeners
+    const questionsContainer = document.querySelector('.related-questions');
+    if (questionsContainer) {
+        questionsContainer.addEventListener('click', async (e) => {
+            const questionItem = e.target.closest('.question-item');
+            if (questionItem) {
+                const answer = questionItem.querySelector('.answer');
+                const icon = questionItem.querySelector('.fa-chevron-down');
+                
+                if (answer && icon) {
+                    questionItem.classList.toggle('expanded');
+                    icon.style.transform = questionItem.classList.contains('expanded') 
+                        ? 'rotate(180deg)' 
+                        : 'rotate(0)';
+                    
+                    if (questionItem.classList.contains('expanded') && !answer.textContent.trim()) {
+                        answer.innerHTML = '<div class="astro-loading"></div>';
+                        const question = questionItem.querySelector('.question span').textContent;
+                        const answerText = await getQuestionAnswer(question);
+                        answer.textContent = answerText || 'No answer available';
+                    }
+                }
             }
-        }
-    });
+        });
+    }
 
     // Improve feedback button handling
     document.querySelectorAll('.feedback-btn').forEach(btn => {

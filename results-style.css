@@ -2169,3 +2169,42 @@ body {
     background: var(--surface-color);
     border: 1px solid var(--border-color);
 }
+
+/* Astro Error State */
+.astro-error {
+    text-align: center;
+    padding: 32px;
+    color: var(--text-secondary);
+}
+
+.astro-error i {
+    font-size: 32px;
+    color: #dc3545;
+    margin-bottom: 16px;
+}
+
+.retry-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    transition: all 0.2s ease;
+}
+
+.retry-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(26, 115, 232, 0.2);
+}
+
+/* Dark theme adjustments */
+[data-theme="darkstyle"] .astro-error {
+    background: var(--surface-color);
+}

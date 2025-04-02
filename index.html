@@ -12,8 +12,6 @@
 
     <!-- Add CSP header -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: 'unsafe-inline' 'unsafe-eval'; img-src 'self' https: data: blob:; connect-src 'self' https:;">
-    <!-- Add SameSite cookie attribute -->
-    <meta http-equiv="Set-Cookie" content="Path=/; SameSite=Strict; Secure">
 
     <!-- Primary SEO Meta Tags -->
 <title>Nova Search</title>
@@ -147,7 +145,17 @@
     <main class="main-content">
         <div class="search-container">
             <h1 class="welcome-text">Good <span id="timeOfDay">morning</span></h1>
-            <gcse:searchbox-only enableautocomplete="true"></gcse:searchbox-only>
+            <form class="search-box" action="results.html" method="get">
+                <input type="text" name="q" id="search-input" autocomplete="off" placeholder="Search the web...">
+                <div class="search-actions">
+                    <button type="button" class="voice-search-btn" aria-label="Search by voice">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button type="submit" aria-label="Search">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
             
             <div class="content-section">
                 <div class="quick-access">
@@ -319,5 +327,6 @@
 
     <div class="overlay" id="overlay"></div>
     <script type="module" src="script.js"></script>
+    <script src="js/voice-search.js"></script>
 </body>
 </html>
