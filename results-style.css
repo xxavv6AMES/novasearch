@@ -2075,3 +2075,97 @@ body {
         rgba(76, 165, 282, 0.05)
     );
 }
+
+/* Astro Permission Styles */
+.astro-permission {
+    background: var(--surface-color);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.permission-content {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.permission-icon {
+    font-size: 48px;
+    color: var(--primary-color);
+    margin-bottom: 16px;
+}
+
+.astro-permission h3 {
+    font-size: 20px;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+}
+
+.astro-permission p {
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.enable-astro-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 24px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 12px;
+}
+
+.enable-astro-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(26, 115, 232, 0.2);
+}
+
+.permission-note {
+    display: block;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* Toggle Switch Styles */
+.toggle-switch {
+    width: 36px;
+    height: 20px;
+    background: var(--border-color);
+    border-radius: 10px;
+    position: relative;
+    transition: background 0.2s;
+    margin-left: auto;
+}
+
+.toggle-switch::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: white;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.2s;
+}
+
+.toggle-switch[data-enabled="true"] {
+    background: var(--primary-color);
+}
+
+.toggle-switch[data-enabled="true"]::after {
+    transform: translateX(16px);
+}
+
+/* Dark theme adjustments */
+[data-theme="darkstyle"] .astro-permission {
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+}

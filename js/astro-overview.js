@@ -1,54 +1,55 @@
-const NLP_API_ENDPOINT = 'https://api.nlpcloud.io/v1/gpu/finetuned-llama-2-70b/generation';
-const NLP_API_KEY = 'your_api_key'; // Replace with your actual API key
+const NLP_API_ENDPOINT = '/.netlify/functions/astro-query';
 const QUOTA_KEY = 'astro:daily:quota';
+const ASTRO_ENABLED_KEY = 'astro:enabled';
 const userId = localStorage.getItem('userId') || 'anonymous';
 
 export async function generateOverview(query) {
     try {
-        const now = new Date();
-        const quotaKey = `${QUOTA_KEY}`;
-        const usageData = JSON.parse(localStorage.getItem(quotaKey) || '{"count": 0, "timestamp": 0}');
+        // Check local quota cache
+        const quota = JSON.parse(localStorage.getItem(QUOTA_KEY) || '{}');
+        const today = new Date().toDateString();
         
-        // Check if 2.5 weeks (17.5 days) have passed since last reset
-        const resetPeriod = 17.5 * 24 * 60 * 60 * 1000; // 2.5 weeks in milliseconds
-        if (now.getTime() - usageData.timestamp > resetPeriod) {
-            usageData.count = 0;
-            usageData.timestamp = now.getTime();
-        }
-        
-        if (usageData.count >= 20) {
-            console.log('Quota exceeded. Resets in ' + formatTimeRemaining(usageData.timestamp + resetPeriod - now.getTime()));
-            return null;
+        if (quota.date === today && quota.remaining <= 0) {
+            const resetTime = new Date().setHours(24, 0, 0, 0);
+            throw new Error(`Daily quota exceeded. Resets in ${formatTimeRemaining(resetTime - Date.now())}`);
         }
 
-        const response = await fetch('/api/astro-query', {  // Updated endpoint
+        const response = await fetch(NLP_API_ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ query, userId })
         });
 
+        if (response.status === 429) {
+            const data = await response.json();
+            localStorage.setItem(QUOTA_KEY, JSON.stringify({
+                date: today,
+                remaining: 0,
+                resetTime: data.resetTime
+            }));
+            throw new Error('Rate limit exceeded');
+        }
+
         if (!response.ok) {
-            if (response.status === 429) {
-                console.log('Server quota exceeded');
-                return null;
-            }
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error('Failed to generate overview');
         }
 
         const data = await response.json();
-        if (data.error) {
-            console.error('API error:', data.error);
-            return null;
-        }
         
-        // Update local quota
-        usageData.count++;
-        usageData.timestamp = new Date().getTime();
-        localStorage.setItem(quotaKey, JSON.stringify(usageData));
-        
-        return data;
+        // Update quota
+        localStorage.setItem(QUOTA_KEY, JSON.stringify({
+            date: today,
+            remaining: data.quotaRemaining
+        }));
+
+        return {
+            overview: data.overview,
+            relatedQuestions: data.relatedQuestions || [],
+            relatedSearches: data.relatedSearches || []
+        };
     } catch (error) {
         console.error('Failed to generate overview:', error);
+        showToast(error.message);
         return null;
     }
 }
@@ -60,21 +61,103 @@ function formatTimeRemaining(ms) {
 }
 
 function generateRelatedQuestions(context) {
-    // Implement logic to extract potential questions from the context
-    // This could be done using NLP or a simpler pattern-based approach
-    return [];
+    // Split into sentences and look for question patterns
+    const sentences = context.split(/[.!?]+/).map(s => s.trim()).filter(s => s);
+    const questions = [];
+    
+    for (const sentence of sentences) {
+        // Look for key phrases that could form questions
+        if (/\b(?:how|what|why|when|where|who|which)\b/i.test(sentence)) {
+            // Already a question
+            if (sentence.endsWith('?')) {
+                questions.push(sentence);
+            } else {
+                // Convert statement to question
+                const question = sentence
+                    .replace(/\b(?:is|are|was|were)\b\s+(\w+)/i, '$1 is/are')
+                    .replace(/\.$/, '?');
+                questions.push(question);
+            }
+        }
+    }
+    
+    // Extract noun phrases as potential "What is" questions
+    const nounPhrases = context.match(/\b[A-Z][a-z]+(?:\s+[a-z]+){1,3}\b/g) || [];
+    for (const phrase of nounPhrases) {
+        if (!questions.find(q => q.includes(phrase))) {
+            questions.push(`What is ${phrase}?`);
+        }
+    }
+    
+    return questions.slice(0, 4).map(q => ({ question: q, answer: '' }));
 }
 
 function generateRelatedSearches(context) {
-    // Implement logic to generate related search terms
-    // Could use keyword extraction or topic modeling
-    return [];
+    const terms = new Set();
+    
+    // Extract key phrases (capitalized terms)
+    const keyPhrases = context.match(/\b[A-Z][a-z]+(?:\s+[a-z]+){0,2}\b/g) || [];
+    keyPhrases.forEach(phrase => terms.add(phrase));
+    
+    // Extract technical terms and concepts
+    const technicalTerms = context.match(/\b[a-z]+(?:[-_][a-z]+)*\b/g) || [];
+    technicalTerms
+        .filter(term => term.length > 5) // Only significant terms
+        .forEach(term => terms.add(term));
+    
+    // Extract noun phrases
+    const nounPhrases = context.match(/\b[a-z]+\s+(?:of|for|in|with)\s+[a-z]+(?:\s+[a-z]+)?\b/gi) || [];
+    nounPhrases.forEach(phrase => terms.add(phrase));
+    
+    // Remove duplicates and common words
+    const commonWords = new Set(['the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'with']);
+    const filteredTerms = [...terms].filter(term => 
+        !commonWords.has(term.toLowerCase()) && term.length > 3
+    );
+    
+    // Return top 6 most relevant terms
+    return filteredTerms
+        .sort((a, b) => b.length - a.length)
+        .slice(0, 6);
 }
 
 export function displayOverview(data) {
     const overviewElement = document.getElementById('astro-overview');
     if (!overviewElement) {
         console.error('Astro overview element not found');
+        return;
+    }
+
+    // Check if Astro is enabled
+    const isAstroEnabled = localStorage.getItem(ASTRO_ENABLED_KEY) === 'true';
+    
+    if (!isAstroEnabled) {
+        overviewElement.classList.remove('hidden');
+        overviewElement.innerHTML = `
+            <div class="astro-permission">
+                <div class="permission-content">
+                    <i class="fas fa-robot permission-icon"></i>
+                    <h3>Enable AI-Powered Insights</h3>
+                    <p>Get smart summaries, related questions, and contextual suggestions for your searches with Astro AI. This feature uses 1 credit from your daily quota of 50 AI-powered searches.</p>
+                    <button class="enable-astro-btn">Enable Astro AI</button>
+                    <span class="permission-note">You can disable this feature anytime in settings</span>
+                </div>
+            </div>
+        `;
+
+        // Add event listener for the enable button
+        const enableButton = overviewElement.querySelector('.enable-astro-btn');
+        enableButton.addEventListener('click', () => {
+            localStorage.setItem(ASTRO_ENABLED_KEY, 'true');
+            // Reload the overview with the current query
+            const urlParams = new URLSearchParams(window.location.search);
+            const query = urlParams.get('q');
+            if (query) {
+                generateOverview(query).then(data => {
+                    if (data) displayOverview(data);
+                });
+            }
+        });
         return;
     }
 
@@ -140,6 +223,23 @@ export function displayOverview(data) {
     }
 }
 
+// Add toast notification
+function showToast(message, duration = 3000) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    // Trigger animation
+    requestAnimationFrame(() => {
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, duration);
+    });
+}
+
 // Initialize event listeners
 document.addEventListener('DOMContentLoaded', () => {
     // Handle question expansion
@@ -163,34 +263,83 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Handle feedback buttons
+    // Improve feedback button handling
     document.querySelectorAll('.feedback-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const action = btn.dataset.action;
-            // Implement feedback tracking logic here
+            const content = document.querySelector('.overview-text').textContent;
+            submitFeedback(action, content);
             btn.classList.add('active');
             setTimeout(() => btn.classList.remove('active'), 2000);
         });
     });
+
+    // Add disable option to settings
+    const settingsContainer = document.querySelector('.settings-section');
+    if (settingsContainer) {
+        const astroToggle = document.createElement('button');
+        astroToggle.className = 'settings-button';
+        astroToggle.innerHTML = `
+            <i class="fas fa-robot"></i>
+            <span>Astro AI Insights</span>
+            <div class="toggle-switch" data-enabled="${localStorage.getItem(ASTRO_ENABLED_KEY) === 'true'}"></div>
+        `;
+        
+        astroToggle.addEventListener('click', () => {
+            const isEnabled = localStorage.getItem(ASTRO_ENABLED_KEY) === 'true';
+            localStorage.setItem(ASTRO_ENABLED_KEY, (!isEnabled).toString());
+            astroToggle.querySelector('.toggle-switch').dataset.enabled = (!isEnabled).toString();
+            
+            // Refresh the current search if on results page
+            if (window.location.pathname.includes('results.html')) {
+                location.reload();
+            }
+        });
+        
+        settingsContainer.appendChild(astroToggle);
+    }
 });
 
 export async function getQuestionAnswer(question) {
     try {
-        const response = await fetch('/.netlify/functions/astro-query', {
+        const response = await fetch(NLP_API_ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
                 query: `Provide a detailed answer to: ${question}`,
+                type: 'answer',
                 userId 
             })
         });
 
-        if (!response.ok) return null;
+        if (!response.ok) throw new Error('Failed to get answer');
         
         const data = await response.json();
-        return data.overview; // Use the overview as the answer
+        return data.answer || data.overview;
     } catch (error) {
         console.error('Failed to get answer:', error);
-        return null;
+        return 'Sorry, failed to generate an answer. Please try again.';
+    }
+}
+
+// Improve feedback handling
+async function submitFeedback(type, content) {
+    try {
+        const response = await fetch('/.netlify/functions/feedback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                type,
+                content,
+                userId,
+                timestamp: new Date().toISOString()
+            })
+        });
+        
+        if (!response.ok) throw new Error('Failed to submit feedback');
+        showToast('Thank you for your feedback!');
+    } catch (error) {
+        console.error('Feedback error:', error);
+        showToast('Failed to submit feedback');
     }
 }

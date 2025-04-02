@@ -487,7 +487,7 @@ function dismissBanner() {
     banner.style.transition = 'all 0.3s ease';
     
     // Updated version number in storage key
-    localStorage.setItem('bannerDismissed_v2.5.2', 'true');
+    localStorage.setItem('bannerDismissed_v2.7.0', 'true');
     
     setTimeout(() => banner.remove(), 300);
 }
@@ -495,7 +495,7 @@ function dismissBanner() {
 // Check if banner should be shown
 function checkBanner() {
     // Updated version number in storage key
-    if (localStorage.getItem('bannerDismissed_v2.5.2')) {
+    if (localStorage.getItem('bannerDismissed_v2.7.0')) {
         const banner = document.getElementById('update-banner');
         if (banner) banner.remove();
     }
