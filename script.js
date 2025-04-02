@@ -226,6 +226,10 @@ function initializeBackgroundControls() {
     const dailyBackground = document.getElementById('daily-background');
     const customBackground = document.getElementById('custom-background');
     const resetBackground = document.getElementById('reset-background');
+    const customizePopup = document.querySelector('.customize-popup');
+
+    // Guard clause - return if elements don't exist
+    if (!dailyBackground || !customBackground || !resetBackground || !customizePopup) return;
 
     dailyBackground.addEventListener('click', async () => {
         localStorage.setItem('backgroundType', 'daily');
@@ -269,10 +273,8 @@ function initializeQuickAccess() {
     const quickAccess = document.querySelector('.quick-access');
     const addTile = document.getElementById('add-tile');
     
-    if (!quickAccess || !addTile) {
-        console.log('Quick access elements not found');
-        return;
-    }
+    // Guard clause - return if elements don't exist
+    if (!quickAccess || !addTile) return;
 
     loadSavedTiles();
     
@@ -405,6 +407,9 @@ const WEATHER_API_KEY = 'fdeafcc5a8c0ea20c5b28b7782a8793b'; // You'll need to si
 async function initializeWeather() {
     const weatherWidget = document.getElementById('weather-content');
     
+    // Guard clause - return if element doesn't exist
+    if (!weatherWidget) return;
+
     if (!localStorage.getItem('weatherPermission')) {
         weatherWidget.innerHTML = `
             <div class="weather-permission">
@@ -495,10 +500,12 @@ function dismissBanner() {
 
 // Check if banner should be shown
 function checkBanner() {
+    const banner = document.getElementById('update-banner');
+    if (!banner) return;
+
     // Updated version number in storage key
     if (localStorage.getItem('bannerDismissed_v2.7.0')) {
-        const banner = document.getElementById('update-banner');
-        if (banner) banner.remove();
+        banner.remove();
     }
 }
 
@@ -507,6 +514,9 @@ function initializeCustomizePopup() {
     const customizeToggle = document.querySelector('.customize-toggle');
     const customizePopup = document.querySelector('.customize-popup');
     const closePopup = document.querySelector('.close-popup');
+
+    // Guard clause - return if any element doesn't exist
+    if (!customizeToggle || !customizePopup || !closePopup) return;
 
     customizeToggle.addEventListener('click', () => {
         customizePopup.classList.add('active');
@@ -1151,75 +1161,50 @@ async function handleFilteredSearch(query, searchType) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const initGoogleSearch = () => {
-        const resultsDiv = document.getElementById('search-results');
-        if (!resultsDiv) return;
-
-        if (window.google && google.search && google.search.cse.element) {
-            google.search.cse.element.render({
-                div: 'search-results',
-                tag: 'searchresults-only'
-            });
-        } else {
-            const fallback = document.getElementById('search-fallback');
-            if (fallback) {
-                fallback.style.display = 'block';
-            }
-            // Try again in a second
-            setTimeout(initGoogleSearch, 1000);
-        }
-    };
-
-    initGoogleSearch();
-    
     const isHomePage = !window.location.pathname.includes('results.html');
+    const isResultsPage = window.location.pathname.includes('results.html');
     
     // Always initialize these features
     initializeAuth();
     initializeEventListeners();
     setTheme(localStorage.getItem('theme') || 'style');
-    
-    // Initialize search with Astro support
-    if (!isHomePage) {
+
+    // Initialize Google CSE if on results page
+    if (isResultsPage) {
+        const initGoogleSearch = () => {
+            if (!window.google || !google.search || !google.search.cse || !google.search.cse.element) {
+                setTimeout(initGoogleSearch, 100);
+                return;
+            }
+            const resultsContainer = document.querySelector('.results-container');
+            if (!resultsContainer) return;
+
+            google.search.cse.element.render({
+                div: resultsContainer,
+                tag: 'searchresults-only'
+            });
+        };
+
+        window.__gcse = {
+            parsetags: 'explicit',
+            callback: initGoogleSearch
+        };
+
+        // Handle Astro integration
         const urlParams = new URLSearchParams(window.location.search);
         const query = urlParams.get('q');
-        
         if (query) {
-            // Handle Astro overview generation
             generateOverview(query).then(data => {
-                if (data) {
-                    displayOverview(data);
-                }
+                if (data) displayOverview(data);
             });
         }
 
-        // Add event listener for new searches
-        document.querySelector('.search-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const searchQuery = e.target.querySelector('input[name="q"]').value;
-            
-            // Update URL
-            const url = new URL(window.location);
-            url.searchParams.set('q', searchQuery);
-            window.history.pushState({}, '', url);
-
-            // Generate new Astro overview
-            const data = await generateOverview(searchQuery);
-            if (data) {
-                displayOverview(data);
-            }
-
-            // Trigger Google CSE search
-            const gsc = document.querySelector('.gsc-control-cse');
-            if (gsc) {
-                const gscInput = gsc.querySelector('.gsc-input-box input');
-                const gscButton = gsc.querySelector('.gsc-search-button');
-                if (gscInput && gscButton) {
-                    gscInput.value = searchQuery;
-                    gscButton.click();
-                }
-            }
-        });
+        // Initialize results page specific features
+        initializeSearchFilters();
+        
+        // Set initial active filter
+        const searchType = urlParams.get('type') || 'all';
+        document.querySelector(`.filter-option[data-type="${searchType}"]`)?.classList.add('active');
     }
 
     // Only initialize home page features if we're on the home page
@@ -1236,7 +1221,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Restore background settings
         const backgroundType = localStorage.getItem('backgroundType');
         if (backgroundType === 'daily') {
-            document.getElementById('daily-background').click();
+            const dailyBackground = document.getElementById('daily-background');
+            if (dailyBackground) dailyBackground.click();
         } else if (backgroundType === 'custom') {
             const customBackground = localStorage.getItem('customBackground');
             if (customBackground) {
@@ -1251,13 +1237,4 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeMobileFeatures();
     initializeDiscover();
     initializeGeneralFeatures();
-    
-    if (!isHomePage) {
-        initializeSearchFilters();
-        
-        // Set initial active filter based on URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const searchType = urlParams.get('type') || 'all';
-        document.querySelector(`.filter-option[data-type="${searchType}"]`)?.classList.add('active');
-    }
 });
