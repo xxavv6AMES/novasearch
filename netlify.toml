@@ -18,6 +18,6 @@
 [[headers]]
   for = "/*"
   [headers.values]
-    Content-Security-Policy = "default-src 'self' https: 'unsafe-inline' 'unsafe-eval'; img-src 'self' https: data: blob:; connect-src 'self' https:;"
+    Content-Security-Policy = "default-src * 'unsafe-inline' 'unsafe-eval'; img-src * data: blob:; connect-src *"
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
