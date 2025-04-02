@@ -1150,21 +1150,27 @@ async function handleFilteredSearch(query, searchType) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Check if Google CSE is loaded
-    if (!document.querySelector('.gsc-control-cse')) {
-        const fallback = document.getElementById('search-fallback');
-        if (fallback) {
-            fallback.style.display = 'block';
-        }
-        
-        // Try to reinitialize after a delay
-        setTimeout(() => {
-            if (window.__gcse) {
-                window.__gcse.render();
-            }
-        }, 1000);
-    }
+    const initGoogleSearch = () => {
+        const resultsDiv = document.getElementById('search-results');
+        if (!resultsDiv) return;
 
+        if (window.google && google.search && google.search.cse.element) {
+            google.search.cse.element.render({
+                div: 'search-results',
+                tag: 'searchresults-only'
+            });
+        } else {
+            const fallback = document.getElementById('search-fallback');
+            if (fallback) {
+                fallback.style.display = 'block';
+            }
+            // Try again in a second
+            setTimeout(initGoogleSearch, 1000);
+        }
+    };
+
+    initGoogleSearch();
+    
     const isHomePage = !window.location.pathname.includes('results.html');
     
     // Always initialize these features
