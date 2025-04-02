@@ -13,13 +13,22 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="results-style.css">
     <link rel="icon" href="https://d2zcpib8duehag.cloudfront.net/novasearchnotext.png">
-    
-    <!-- Scripts -->
-    <script async src="https://cse.google.com/cse.js?cx=4776225bf1aee432e"></script>
+
     <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <!-- Scripts -->
+    <script async src="https://cse.google.com/cse.js?cx=4776225bf1aee432e"></script>
+    <script type="module">
+        import { initializeAstroOverview } from './js/astro-init.js';
+        
+        // Initialize when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeAstroOverview();
+        });
+    </script>
 </head>
 <body>
     <div class="page-wrapper">
@@ -88,25 +97,6 @@
                     </div>
                 </div>
             </div>
-
-            <nav class="search-filters">
-                <div class="filter-option active" data-type="all">
-                    <i class="fas fa-search"></i>
-                    All
-                </div>
-                <div class="filter-option" data-type="image">
-                    <i class="fas fa-image"></i>
-                    Images
-                </div>
-                <div class="filter-option" data-type="video">
-                    <i class="fas fa-video"></i>
-                    Videos
-                </div>
-                <div class="filter-option" data-type="news">
-                    <i class="fas fa-newspaper"></i>
-                    News
-                </div>
-            </nav>
         </header>
 
         <main class="results-main">
