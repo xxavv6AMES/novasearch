@@ -24,10 +24,10 @@ export async function initializeAstroOverview() {
 
     if (localStorage.getItem(ASTRO_PERMISSION_KEY) === 'granted') {
         // Setup Google CSE callback for granted permission
-        window.__gcse = {
-            callback: function() {
-                const element = google.search.cse.element.getElement('searchresults');
-                element.addResultSelectedCallback(() => {
+        window.__gcse = window.__gcse || {};
+        window.__gcse.searchCallbacks = {
+            web: {
+                ready: function(gname) {
                     const urlParams = new URLSearchParams(window.location.search);
                     const query = urlParams.get('q');
                     if (query) {
@@ -35,7 +35,7 @@ export async function initializeAstroOverview() {
                             if (data) displayOverview(data);
                         });
                     }
-                });
+                }
             }
         };
     }
