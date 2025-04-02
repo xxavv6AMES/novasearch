@@ -390,9 +390,10 @@ function addNewTile() {
 
 // Welcome message
 function updateWelcomeMessage() {
-    const hour = new Date().getHours();
     const timeSpan = document.getElementById('timeOfDay');
+    if (!timeSpan) return; // Add check to prevent error on results page
     
+    const hour = new Date().getHours();
     if (hour < 12) timeSpan.textContent = 'morning';
     else if (hour < 18) timeSpan.textContent = 'afternoon';
     else timeSpan.textContent = 'evening';
