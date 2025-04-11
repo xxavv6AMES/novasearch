@@ -1,23 +1,19 @@
 [build]
   functions = "netlify/functions"
-  publish = "."
 
 [functions]
-  external_node_modules = ["axios", "ioredis"]
   node_bundler = "esbuild"
 
 [[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
+  from = "/*"
+  to = "/index.html"
   status = 200
 
-[dev]
-  functions = "netlify/functions"
-  publish = "."
+# Add custom 404 page
+[build.processing.html]
+  pretty_urls = true
 
-[[headers]]
-  for = "/*"
-  [headers.values]
-    Content-Security-Policy = "default-src * 'unsafe-inline' 'unsafe-eval'; img-src * data: blob:; connect-src *"
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
+[[redirects]]
+  from = "/*"
+  to = "/404.html"
+  status = 404

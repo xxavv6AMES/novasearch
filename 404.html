@@ -3,27 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 | Nova Search</title>
-    <link rel="icon" href="https://d2zcpib8duehag.cloudfront.net/novasearchcorp.png">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="404-style.css">
+    <title>Page Not Found - Nova Search</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="https://static.wixstatic.com/media/5f23d5_5724b6ca5ab64193801259dddba35e59~mv2.png">
 </head>
 <body>
-    <div class="container">
-        <header class="logo">
-            <a href="../index.html">
-                <img src="https://d2zcpib8duehag.cloudfront.net/novasearchcorp.png" alt="Nova Logo">
+    <div class="error-page">
+        <div class="background-decoration"></div>
+        <div class="error-content">
+            <a href="/" class="logo-small">
+                <img src="https://static.wixstatic.com/media/5f23d5_5724b6ca5ab64193801259dddba35e59~mv2.png" alt="Nova Search">
+                Nova Search
             </a>
-        </header>
-
-        <main class="main-content">
-            <section class="error-message">
-                <h1>Oops! Something went wrong.</h1>
-                <p>The page you're looking for could not be found. But don't worry, we can help you get back on track.</p>
-                <a href="../index.html" class="back-home">Back To Search</a>
-            </section>
-        </main>
+            <div class="error-details">
+                <h1>404</h1>
+                <p class="error-message">Page not found</p>
+                <p class="error-description">The page you're looking for doesn't exist or has been moved.</p>
+                <a href="/" class="error-button">Return Home</a>
+            </div>
+        </div>
     </div>
-    <script src="js/404.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js');
+        }
+        </script>
 </body>
 </html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal - Nova Search</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="legal-page">
+    <header>
+        <div class="top-bar">
+            <a href="index.html" class="logo-small">Nova Search</a>
+        </div>
+    </header>
+    <div class="legal-container">
+        <div class="legal-tabs">
+            <button class="legal-tab active" data-tab="terms">Terms & Conditions</button>
+            <button class="legal-tab" data-tab="privacy">Privacy Policy</button>
+        </div>
+        <div class="legal-content">
+            <div id="terms" class="tab-content active">
+                <h1>Terms and Conditions</h1>
+                <div class="legal-text">
+                    <h2>Service Overview</h2>
+                    <p>Nova Search is primarily a web search engine with optional AI-powered features. Our core service helps you find relevant information across the internet, while Astro AI provides additional insights when requested.</p>
+
+                    <h2>Core Search Services</h2>
+                    <ul>
+                        <li>Web, image, and news search functionality</li>
+                        <li>Results from publicly available sources</li>
+                        <li>Ranking based on relevance algorithms</li>
+                        <li>Local and personalized result options</li>
+                        <li>Standard search tools and filters</li>
+                    </ul>
+
+                    <h2>Optional AI Features</h2>
+                    <ul>
+                        <li>Supplementary AI insights on demand</li>
+                        <li>Daily usage limits for AI features</li>
+                        <li>AI responses for reference only</li>
+                        <li>May require additional verification</li>
+                        <li>Not required for basic search</li>
+                    </ul>
+
+                    <h2>Acceptable Use</h2>
+                    <ul>
+                        <li>Fair use of search services</li>
+                        <li>No automated scraping or crawling</li>
+                        <li>Respect system limitations</li>
+                        <li>No misuse of AI features</li>
+                        <li>Appropriate content only</li>
+                    </ul>
+
+                    <h2>User Responsibilities</h2>
+                    <ul>
+                        <li>Use search responsibly</li>
+                        <li>Verify information from multiple sources</li>
+                        <li>Report problematic content</li>
+                        <li>Maintain account security</li>
+                        <li>Follow usage guidelines</li>
+                    </ul>
+
+                    <h2>Service Limitations</h2>
+                    <ul>
+                        <li>Search results may vary</li>
+                        <li>Some features may be region-restricted</li>
+                        <li>AI features are supplementary only</li>
+                        <li>No guarantee of availability</li>
+                        <li>Services evolve over time</li>
+                    </ul>
+
+                    <h2>Content & Copyright</h2>
+                    <ul>
+                        <li>AI-generated content may be subject to review</li>
+                        <li>Users responsible for their queries</li>
+                        <li>Respect third-party rights</li>
+                        <li>No unauthorized content distribution</li>
+                    </ul>
+
+                    <h2>Updates & Changes</h2>
+                    <ul>
+                        <li>Terms may be updated as services evolve</li>
+                        <li>Users notified of significant changes</li>
+                        <li>Continued use implies acceptance</li>
+                        <li>Regular review recommended</li>
+                    </ul>
+
+                    <h2>Contact Us</h2>
+                    <p>For legal inquiries:</p>
+                    <p><a href="mailto:legal@novasearch.com">legal@novasearch.com</a></p>
+                </div>
+            </div>
+            <div id="privacy" class="tab-content">
+                <h1>Privacy Policy</h1>
+                <div class="legal-text">
+                    <h2>Information We Collect</h2>
+                    <p>When you use Nova Search, we collect:</p>
+                    <ul>
+                        <li>Basic search queries and results interaction</li>
+                        <li>Optional AI feature usage when enabled</li>
+                        <li>Device and browser information</li>
+                        <li>Approximate location (with consent, for local results)</li>
+                        <li>Customization preferences</li>
+                        <li>Service performance metrics</li>
+                    </ul>
+
+                    <h2>Search Data Usage</h2>
+                    <p>Your search data helps us:</p>
+                    <ul>
+                        <li>Deliver relevant search results</li>
+                        <li>Improve result rankings</li>
+                        <li>Provide local and personalized results</li>
+                        <li>Protect against automated misuse</li>
+                        <li>Debug and optimize performance</li>
+                    </ul>
+
+                    <h2>Optional AI Features</h2>
+                    <p>When you use Astro AI features:</p>
+                    <ul>
+                        <li>AI processing is done on-demand only</li>
+                        <li>Responses are generated in real-time</li>
+                        <li>No personal data used in AI training</li>
+                        <li>AI interactions are separately stored</li>
+                        <li>You can opt-out at any time</li>
+                    </ul>
+
+                    <h2>Data Protection</h2>
+                    <ul>
+                        <li>Industry-standard encryption for all data</li>
+                        <li>Separate handling of search and AI data</li>
+                        <li>Regular security assessments</li>
+                        <li>Compliance with privacy regulations</li>
+                        <li>Transparent data handling practices</li>
+                    </ul>
+
+                    <h2>Your Privacy Controls</h2>
+                    <ul>
+                        <li>Manage search history and preferences</li>
+                        <li>Control AI feature availability</li>
+                        <li>Choose personalization level</li>
+                        <li>Export or delete your data</li>
+                        <li>Set data retention preferences</li>
+                    </ul>
+
+                    <h2>Third-Party Processing</h2>
+                    <p>We use trusted partners for:</p>
+                    <ul>
+                        <li>AI model processing and hosting</li>
+                        <li>Cloud infrastructure services</li>
+                        <li>Analytics and performance monitoring</li>
+                        <li>Content delivery networks</li>
+                    </ul>
+
+                    <h2>Contact & Rights</h2>
+                    <p>You can exercise your rights or contact our Data Protection Officer at:</p>
+                    <p><a href="mailto:privacy@novasearch.com">privacy@novasearch.com</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="legal.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js');
+        }
+        </script>
+</body>
+</html>

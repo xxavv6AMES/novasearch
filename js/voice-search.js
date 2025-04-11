@@ -1,130 +1,72 @@
-const SOUNDS_PATH = 'assets/sounds/';
-
-// Sound effect placeholders
-const SOUNDS = {
-    START: `${SOUNDS_PATH}start.mp3`,
-    STOP: `${SOUNDS_PATH}stop.mp3`,
-    ERROR: `${SOUNDS_PATH}error.mp3`
-};
+const beepStart = new Audio('/sounds/start.mp3');
+const beepEnd = new Audio('/sounds/end.mp3');
+const beepError = new Audio('/sounds/error.mp3');
 
 class VoiceSearch {
-    constructor() {
-        this.recognition = null;
-        this.isListening = false;
-        this.voiceButton = document.querySelector('.voice-search-btn');
-        this.searchInput = document.querySelector('#search-input');
-        this.sounds = {};
+    constructor(inputId, buttonId) {
+        this.input = document.getElementById(inputId);
+        this.button = document.getElementById(buttonId);
         
-        this.initializeSpeechRecognition();
-        this.initializeSoundEffects();
-        this.setupEventListeners();
-    }
-
-    initializeSpeechRecognition() {
-        // Check for all possible speech recognition APIs
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition;
-        
-        if (SpeechRecognition) {
-            this.recognition = new SpeechRecognition();
-            this.recognition.continuous = false;
-            this.recognition.interimResults = false;
-            this.recognition.lang = 'en-US';
-
-            this.recognition.onstart = () => this.handleRecognitionStart();
-            this.recognition.onresult = (event) => this.handleRecognitionResult(event);
-            this.recognition.onerror = (event) => this.handleRecognitionError(event);
-            this.recognition.onend = () => this.handleRecognitionEnd();
-        } else {
-            this.voiceButton.style.display = 'none';
-            console.log('Speech recognition not supported in this browser');
+        // Fix: Use only webkitSpeechRecognition for now as it's the most widely supported
+        if (!('webkitSpeechRecognition' in window)) {
+            console.error('Speech recognition not supported');
+            this.button.style.display = 'none';
+            return;
         }
+        
+        this.recognition = new webkitSpeechRecognition();
+        this.isListening = false;
+        
+        this.setupRecognition();
+        this.setupButton();
     }
 
-    initializeSoundEffects() {
-        // Preload sound effects
-        Object.entries(SOUNDS).forEach(([key, path]) => {
-            this.sounds[key] = new Audio(path);
-            this.sounds[key].preload = 'auto';
+    setupRecognition() {
+        this.recognition.continuous = false;
+        this.recognition.interimResults = true;
+        this.recognition.lang = 'en-US';
+
+        this.recognition.onstart = () => {
+            this.isListening = true;
+            this.button.classList.add('listening');
+            beepStart.play();
+        };
+
+        this.recognition.onend = () => {
+            this.isListening = false;
+            this.button.classList.remove('listening');
+            beepEnd.play();
+        };
+
+        this.recognition.onerror = () => {
+            this.isListening = false;
+            this.button.classList.remove('listening');
+            beepError.play();
+        };
+
+        this.recognition.onresult = (event) => {
+            const transcript = Array.from(event.results)
+                .map(result => result[0].transcript)
+                .join('');
+            
+            this.input.value = transcript;
+            
+            if (event.results[0].isFinal) {
+                this.recognition.stop();
+                if (this.input.form) {
+                    this.input.form.submit();
+                }
+            }
+        };
+    }
+
+    setupButton() {
+        this.button.addEventListener('click', () => {
+            if (this.isListening) {
+                this.recognition.stop();
+            } else {
+                this.recognition.start();
+            }
         });
     }
-
-    setupEventListeners() {
-        if (this.voiceButton) {
-            this.voiceButton.addEventListener('click', () => this.toggleVoiceInput());
-        }
-    }
-
-    toggleVoiceInput() {
-        if (!this.isListening) {
-            this.startListening();
-        } else {
-            this.stopListening();
-        }
-    }
-
-    startListening() {
-        try {
-            this.recognition.start();
-            this.playSound('START');
-        } catch (error) {
-            console.error('Speech recognition error:', error);
-            this.handleRecognitionError(error);
-        }
-    }
-
-    stopListening() {
-        this.recognition.stop();
-        this.playSound('STOP');
-    }
-
-    handleRecognitionStart() {
-        this.isListening = true;
-        this.voiceButton.classList.add('listening');
-        this.voiceButton.innerHTML = '<i class="fas fa-microphone-slash"></i>';
-        
-        // Add visual feedback
-        document.body.classList.add('voice-active');
-    }
-
-    handleRecognitionResult(event) {
-        const transcript = event.results[0][0].transcript;
-        this.searchInput.value = transcript;
-        
-        // Find the form and submit
-        const searchForm = this.searchInput.closest('form');
-        if (searchForm && event.results[0][0].confidence > 0.8) {
-            searchForm.submit();
-        }
-    }
-
-    handleRecognitionError(event) {
-        console.error('Speech recognition error:', event.error);
-        this.playSound('ERROR');
-        this.resetVoiceInterface();
-    }
-
-    handleRecognitionEnd() {
-        this.resetVoiceInterface();
-    }
-
-    resetVoiceInterface() {
-        this.isListening = false;
-        this.voiceButton.classList.remove('listening');
-        this.voiceButton.innerHTML = '<i class="fas fa-microphone"></i>';
-        document.body.classList.remove('voice-active');
-    }
-
-    playSound(soundKey) {
-        if (this.sounds[soundKey]) {
-            this.sounds[soundKey].currentTime = 0;
-            this.sounds[soundKey].play().catch(error => {
-                console.log('Sound playback error:', error);
-            });
-        }
-    }
 }
-
-// Initialize voice search when document is ready
-document.addEventListener('DOMContentLoaded', () => {
-    const voiceSearch = new VoiceSearch();
-});

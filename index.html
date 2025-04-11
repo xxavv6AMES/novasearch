@@ -1,330 +1,111 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="style">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Nova Search</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- Add iOS meta tags for PWA -->
+    <!-- SEO Tags -->
+    <title>Nova Search - Intelligent Web Search with AI Insights</title>
+    <meta name="description" content="Experience smarter web search with Nova Search. Get AI-powered overviews and insights while you search the web. Fast, private, and intelligent.">
+    <meta name="keywords" content="search engine, AI search, intelligent search, web search, nova search, astro AI">
+    
+    <!-- Open Graph / Social -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Nova Search - Intelligent Web Search">
+    <meta property="og:description" content="Experience smarter web search with AI-powered insights and overviews.">
+    <meta property="og:image" content="https://static.wixstatic.com/media/5f23d5_5724b6ca5ab64193801259dddba35e59~mv2.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://static.wixstatic.com/media/5f23d5_5724b6ca5ab64193801259dddba35e59~mv2.png">
+    <link rel="apple-touch-icon" href="https://static.wixstatic.com/media/5f23d5_5724b6ca5ab64193801259dddba35e59~mv2.png">
+    
+    <!-- PWA Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#002eff">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#ffffff">
-
-    <!-- Add CSP header -->
-    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'; img-src * data: blob:; connect-src *">
-
-    <!-- Primary SEO Meta Tags -->
-<title>Nova Search</title>
-<meta name="description" content="Nova Search: A powerful, easy-to-use platform for finding resources, answers, and tools to get things done. Explore documentation, guides, and helpful tools all in one place.">
-<meta name="keywords" content="search platform, find resources, tools, documentation, guides, efficient search, user-friendly search, Nova Search">
-
-<!-- Open Graph / Social Media Meta Tags -->
-<meta property="og:type" content="website">
-<meta property="og:title" content="Nova Search">
-<meta property="og:description" content="Simplify your search for resources, answers, and tools. Nova Search is built for everyone to find what they need with ease.">
-<meta property="og:image" content="https://d2zcpib8duehag.cloudfront.net/novasearch-preview.png">
-<meta property="og:url" content="https://search.novasuite.one">
-
-<!-- Twitter Card Meta Tags -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Nova Search">
-<meta name="twitter:description" content="Simplify your search for resources, answers, and tools. Nova Search is built for everyone to find what they need with ease.">
-<meta name="twitter:image" content="https://d2zcpib8duehag.cloudfront.net/novasearch-preview.png">
-
-<!-- Canonical URL -->
-<link rel="canonical" href="https://search.novasuite.one">
-
-<!-- Favicon -->
-<link rel="icon" href="https://d2zcpib8duehag.cloudfront.net/novasearchnotext.png" type="image/x-icon">
-
-<!-- Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Wix+Madefor+Display:wght@400;600&family=Wix+Madefor+Text:wght@400;600;700&display=swap" rel="stylesheet">
-<!-- Robots Meta Tag -->
-<meta name="robots" content="index, follow">
-
-    <!-- Webmaster Tools Verification -->
-    <meta name="msvalidate.01" content="412FF96B0709F5139281F2626F5B966B" />
-    <meta name="theme-color" content="#ffffff">
-    <meta name="mobile-web-app-capable" content="yes">
-
-    <link rel="icon" href="https://d2zcpib8duehag.cloudfront.net/novasearchnotext.png">
-    <link rel="stylesheet" href="style.css">
-    <script async src="https://cse.google.com/cse.js?cx=4776225bf1aee432e"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <link rel="apple-touch-startup-image" href="https://static.wixstatic.com/media/5f23d5_5724b6ca5ab64193801259dddba35e59~mv2.png">
+    
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/pwa.js"></script>
+    <script src="weather.js"></script>
 </head>
 <body>
-    <header class="main-header">
-        <div class="header-container">
-            <button class="menu-button" id="app-button" aria-label="Menu">
-                <i class="fas fa-bars"></i>
-            </button>
-            <a href="/" class="logo-link">
-                <img src="https://d2zcpib8duehag.cloudfront.net/novasearchnotext.png" alt="Nova Logo" width="40" height="40">
-            </a>
-            <div class="auth-container">
-                <button id="login-button" class="auth-button">
-                    <i class="fas fa-user"></i>
-                    <span>Sign In</span>
-                </button>
-                <div id="user-info" class="user-info">
-                    <div class="user-profile">
-                        <div class="user-header">
-                            <span class="greeting">Hi, </span>
-                            <span class="display-name"></span>
-                        </div>
-                        <img src="" alt="" class="avatar">
-                        <div class="user-dropdown">
-                            <div class="dropdown-header">
-                                <img src="" alt="" class="dropdown-avatar">
-                                <div class="user-details">
-                                    <span class="user-name"></span>
-                                    <span class="user-email"></span>
-                                </div>
-                            </div>
-                            <div class="dropdown-menu">
-                                <a href="https://account.nova.xxavvgroup.com" class="dropdown-item">
-                                    <i class="fas fa-user-cog"></i>
-                                    Manage Account
-                                </a>
-                                <a href="mailto:support.xts@xxavvgroup.com" class="dropdown-item">
-                                    <i class="fas fa-question-circle"></i>
-                                    Get Help
-                                </a>
-                                <button id="logout-button" class="dropdown-item">
-                                    <i class="fas fa-sign-out-alt"></i>
-                                    Sign Out
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="search-container">
+        <div class="background-decoration"></div>
+        <div class="logo">
+            <img src="https://static.wixstatic.com/media/5f23d5_5724b6ca5ab64193801259dddba35e59~mv2.png" alt="Nova Search" class="logo-image">
+            <span class="logo-text">Nova Search</span>
         </div>
-    </header>
-
-    <div class="mobile-nav">
-        <a href="/" class="nav-item active">
-            <i class="fas fa-search"></i>
-            <span>Search</span>
-        </a>
-        <a href="javascript:void(0)" class="nav-item" id="mobile-apps">
-            <i class="fas fa-th"></i>
-            <span>Apps</span>
-        </a>
-        <a href="https://account.nova.xxavvgroup.com" class="nav-item">
-            <i class="fas fa-user"></i>
-            <span>Account</span>
-        </a>
-        <button class="nav-item" id="mobile-theme">
-            <i class="fas fa-moon"></i>
-            <span>Theme</span>
-        </button>
-    </div>
-
-    <div class="pull-indicator">
-        <i class="fas fa-sync-alt"></i>
-    </div>
-
-    <div class="update-banner" id="update-banner">
-        <div class="banner-content">
-            <span class="banner-badge">New</span>
-            <p>Nova Search has been updated to version 2.7.0! The Astro Enhancement Update.</p>
-            <a href="corporate/changelog.html">See what's new</a>
-        </div>
-        <button class="banner-close" aria-label="Dismiss" onclick="dismissBanner()">
-            <i class="fas fa-times"></i>
-        </button>
-    </div>
-
-    <div class="page-background"></div>
-    
-    <main class="main-content">
-        <div class="search-container">
-            <h1 class="welcome-text">Good <span id="timeOfDay">morning</span></h1>
-            <div class="gcse-searchbox-only"></div>
-            <div class="search-actions">
-                <button type="button" class="voice-search-btn" aria-label="Search by voice">
-                    <i class="fas fa-microphone"></i>
-                </button>
-                <button aria-label="Search">
-                    <i class="fas fa-search"></i>
-                </button>
-            </div>
-            
-            <div class="content-section">
-                <div class="quick-access">
-                    <div class="quick-tile" id="add-tile">
-                        <i class="fas fa-plus"></i>
-                        <span>Add</span>
-                    </div>
-                </div>
-                
-                <div class="weather-widget">
-                    <div id="weather-content"></div>
-                </div>
-            </div>
-
-            <!-- New Discover Section -->
-            <div class="discover-section">
-                <div class="discover-header">
-                    <h2>Discover</h2>
-                    <div class="discover-tabs">
-                        <button class="tab-button active" data-tab="news">News</button>
-                        <button class="tab-button" data-tab="videos">Videos</button>
-                        <button class="tab-button" data-tab="topics">Topics</button>
-                    </div>
-                </div>
-
-                <div class="discover-content">
-                    <div class="tab-content active" id="news-content">
-                        <div class="content-grid news-grid"></div>
-                    </div>
-                    <div class="tab-content" id="videos-content">
-                        <div class="content-grid video-grid"></div>
-                    </div>
-                    <div class="tab-content" id="topics-content">
-                        <div class="topics-grid"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <button class="customize-toggle" aria-label="Customize">
-            <i class="fas fa-paint-brush"></i>
-            <span>Customize</span>
-        </button>
-
-        <div class="customize-popup">
-            <div class="popup-header">
-                <h3>Customize Your Page</h3>
-                <button class="close-popup" aria-label="Close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="popup-content">
-                <div class="settings-section">
-                    <h4>Background</h4>
-                    <div class="background-controls">
-                        <button id="daily-background" class="settings-button">
-                            <i class="fas fa-image"></i>
-                            Use Daily Background
-                        </button>
-                        <button id="custom-background" class="settings-button">
-                            <i class="fas fa-upload"></i>
-                            Custom Background
-                        </button>
-                        <button id="reset-background" class="settings-button">
-                            <i class="fas fa-undo"></i>
-                            Reset Background
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <nav id="sidebar-menu" class="sidebar" aria-label="Main navigation">
-        <div class="sidebar-header">
-            <h2>Nova Apps</h2>
-            <button id="close-sidebar" aria-label="Close menu">
-                <i class="fas fa-times"></i>
+        <div class="search-box">
+            <form action="results.html" method="get">
+                <input type="text" name="q" id="search-input" autocomplete="off">
+                <button type="submit">Search</button>
+            </form>
+            <button type="button" id="voice-search" class="voice-search-button">
+                <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.36-.98.85C16.52 14.2 14.47 16 12 16s-4.52-1.8-4.93-4.15c-.08-.49-.49-.85-.98-.85-.61 0-1.09.54-1 1.14.49 3 2.89 5.35 5.91 5.78V20c0 .55.45 1 1 1s1-.45 1-1v-2.08c3.02-.43 5.42-2.78 5.91-5.78.1-.6-.39-1.14-1-1.14z"></path></svg>
             </button>
         </div>
-        <div class="sidebar-content">
-            <a href="https://mail.nova.xxavvgroup.com" class="sidebar-link">
-                <img src="https://icons.duckduckgo.com/ip3/mail.nova.xxavvgroup.com.ico" alt="Nova Mail" class="nova-icon">
-                Nova Mail
-            </a>
-            <a href="https://calendar.nova.xxavvgroup.com" class="sidebar-link">
-                <img src="https://icons.duckduckgo.com/ip3/calendar.nova.xxavvgroup.com.ico" alt="Nova Calendar" class="nova-icon">
-                Nova Calendar
-            </a>
-            <a href="https://present.nova.xxavvgroup.com" class="sidebar-link">
-                <img src="https://icons.duckduckgo.com/ip3/present.nova.xxavvgroup.com.ico" alt="Nova Present" class="nova-icon">
-                Nova Present
-            </a>
-            <a href="https://gists.nova.xxavvgroup.com" class="sidebar-link">
-                <img src="https://icons.duckduckgo.com/ip3/gists.nova.xxavvgroup.com.ico" alt="Nova Gists" class="nova-icon">
-                Nova Gists
-            </a>
-            <a href="https://docs.nova.xxavvgroup.com" class="sidebar-link">
-                <img src="https://icons.duckduckgo.com/ip3/docs.nova.xxavvgroup.com.ico" alt="Nova Docs" class="nova-icon">
-                Nova Docs
-            </a>
-            <a href="https://astro.nova.xxavvgroup.com" class="sidebar-link">
-                <img src="https://icons.duckduckgo.com/ip3/astro.nova.xxavvgroup.com.ico" alt="Astro AI" class="nova-icon">
-                Astro AI
-            </a>
-            <a href="https://central.nova.xxavvgroup.com" class="sidebar-link">
-                <img src="https://icons.duckduckgo.com/ip3/central.nova.xxavvgroup.com.ico" alt="Nova Central" class="nova-icon">
-                Nova Central
-            </a>
-            <a href="https://account.nova.xxavvgroup.com" class="sidebar-link">
-                <img src="https://icons.duckduckgo.com/ip3/account.nova.xxavvgroup.com.ico" alt="Your Account" class="nova-icon">
-                Your Account
-            </a>
-            <hr class="sidebar-divider">
-            <button id="theme-toggle" class="sidebar-link" aria-label="Toggle Theme">
-                <i id="theme-icon" class="fas fa-moon"></i>
-                <span>Toggle Theme</span>
-            </button>
+        <div class="trending-searches">
+            <h3>Trending</h3>
+            <div class="trending-tags">
+                <a href="results.html?q=AI+news" target="_blank">AI News</a>
+                <a href="results.html?q=tech+trends" target="_blank">Tech Trends</a>
+                <a href="results.html?q=web+development" target="_blank">Web Dev</a>
+                <a href="results.html?q=programming+tips" target="_blank">Coding Tips</a>
+            </div>
         </div>
-    </nav>
-
-    <footer class="main-footer">
-        <nav class="footer-nav">
-            <a href="corporate/about.html">About</a>
-            <a href="corporate/privacy.html">Privacy</a>
-            <a href="corporate/terms.html">Terms</a>
-            <a href="settings.html">Settings</a>
-        </nav>
+        <div class="category-shortcuts">
+            <a href="results.html?q=news" class="category-card" target="_blank">
+                <span class="category-icon">📰</span>
+                <span>News</span>
+            </a>
+            <a href="results.html?q=images" class="category-card" target="_blank">
+                <span class="category-icon">🖼️</span>
+                <span>Images</span>
+            </a>
+            <a href="results.html?q=videos" class="category-card" target="_blank">
+                <span class="category-icon">🎥</span>
+                <span>Videos</span>
+            </a>
+            <a href="results.html?q=maps" class="category-card" target="_blank">
+                <span class="category-icon">🗺️</span>
+                <span>Maps</span>
+            </a>
+            <div class="weather-widget" id="weather-widget">
+                <div class="weather-loading">Loading weather...</div>
+            </div>
+        </div>
+    </div>
+    <div id="pwa-install-prompt" class="pwa-prompt" style="display: none;">
+        <div class="pwa-prompt-content">
+            <img src="https://static.wixstatic.com/media/5f23d5_5724b6ca5ab64193801259dddba35e59~mv2.png" alt="Nova Search" class="pwa-icon">
+            <div class="pwa-text">
+                <h3>Install Nova Search</h3>
+                <p>Search smarter with instant access</p>
+            </div>
+            <button id="pwa-install-button">Install</button>
+            <button id="pwa-dismiss-button" class="secondary">Maybe Later</button>
+        </div>
+    </div>
+    <footer class="home-footer">
+        <div class="footer-links">
+            <a href="#about">About</a>
+            <a href="legal.html#privacy">Privacy</a>
+            <a href="legal.html#terms">Terms</a>
+            <a href="#settings">Settings</a>
+        </div>
+        <div class="footer-info">
+            Made with ❤️ by xxavvTechnologies
+        </div>
     </footer>
-
-    <div id="login-dialog" class="login-dialog">
-        <div class="login-content">
-            <button class="close-dialog" aria-label="Close">×</button>
-            <div class="video-banner">
-                <video id="login-video" autoplay muted playsinline oncontextmenu="return false;">
-                    <source src="https://d2zcpib8duehag.cloudfront.net/nova-login.mp4" type="video/mp4">
-                </video>
-            </div>
-            <div class="login-form-container">
-                <img src="https://d2zcpib8duehag.cloudfront.net/novasearchnotext.png" alt="Nova Logo" class="login-logo">
-                <h2>Sign in with Nova ID</h2>
-                <div class="social-buttons">
-                    <button type="button" id="google-login" class="social-button">
-                        <i class="fab fa-google"></i>
-                        Google
-                    </button>
-                    <button type="button" id="github-login" class="social-button">
-                        <i class="fab fa-github"></i>
-                        GitHub
-                    </button>
-                </div>
-                <p class="error-message"></p>
-                <form id="login-form">
-                    <div class="form-group">
-                        <input type="email" id="email" required placeholder="Email">
-                    </div>
-                    <div class="form-group">
-                        <input type="password" id="password" required placeholder="Password">
-                    </div>
-                    <button type="submit" class="submit-button">Sign In</button>
-                </form>
-                <p class="signup-text">
-                    Don't have an account? 
-                    <a href="https://account.nova.xxavvgroup.com/signup.html">Create one</a>
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <div class="overlay" id="overlay"></div>
-    <script type="module" src="script.js"></script>
+    <script src="script.js"></script>
     <script src="js/voice-search.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js');
+        }
+        new VoiceSearch('search-input', 'voice-search');
+    </script>
 </body>
 </html>
