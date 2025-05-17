@@ -1,8 +1,0 @@
-{
-  "name": "nova-search",
-  "version": "1.0.0",
-  "private": true,
-  "dependencies": {
-    "nlpcloud": "^1.0.47"
-  }
-}

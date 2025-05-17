@@ -1,0 +1,220 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+
+interface AstroOverviewProps {
+  query: string;
+  enabled: boolean;
+  onToggle: (enabled: boolean) => void;
+  usageCount: number;
+  maxUsage: number;
+}
+
+const FEATURES = [
+  'Quick topic summaries',
+  'Research assistance',
+  'Secure processing',
+  'Contextual insights',
+  'Learning support'
+] as const;
+
+function AstroOverview({ query, enabled, onToggle, usageCount, maxUsage }: AstroOverviewProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [overview, setOverview] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (enabled && query && !overview) {
+      generateOverview();
+    }
+  }, [enabled, query]);
+
+  const generateOverview = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/astro', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to generate overview');
+      }
+
+      const data = await response.json();
+      setOverview(data.overview);
+    } catch (err) {
+      console.error('Error generating overview:', err);
+      setError(err instanceof Error ? err.message : 'Failed to generate overview');
+      setOverview(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Reset overview when query changes
+  useEffect(() => {
+    setOverview(null);
+    setError(null);
+  }, [query]);
+
+  const handleToggle = () => {
+    if (!enabled && usageCount >= maxUsage) {
+      return;
+    }
+    if (!enabled && query) {
+      generateOverview();
+    }
+    onToggle(!enabled);
+  };
+
+  return (
+    <div className="w-full bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 hover:shadow-xl">
+      {/* Animated gradient background when enabled */}
+      {enabled && (
+        <div className="absolute inset-0 bg-gradient-to-br from-[#9e00ff]/10 to-transparent animate-gradient-shift pointer-events-none" />
+      )}
+      
+      {/* Purple glow effect */}
+      <div className={`absolute -inset-0.5 bg-[#9e00ff] opacity-0 transition-opacity duration-300 rounded-xl blur-lg ${enabled ? 'opacity-20' : 'opacity-0'}`} />
+
+      {/* Header */}
+      <div className="relative p-5 border-b border-gray-200 dark:border-gray-800">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-3">
+            {/* Astro Icon */}
+            <div className={`p-2 rounded-lg ${enabled ? 'bg-[#9e00ff]/10' : 'bg-gray-100 dark:bg-gray-800'}`}>
+              <svg className={`w-6 h-6 ${enabled ? 'text-[#9e00ff]' : 'text-gray-400'}`} 
+                   viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="2"/>
+                <path d="M12 8v4l3 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </div>
+            <div>
+              <h2 className={`text-xl font-semibold ${enabled ? 'text-[#9e00ff]' : 'text-gray-900 dark:text-gray-100'}`}>
+                Astro Overview
+              </h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Powered by NovaAI ModelA 8-Pro
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={handleToggle}
+            className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#9e00ff] focus:ring-offset-2 ${enabled ? 'bg-[#9e00ff]' : 'bg-gray-200 dark:bg-gray-700'}`}
+          >
+            <span className="sr-only">Enable Astro Overview</span>
+            <span
+              className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-lg transition-transform ${enabled ? 'translate-x-6' : 'translate-x-1'}`}
+            />
+          </button>
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className={`inline-block w-2 h-2 rounded-full ${enabled ? 'bg-[#9e00ff] animate-pulse' : 'bg-gray-400'}`}></span>
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              {enabled ? 'Active' : 'Inactive'}
+            </span>
+          </div>
+          <div className="text-sm">
+            <span className={`font-medium ${usageCount >= maxUsage ? 'text-red-500' : 'text-[#9e00ff]'}`}>
+              {usageCount}
+            </span>
+            <span className="text-gray-500 dark:text-gray-400">/{maxUsage} uses this month</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="relative p-5">
+        {!enabled ? (
+          <div className="space-y-5">
+            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+              Astro can provide AI-powered overviews for your searches, helping you quickly understand topics and get more context.
+            </p>
+            <ul className="space-y-3">
+              {FEATURES.map((feature, index) => (
+                <li key={index} className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#9e00ff]/10 flex items-center justify-center">
+                    <svg className="w-4 h-4 text-[#9e00ff]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </span>
+                  {feature}
+                </li>
+              ))}
+            </ul>
+            {usageCount >= maxUsage && (
+              <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-100 dark:border-red-800">
+                <div className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  <span className="text-sm font-medium text-red-800 dark:text-red-200">
+                    Monthly limit reached
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : isLoading ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="relative">
+              <div className="w-12 h-12 rounded-full border-2 border-[#9e00ff]/20 border-t-[#9e00ff] animate-spin"></div>
+              <div className="absolute inset-0 w-12 h-12 rounded-full border-2 border-[#9e00ff]/10 blur-sm"></div>
+            </div>
+          </div>
+        ) : overview ? (
+          <div className="prose dark:prose-invert max-w-none">
+            <div className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-line">
+              {overview}
+            </div>
+          </div>
+        ) : error ? (
+          <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-100 dark:border-red-800">
+            <div className="flex items-center gap-3">
+              <svg className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.375 18.975l-1.425-1.425L12 15.525l4.05 4.05-1.425 1.425L12 17.475l-2.625 2.625z" />
+              </svg>
+              <span className="text-sm font-medium text-red-800 dark:text-red-200">
+                {error}
+              </span>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <div className="w-12 h-12 mb-4 rounded-full bg-[#9e00ff]/10 flex items-center justify-center">
+              <svg className="w-6 h-6 text-[#9e00ff]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                      d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+            </div>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Processing your query for &quot;{query}&quot;
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="relative px-5 py-4 bg-gray-50 dark:bg-gray-800/50 text-xs text-gray-500 dark:text-gray-400 rounded-b-xl">
+        <div className="flex items-center gap-2">
+          <svg className="w-4 h-4 text-[#9e00ff]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+          <span>Your searches will be processed securely. No personal data is stored.</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default AstroOverview;
