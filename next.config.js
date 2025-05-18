@@ -3,6 +3,7 @@ const nextConfig = {
   env: {
     BRAVE_SEARCH_API_KEY: process.env.BRAVE_SEARCH_API_KEY,
   },
+  output: 'standalone',
   images: {
     remotePatterns: [
       {

@@ -1,6 +1,6 @@
 [build]
   command = "npm install && npm run build"
-  publish = ".netlify/functions-internal"
+  publish = ".next"
 
 [build.environment]
   NEXT_TELEMETRY_DISABLED = "1"
