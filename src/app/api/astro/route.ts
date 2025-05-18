@@ -5,7 +5,7 @@ import { fetchWithRateLimiting } from '@/app/utils/api';
 
 export async function POST(request: NextRequest) {
   try {
-    const { query, stream } = await request.json();
+    const { query } = await request.json();
 
     if (!query) {
       return NextResponse.json(
@@ -14,7 +14,6 @@ export async function POST(request: NextRequest) {
       );
     }
       // We no longer support streaming, always use regular endpoint
-    // Ignoring the stream parameter
 
     // First get search results directly from Brave API
     const apiKey = process.env.BRAVE_SEARCH_API_KEY || process.env.BRAVE_AI_API_KEY;
