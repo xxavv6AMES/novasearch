@@ -9,5 +9,20 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-# Netlify handles routing for Next.js apps automatically through the plugin,
-# so we don't need a custom redirect to index.html
+# More comprehensive static asset handling
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"

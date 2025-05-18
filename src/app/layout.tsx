@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import { Space_Grotesk, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
+// Self-hosting the fonts to avoid 404 errors
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-space-grotesk",
   weight: ["300", "400", "500", "600", "700"],
+  preload: true,
 });
 
 const jakartaSans = Plus_Jakarta_Sans({
@@ -14,6 +16,7 @@ const jakartaSans = Plus_Jakarta_Sans({
   display: "swap",
   variable: "--font-jakarta-sans",
   weight: ["400", "500", "600", "700"],
+  preload: true,
 });
 
 export const metadata: Metadata = {

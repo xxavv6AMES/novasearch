@@ -1,13 +1,12 @@
 {
   "name": "ns-new",
   "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev --turbopack",
+  "private": true,  "scripts": {
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
-  },  "dependencies": {
+  },"dependencies": {
     "lru-cache": "^11.1.0",
     "next": "15.3.2",
     "react": "^19.0.0",
