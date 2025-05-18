@@ -1,0 +1,196 @@
+.astroContent {
+  width: 100%;
+  line-height: 1.7;
+  font-size: 1rem;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+.astroContent h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: #9e00ff;
+  line-height: 1.3;
+}
+
+.astroContent h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: #9e00ff;
+  line-height: 1.3;
+}
+
+.astroContent h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.astroContent p {
+  margin-bottom: 0.75rem;
+  max-width: 100%;
+}
+
+.astroContent strong {
+  font-weight: 600;
+  color: #9e00ff;
+  background-color: rgba(158, 0, 255, 0.05);
+  padding: 0 0.15rem;
+  border-radius: 0.25rem;
+}
+
+.astroContent em {
+  font-style: italic;
+}
+
+.astroContent ul, .astroContent ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.astroContent ul {
+  list-style-type: disc;
+}
+
+.astroContent ol {
+  list-style-type: decimal;
+}
+
+.astroContent li {
+  margin-bottom: 0.5rem;
+}
+
+.astroContent a {
+  color: #9e00ff;
+  text-decoration: underline;
+}
+
+.astroContent a:hover {
+  text-decoration: none;
+}
+
+.astroContent code {
+  font-family: monospace;
+  background-color: rgba(158, 0, 255, 0.1);
+  padding: 0.15rem 0.3rem;
+  border-radius: 0.25rem;
+}
+
+/* Fix for broken HTML entities and elements */
+.astroContent :global(�) {
+  display: none;
+}
+
+.astroContent > *:first-child {
+  margin-top: 0;
+}
+
+/* Fix for any malformed tags - ensure proper display for known elements, and handle unknown elements safely */
+.astroContent *:not(h1, h2, h3, h4, h5, h6, p, div, section, article, ul, ol, li, a, span, strong, em, br, img, code, pre) {
+  display: inline;
+  margin: 0;
+  padding: 0;
+}
+
+/* Dark mode specific overrides */
+:global(.dark) .astroContent h1,
+:global(.dark) .astroContent h2 {
+  color: #c07aff;
+}
+
+:global(.dark) .astroContent strong {
+  color: #c07aff;
+  background-color: rgba(158, 0, 255, 0.1);
+}
+
+:global(.dark) .astroContent code {
+  background-color: rgba(158, 0, 255, 0.15);
+  color: #e0c0ff;
+}
+
+/* Fix for broken multi-byte characters */
+.astroContent span:empty,
+.astroContent :global(span:empty) {
+  display: none;
+}
+
+/* Add smooth transitions for dark/light mode changes */
+.astroContent * {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Block quotes and citations */
+.astroContent blockquote {
+  padding-left: 1rem;
+  border-left: 3px solid rgba(158, 0, 255, 0.3);
+  font-style: italic;
+  margin: 1rem 0;
+  color: rgba(107, 114, 128, 1);
+}
+
+/* Tables */
+.astroContent table {
+  width: 100%;
+  margin: 1rem 0;
+  border-collapse: collapse;
+}
+
+.astroContent th {
+  background-color: rgba(158, 0, 255, 0.1);
+  font-weight: 600;
+  text-align: left;
+  padding: 0.5rem;
+}
+
+.astroContent td {
+  padding: 0.5rem;
+  border: 1px solid rgba(158, 0, 255, 0.2);
+}
+
+/* Improve paragraphs inside list items */
+.astroContent li > p {
+  margin-bottom: 0.25rem;
+}
+
+/* Image handling */
+.astroContent img {
+  max-width: 100%;
+  height: auto;
+  margin: 1rem 0;
+  border-radius: 0.25rem;
+}
+
+/* Dividers */
+.astroContent hr {
+  border: none;
+  height: 1px;
+  background-color: rgba(158, 0, 255, 0.2);
+  margin: 1.5rem 0;
+}
+
+/* Handle nested lists properly */
+.astroContent ul ul,
+.astroContent ol ol,
+.astroContent ul ol,
+.astroContent ol ul {
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
+
+/* Fix for extra whitespace in code blocks */
+.astroContent pre {
+  white-space: pre-wrap;
+  background-color: rgba(158, 0, 255, 0.05);
+  padding: 1rem;
+  border-radius: 0.25rem;
+  margin: 1rem 0;
+  overflow-x: auto;
+}

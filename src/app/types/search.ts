@@ -6,11 +6,15 @@ export interface BraveSearchResult {
     scheme: string;
     hostname: string;
     path: string;
+    favicon?: string;
   };
   family_friendly: boolean;
   is_navigational: boolean;
   rank: number;
-  deep_results: any[];
+  deep_results: Array<{
+    type: string;
+    [key: string]: unknown;
+  }>;
 }
 
 export interface BraveSearchResponse {

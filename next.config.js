@@ -14,8 +14,16 @@ const nextConfig = {
         protocol: 'https',
         hostname: '**.brave.com',
         pathname: '/**',
+      },
+      {
+        // Allow all domains for favicons
+        protocol: 'https',
+        hostname: '**',
+        pathname: '/**',
       }
     ],
+    // Allow unoptimized images for favicons
+    unoptimized: true,
   },
 }
 

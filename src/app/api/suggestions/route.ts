@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCachedResponse, setCachedResponse } from '@/app/utils/cache';
-import { fetchWithRateLimiting, ApiError } from '@/app/utils/api';
+import { fetchWithRateLimiting } from '@/app/utils/api';
 
 interface BraveSuggestionResult {
   query: string;

@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import Image from "next/image";
 import SearchBox from "@/app/components/SearchBox";
 import SearchResultItem from "@/app/components/SearchResultItem";
@@ -12,10 +13,11 @@ import ImageViewer from "@/app/components/ImageViewer";
 import AstroOverview from "@/app/components/AstroOverview";
 import { searchBrave } from "@/app/services/search";
 import { BraveSearchResponse } from "@/app/types/search";
-import { ImageResult, ImageSearchResponse } from "@/app/types/images";
+import { ImageResult } from "@/app/types/images";
 import { SearchFilters as SearchFiltersType, defaultFilters } from "@/app/types/filters";
 
-export default function SearchResults() {
+// This component will use the searchParams hook
+function SearchResultsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const query = searchParams.get('q') || '';
@@ -99,13 +101,12 @@ export default function SearchResults() {
       localStorage.setItem('astroUsage', newUsage.toString());
     }
   };
-
   return (
     <div className="min-h-screen flex flex-col px-4 py-4 gap-6">
       {/* Header with Search */}
       <div className="w-full max-w-7xl mx-auto flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <a href="/" className="flex items-center gap-2 group">
+          <Link href="/" className="flex items-center gap-2 group">
             <Image
               src="/nova-logo.svg"
               alt="Nova Search"
@@ -118,11 +119,10 @@ export default function SearchResults() {
                           to-purple-500 bg-clip-text text-transparent font-grotesk">
               Nova Search
             </span>
-          </a>
-        </div>
-        <div className="flex items-center gap-4">
+          </Link>
+        </div><div className="flex items-center gap-4">
           <div className="flex-1">
-            <SearchBox onSearch={handleSearch} initialValue={query} />
+            <SearchBox onSearch={handleSearch} initialValue={query} filters={filters} />
           </div>
           <SearchFilters
             filters={filters}
@@ -160,9 +160,8 @@ export default function SearchResults() {
             ) : (
               <div className={filters.type === 'images' ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4' : 'space-y-4'}>
                 {resultCount > 0 ? (
-                  <>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 col-span-full">
-                      Found {resultCount} results for "{query}"
+                  <>                    <p className="text-sm text-gray-600 dark:text-gray-400 col-span-full">
+                      Found {resultCount} results for &quot;{query}&quot;
                     </p>
                     {filters.type === 'images' ? (
                       imageResults.map((result, index) => (
@@ -208,5 +207,38 @@ export default function SearchResults() {
         onClose={() => setSelectedImage(null)}
       />
     </div>
+  );
+}
+
+// Main component that wraps the search results content in Suspense
+export default function SearchResults() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex flex-col px-4 py-4 gap-6">
+        <div className="w-full max-w-7xl mx-auto flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-2">
+              <Image
+                src="/nova-logo.svg"
+                alt="Nova Search"
+                width={28}
+                height={28}
+                className="text-blue-500 dark:text-blue-400"
+              />
+              <span className="text-2xl font-bold bg-gradient-to-r from-blue-500 
+                            to-purple-500 bg-clip-text text-transparent font-grotesk">
+                Nova Search
+              </span>
+            </Link>
+          </div>
+          <div className="flex justify-center w-full py-20">
+            <div className="animate-spin rounded-full h-10 w-10 border-2 border-blue-500 
+                         border-t-transparent"></div>
+          </div>
+        </div>
+      </div>
+    }>
+      <SearchResultsContent />
+    </Suspense>
   );
 }

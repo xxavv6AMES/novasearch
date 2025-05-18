@@ -45,7 +45,7 @@ function AstroOverview({ query, enabled, onToggle, usageCount, maxUsage }: Astro
     }
     setOverview(data.overview);
   }, [query]);
-
+  
   const generateOverview = useCallback(async () => {
     setIsLoading(true);
     setError(null);
@@ -62,11 +62,13 @@ function AstroOverview({ query, enabled, onToggle, usageCount, maxUsage }: Astro
         },
         body: JSON.stringify({ query, stream: true }),
       });      
-        if (!response.ok) {        try {
+      
+      if (!response.ok) {
+        try {
           // Try to parse error as JSON
           const error = await response.json();
           throw new Error(error.error || error.message || 'Failed to generate overview');
-        } catch {
+        } catch (_) {
           // If it's not JSON, use text error
           const errorText = await response.text();
           throw new Error(errorText || response.statusText || 'Failed to generate overview');
@@ -130,18 +132,17 @@ function AstroOverview({ query, enabled, onToggle, usageCount, maxUsage }: Astro
     }
   }, [query, generateRegularOverview]);
 
-  // Reset overview when query changes
-  useEffect(() => {
-    setOverview(null);
-    setError(null);
-  }, [query]);
-
-  // Generate overview when enabled
   useEffect(() => {
     if (enabled && query && !overview) {
       generateOverview();
     }
   }, [enabled, query, overview, generateOverview]);
+
+  // Reset overview when query changes
+  useEffect(() => {
+    setOverview(null);
+    setError(null);
+  }, [query]);
 
   const handleToggle = () => {
     if (!enabled && usageCount >= maxUsage) {
@@ -261,7 +262,7 @@ function AstroOverview({ query, enabled, onToggle, usageCount, maxUsage }: Astro
                   {!isStreaming && (
                     <span>Powered by Astro AI</span>
                   )}
-                </div>
+                </div>                
                 <div className="text-xs text-[#9e00ff]">
                   Summary for &quot;{query}&quot;
                 </div>

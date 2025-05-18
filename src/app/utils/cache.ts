@@ -1,7 +1,7 @@
 import { LRUCache } from 'lru-cache';
 
 // Cache for search results and suggestions
-const searchCache = new LRUCache<string, any>({
+const searchCache = new LRUCache<string, Record<string, unknown>>({
   max: 100,
   ttl: 1000 * 60 * 5, // 5 minutes
 });
@@ -94,7 +94,7 @@ export function getCachedResponse(key: string) {
   return searchCache.get(key);
 }
 
-export function setCachedResponse(key: string, value: any) {
+export function setCachedResponse(key: string, value: Record<string, unknown>) {
   searchCache.set(key, value);
 }
 

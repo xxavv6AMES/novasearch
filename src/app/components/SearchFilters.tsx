@@ -11,7 +11,7 @@ interface SearchFiltersProps {
 export default function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleFilterChange = (key: keyof SearchFiltersType, value: any) => {
+  const handleFilterChange = (key: keyof SearchFiltersType, value: string | boolean | number) => {
     onFiltersChange({
       ...filters,
       [key]: value,
@@ -86,10 +86,9 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
             <div>
               <label className="block text-sm font-medium mb-2 font-grotesk">
                 Time Range
-              </label>
-              <select
+              </label>              <select
                 value={filters.freshness || ''}
-                onChange={(e) => handleFilterChange('freshness', e.target.value || undefined)}
+                onChange={(e) => handleFilterChange('freshness', e.target.value === '' ? undefined as unknown as string : e.target.value)}
                 className="w-full px-3 py-2 rounded-md border border-gray-200 
                         dark:border-gray-700 bg-white dark:bg-gray-800 text-sm"
               >

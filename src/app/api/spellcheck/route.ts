@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCachedResponse, setCachedResponse } from '@/app/utils/cache';
-import { fetchWithRateLimiting } from '@/app/utils/api';
+import { fetchWithRateLimiting, ApiError } from '@/app/utils/api';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -20,13 +20,16 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-
   // Build API parameters
   const apiParams = new URLSearchParams();
   apiParams.append('q', query);
-
+  
+  // Always add a default country (required by API)
+  const country = searchParams.get('country') || 'US';
+  apiParams.append('country', country);
+  
   // Copy allowed parameters from request to API call
-  ['safesearch', 'freshness', 'country', 'search_lang', 'type'].forEach(param => {
+  ['lang'].forEach(param => {
     const value = searchParams.get(param);
     if (value) {
       apiParams.append(param, value);
@@ -34,31 +37,51 @@ export async function GET(request: NextRequest) {
   });
 
   // Check cache first
-  const cacheKey = `search:${apiParams.toString()}`;
+  const cacheKey = `spellcheck:${apiParams.toString()}`;
   const cachedResult = getCachedResponse(cacheKey);
   if (cachedResult) {
     return NextResponse.json(cachedResult);
-  }
-  try {
+  }  try {
+    // Add detailed console logging to help debug
+    console.log(`Calling Brave Spellcheck API with params: ${apiParams.toString()}`);
+    
     const response = await fetchWithRateLimiting(
-      `https://api.search.brave.com/res/v1/web/search?${apiParams.toString()}`,
+      `https://api.search.brave.com/res/v1/spellcheck/search?${apiParams.toString()}`,
       {
         headers: {
           'Accept': 'application/json',
+          'Accept-Encoding': 'gzip',
           'X-Subscription-Token': apiKey,
         },
       },
-      true // This is a search request
+      false // This is not a full search request, more like suggestions
     );
 
     const data = await response.json();
     setCachedResponse(cacheKey, data);
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error('Search error:', error);
+    return NextResponse.json(data);  } catch (error) {
+    console.error('Spellcheck error:', error);
+    
+    // Extract more detailed error information
+    let errorData = null;
+    let statusCode = 500;
+    
+    if (error instanceof ApiError) {
+      statusCode = error.status;
+      errorData = error.data;
+      console.error('API error details:', {
+        status: error.status,
+        message: error.message,
+        data: error.data
+      });
+    }
+    
     return NextResponse.json(
-      { error: 'Failed to fetch search results' },
-      { status: 500 }
+      { 
+        error: error instanceof ApiError ? error.message : 'Failed to fetch spellcheck results',
+        details: errorData
+      },
+      { status: statusCode }
     );
   }
 }

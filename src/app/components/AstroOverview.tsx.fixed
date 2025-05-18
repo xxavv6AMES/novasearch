@@ -62,11 +62,13 @@ function AstroOverview({ query, enabled, onToggle, usageCount, maxUsage }: Astro
         },
         body: JSON.stringify({ query, stream: true }),
       });      
-        if (!response.ok) {        try {
+      
+      if (!response.ok) {
+        try {
           // Try to parse error as JSON
           const error = await response.json();
           throw new Error(error.error || error.message || 'Failed to generate overview');
-        } catch {
+        } catch (_) {
           // If it's not JSON, use text error
           const errorText = await response.text();
           throw new Error(errorText || response.statusText || 'Failed to generate overview');

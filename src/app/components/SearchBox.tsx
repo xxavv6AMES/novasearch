@@ -3,27 +3,36 @@
 import { useState, useEffect, useRef, KeyboardEvent } from 'react';
 import Image from 'next/image';
 import { getSearchSuggestions } from '../services/suggestions';
+import { checkSpelling } from '../services/spellcheck';
 import { useDebounce } from 'use-debounce';
+import { SearchFilters, defaultFilters } from '../types/filters';
 
 interface SearchBoxProps {
   onSearch: (query: string) => void;
   initialValue?: string;
+  filters?: SearchFilters;
 }
 
-export default function SearchBox({ onSearch, initialValue = '' }: SearchBoxProps) {
+export default function SearchBox({ onSearch, initialValue = '', filters = defaultFilters }: SearchBoxProps) {
   const [query, setQuery] = useState(initialValue);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [debouncedQuery] = useDebounce(query, 300);
   const suggestionsRef = useRef<HTMLDivElement>(null);
-
+  const [spellcheckSuggestion, setSpellcheckSuggestion] = useState<string | null>(null);  // Separate effect for suggestions
   useEffect(() => {
     const fetchSuggestions = async () => {
       if (debouncedQuery.trim()) {
-        const results = await getSearchSuggestions(debouncedQuery);
-        setSuggestions(results);
-        setShowSuggestions(true);
+        try {
+          const results = await getSearchSuggestions(debouncedQuery);
+          setSuggestions(results);
+          setShowSuggestions(true);
+        } catch (error) {
+          console.error('Error fetching search suggestions:', error);
+          setSuggestions([]);
+          setShowSuggestions(false);
+        }
       } else {
         setSuggestions([]);
         setShowSuggestions(false);
@@ -32,6 +41,37 @@ export default function SearchBox({ onSearch, initialValue = '' }: SearchBoxProp
 
     fetchSuggestions();
   }, [debouncedQuery]);
+  
+  // Separate effect for spellcheck
+  useEffect(() => {
+    const fetchSpellcheck = async () => {
+      // Reset spellcheck suggestion when query changes
+      setSpellcheckSuggestion(null);
+      
+      // Only check spelling for queries with at least 3 characters
+      if (debouncedQuery.trim().length >= 3) {
+        try {
+          console.log('Checking spelling for:', debouncedQuery);
+          const spellcheckResults = await checkSpelling(debouncedQuery, filters);
+          
+          // If there's a spellcheck suggestion that's different from the query
+          if (
+            spellcheckResults?.results?.length > 0 &&
+            spellcheckResults.results[0]?.query &&
+            spellcheckResults.results[0].query !== debouncedQuery.trim().toLowerCase()
+          ) {
+            console.log('Spellcheck suggestion found:', spellcheckResults.results[0].query);
+            setSpellcheckSuggestion(spellcheckResults.results[0].query);
+          }
+        } catch (error) {
+          console.error('Failed to check spelling:', error);
+          // Already logging in the service
+        }
+      }
+    };
+    
+    fetchSpellcheck();
+  }, [debouncedQuery, filters]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -83,8 +123,7 @@ export default function SearchBox({ onSearch, initialValue = '' }: SearchBoxProp
   };
 
   return (
-    <div className="w-full relative" ref={suggestionsRef}>
-      <form onSubmit={handleSubmit}>
+    <div className="w-full relative" ref={suggestionsRef}>      <form onSubmit={handleSubmit}>
         <div className="relative group">
           <div className="absolute left-5 top-1/2 -translate-y-1/2">
             <Image
@@ -123,6 +162,23 @@ export default function SearchBox({ onSearch, initialValue = '' }: SearchBoxProp
             Search
           </button>
         </div>
+        
+        {/* Spellcheck suggestion */}
+        {spellcheckSuggestion && (
+          <div className="mt-2 text-sm">
+            <span className="text-gray-600 dark:text-gray-400">Did you mean: </span>
+            <button
+              onClick={() => {
+                setQuery(spellcheckSuggestion);
+                onSearch(spellcheckSuggestion);
+                setSpellcheckSuggestion(null);
+              }}
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
+              {spellcheckSuggestion}
+            </button>
+          </div>
+        )}
       </form>
 
       {/* Suggestions Dropdown */}

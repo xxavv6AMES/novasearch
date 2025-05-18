@@ -66,10 +66,8 @@ export async function GET(request: NextRequest) {
         },
       },
       true // This is a search request
-    );
-
-    const data = (await response.json()) as ImageSearchResponse;
-    setCachedResponse(cacheKey, data);
+    );    const data = (await response.json()) as ImageSearchResponse;
+    setCachedResponse(cacheKey, data as unknown as Record<string, unknown>);
     return NextResponse.json(data);
   } catch (error) {
     console.error('Image search error:', error);
