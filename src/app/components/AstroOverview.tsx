@@ -24,113 +24,51 @@ const FEATURES = [
 function AstroOverview({ query, enabled, onToggle, usageCount, maxUsage }: AstroOverviewProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [overview, setOverview] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isStreaming, setIsStreaming] = useState(false);
-  
-  const generateRegularOverview = useCallback(async () => {
-    const response = await fetch('/api/astro', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ query, stream: false }),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to generate overview');
-    }
-
-    const data = await response.json();
-    if (!data.overview) {
-      throw new Error('No overview received from the server');
-    }
-    setOverview(data.overview);
-  }, [query]);
-
+  const [error, setError] = useState<string | null>(null);  const [isStreaming, setIsStreaming] = useState(false);
   const generateOverview = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     setOverview("");
     
     try {
-      // Use streaming by default
-      setIsStreaming(true);
+      // Always use non-streaming approach
+      setIsStreaming(false);
       
       const response = await fetch('/api/astro', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ query, stream: true }),
+        body: JSON.stringify({ query, stream: false }),
       });      
-        if (!response.ok) {        try {
-          // Try to parse error as JSON
-          const error = await response.json();
-          throw new Error(error.error || error.message || 'Failed to generate overview');
-        } catch {
-          // If it's not JSON, use text error
-          const errorText = await response.text();
-          throw new Error(errorText || response.statusText || 'Failed to generate overview');
+        if (!response.ok) {
+          try {
+            // Try to parse error as JSON
+            const error = await response.json();
+            throw new Error(error.error || error.message || 'Failed to generate overview');
+          } catch {
+            // If it's not JSON, use text error
+            const errorText = await response.text();
+            throw new Error(errorText || response.statusText || 'Failed to generate overview');
+          }
         }
-      }
 
-      // Handle streaming response
-      const reader = response.body?.getReader();
-      if (!reader) {
-        throw new Error('No reader available for streaming');
+      // Handle regular JSON response
+      const data = await response.json();
+      if (!data.overview) {
+        throw new Error('No overview received from the server');
       }
-
-      const decoder = new TextDecoder();
-      let streamingOverview = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
+      setOverview(data.overview);
         
-        if (done) {
-          break;
-        }
-        
-        // Decode and append the chunk
-        const chunk = decoder.decode(value, { stream: true });
-        
-        // If the chunk starts with "Error:", treat as error
-        if (chunk.startsWith('Error:')) {
-          throw new Error(chunk);
-        }
-        
-        streamingOverview += chunk;
-        setOverview(streamingOverview);
-      }
-      
-      // If we didn't get any text in streaming mode, fall back to regular mode
-      if (!streamingOverview.trim()) {
-        setIsStreaming(false);
-        await generateRegularOverview();
-      }
-    } catch (err) {
+            } catch (err) {
       console.error('Error generating overview:', err);
-      
-      // If streaming fails, fall back to regular overview
-      if (err instanceof Error && err.message.includes('stream')) {
-        setIsStreaming(false);
-        try {
-          await generateRegularOverview();
-          return;
-        } catch (secondErr) {
-          console.error('Error in fallback overview generation:', secondErr);
-          setError(secondErr instanceof Error ? secondErr.message : 'Failed to generate overview');
-          setOverview(null);
-        }
-      } else {
-        setError(err instanceof Error ? err.message : 'Failed to generate overview');
-        setOverview(null);
-      }
+      setError(err instanceof Error ? err.message : 'Failed to generate overview');
+      setOverview(null);
     } finally {
       setIsLoading(false);
       setIsStreaming(false);
     }
-  }, [query, generateRegularOverview]);
+  }, [query]);
 
   // Reset overview when query changes
   useEffect(() => {

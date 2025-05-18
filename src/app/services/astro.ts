@@ -14,12 +14,6 @@ interface AstroResponse {
   error?: string;
 }
 
-interface StreamingOptions {
-  onToken: (token: string) => void;
-  onComplete: () => void;
-  onError: (error: string) => void;
-}
-
 /**
  * Helper functions
  */
@@ -38,11 +32,11 @@ function getApiUrl(enableGpu: boolean = false): string {
   return `https://api.nlpcloud.io/v1/${gpuPrefix}${NLPCLOUD_MODEL}/chatbot`;
 }
 
-function createRequestPayload(query: string, context: Array<{title: string; description: string; url: string}>, streaming: boolean = false) {
-  // Create consistent request payload for both streaming and non-streaming requests
+function createRequestPayload(query: string, context: Array<{title: string; description: string; url: string}>) {
+  // Create request payload for Astro overview
   return {
     input: `I'm looking for information about "${query}". Please provide a helpful summary of these search results.`,
-    context: `This is a conversation between a human and an AI search assistant named Astro. The human is looking for information on search results, and Astro provides concise, informative summaries. Astro should extract key information and offer useful insights. Try not to use any HTML tags or anything of that nature. Make sure all HTML tags are properly closed and well-formed. Do not use unusual Unicode characters or symbols. Be aware that you may have various results from different sources that are completely different topics so use your best judgment to summarize and categorize/separate them accordingly.`,
+    context: `This is a conversation between a human and an AI search assistant named Astro. The human is looking for information on search results, and Astro provides concise, informative summaries. Astro should extract key information and offer useful insights. DO NOT USE HTML tags. Please use plain text or markdown for all your responses. Make sure all HTML tags are properly closed and well-formed. Do not use unusual Unicode characters or symbols. Be aware that you may have various results from different sources that are completely different topics so use your best judgment to summarize and categorize/separate them accordingly.`,
     history: [
       {
         input: "Here are some search results to summarize:",
@@ -54,8 +48,7 @@ function createRequestPayload(query: string, context: Array<{title: string; desc
         ).join('\n')}`,
         response: "Now I'll create a helpful summary focusing on the key points from these search results."
       }
-    ],
-    ...(streaming ? { stream: true } : {})
+    ]
   };
 }
 
@@ -265,94 +258,5 @@ export async function generateOverview(query: string, searchResults: BraveSearch
       overview: '',
       error: error instanceof Error ? error.message : 'Failed to generate overview'
     };
-  }
-}
-
-export async function generateOverviewStreaming(
-  query: string, 
-  searchResults: BraveSearchResponse, 
-  streamingOptions: StreamingOptions
-): Promise<void> {
-  // Check if API key is configured
-  const NLPCLOUD_API_KEY = process.env.NLPCLOUD_API_KEY;
-  if (!NLPCLOUD_API_KEY) {
-    streamingOptions.onError('NLPCloud API key is not configured');
-    return;
-  }
-
-  // Prepare search context
-  const context = prepareSearchContext(searchResults);
-  
-  // Handle case with no search results
-  if (context.length === 0) {
-    streamingOptions.onError('No search results found for this query');
-    return;
-  }
-
-  try {
-    // Make API request with streaming
-    const apiUrl = getApiUrl(true); // Use GPU for streaming
-    const apiResponse = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${NLPCLOUD_API_KEY}`
-      },
-      body: JSON.stringify(createRequestPayload(query, context, true)),
-      cache: 'no-cache'
-    });
-
-    // Handle API errors
-    if (!apiResponse.ok) {
-      const errorText = await apiResponse.text();
-      console.error('API error response:', errorText);
-      streamingOptions.onError(`NLPCloud API error: ${apiResponse.statusText}`);
-      return;
-    }
-
-    // Handle the streaming response
-    if (!apiResponse.body) {
-      streamingOptions.onError('No response body');
-      return;
-    }
-
-    // Process the stream
-    const reader = apiResponse.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = '';    while (true) {
-      const { done, value } = await reader.read();
-      
-      if (done) {
-        // Format final buffer before completing
-        if (buffer.trim()) {          const formattedFinal = formatResponseText(buffer);
-          streamingOptions.onToken(formattedFinal); // Send final buffer
-        }
-        streamingOptions.onComplete();
-        break;
-      }
-
-      const chunk = decoder.decode(value);
-      buffer += chunk;
-      
-      // Check for the [DONE] marker that NLP Cloud API uses
-      if (buffer.includes('[DONE]')) {
-        // Extract text before [DONE] and format it
-        const text = buffer.split('[DONE]')[0];        const formattedText = formatResponseText(text);
-        streamingOptions.onToken(formattedText); // Send final text
-        streamingOptions.onComplete();
-        break;      } else {
-        // For streaming, we need to handle partial HTML tags carefully
-        // Let's do minimal sanitization for each chunk (remove problematic characters)
-        const sanitizedChunk = chunk
-          .replace(/�/g, '') // Remove any � characters
-          .replace(/<�(\w+)>/g, '<$1>') // Fix opening tags
-          .replace(/<\/�(\w+)>/g, '</$1>'); // Fix closing tags
-          
-        streamingOptions.onToken(sanitizedChunk);
-      }
-    }
-  } catch (error) {
-    console.error('Error generating streaming overview:', error);
-    streamingOptions.onError(error instanceof Error ? error.message : 'Failed to generate overview');
   }
 }

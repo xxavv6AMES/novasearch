@@ -4,6 +4,9 @@ const nextConfig = {
     BRAVE_SEARCH_API_KEY: process.env.BRAVE_SEARCH_API_KEY,
   },
   output: 'standalone',
+  experimental: {
+    disableOptimizedLoading: true,
+  },
   images: {
     remotePatterns: [
       {
