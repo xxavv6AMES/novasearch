@@ -8,7 +8,8 @@
   max-width: 100%;
 }
 
-.astroContent h1 {
+/* Use :global selectors for ReactMarkdown elements */
+.astroContent :global(h1) {
   font-size: 1.5rem;
   font-weight: 600;
   margin-top: 1.5rem;
@@ -17,7 +18,7 @@
   line-height: 1.3;
 }
 
-.astroContent h2 {
+.astroContent :global(h2) {
   font-size: 1.25rem;
   font-weight: 600;
   margin-top: 1.25rem;
@@ -26,7 +27,7 @@
   line-height: 1.3;
 }
 
-.astroContent h3 {
+.astroContent :global(h3) {
   font-size: 1.125rem;
   font-weight: 600;
   margin-top: 1rem;
@@ -34,12 +35,12 @@
   line-height: 1.3;
 }
 
-.astroContent p {
+.astroContent :global(p) {
   margin-bottom: 0.75rem;
   max-width: 100%;
 }
 
-.astroContent strong {
+.astroContent :global(strong) {
   font-weight: 600;
   color: #9e00ff;
   background-color: rgba(158, 0, 255, 0.05);
@@ -47,37 +48,37 @@
   border-radius: 0.25rem;
 }
 
-.astroContent em {
+.astroContent :global(em) {
   font-style: italic;
 }
 
-.astroContent ul, .astroContent ol {
+.astroContent :global(ul), .astroContent :global(ol) {
   padding-left: 1.5rem;
   margin-bottom: 1rem;
 }
 
-.astroContent ul {
+.astroContent :global(ul) {
   list-style-type: disc;
 }
 
-.astroContent ol {
+.astroContent :global(ol) {
   list-style-type: decimal;
 }
 
-.astroContent li {
+.astroContent :global(li) {
   margin-bottom: 0.5rem;
 }
 
-.astroContent a {
+.astroContent :global(a) {
   color: #9e00ff;
   text-decoration: underline;
 }
 
-.astroContent a:hover {
+.astroContent :global(a:hover) {
   text-decoration: none;
 }
 
-.astroContent code {
+.astroContent :global(code) {
   font-family: monospace;
   background-color: rgba(158, 0, 255, 0.1);
   padding: 0.15rem 0.3rem;
@@ -89,24 +90,24 @@
   display: none;
 }
 
-.astroContent > *:first-child {
+.astroContent > :global(*:first-child) {
   margin-top: 0;
 }
 
 /* Fix for any malformed tags - ensure proper display for known elements, and handle unknown elements safely */
-.astroContent *:not(h1, h2, h3, h4, h5, h6, p, div, section, article, ul, ol, li, a, span, strong, em, br, img, code, pre) {
+.astroContent :global(*:not(h1, h2, h3, h4, h5, h6, p, div, section, article, ul, ol, li, a, span, strong, em, br, img, code, pre)) {
   display: inline;
   margin: 0;
   padding: 0;
 }
 
 /* Dark mode specific overrides */
-:global(.dark) .astroContent h1,
-:global(.dark) .astroContent h2 {
+:global(.dark) .astroContent :global(h1),
+:global(.dark) .astroContent :global(h2) {
   color: #c07aff;
 }
 
-:global(.dark) .astroContent strong {
+:global(.dark) .astroContent :global(strong) {
   color: #c07aff;
   background-color: rgba(158, 0, 255, 0.1);
 }

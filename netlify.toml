@@ -1,16 +1,13 @@
 [build]
-  command = "npm run build"
-  publish = ".next"
+  command = "npm install && npm run build"
+  publish = ".netlify/functions-internal"
 
 [build.environment]
   NEXT_TELEMETRY_DISABLED = "1"
+  NODE_VERSION = "20"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-  force = false
-  conditions = {Role = ["anonymous"]}
+# Netlify handles routing for Next.js apps automatically through the plugin,
+# so we don't need a custom redirect to index.html

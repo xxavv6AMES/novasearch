@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import styles from './AstroOverview.module.css';
 
 interface AstroOverviewProps {
@@ -245,11 +247,14 @@ function AstroOverview({ query, enabled, onToggle, usageCount, maxUsage }: Astro
               <div className="w-12 h-12 rounded-full border-2 border-[#9e00ff]/20 border-t-[#9e00ff] animate-spin"></div>
               <div className="absolute inset-0 w-12 h-12 rounded-full border-2 border-[#9e00ff]/10 blur-sm"></div>
             </div>
-          </div>
-        ) : overview ? (
+          </div>        ) : overview ? (
           <div className="prose dark:prose-invert max-w-none w-full">
             <div className="p-4 bg-[#9e00ff]/5 rounded-lg border border-[#9e00ff]/10 shadow-inner">
-              <div className={styles.astroContent} dangerouslySetInnerHTML={{ __html: overview || "" }} />
+              <div className={styles.astroContent}>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {overview || ""}
+                </ReactMarkdown>
+              </div>
               <div className="mt-4 pt-3 border-t border-[#9e00ff]/10 flex items-center justify-between">
                 <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-2">
                   {isStreaming && (
