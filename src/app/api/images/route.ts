@@ -48,10 +48,21 @@ export async function GET(request: NextRequest) {
   // Set count with a default and maximum value
   const count = searchParams.get('count');
   apiParams.append('count', count ? Math.min(parseInt(count), 100).toString() : '50');
-
-  // Check cache first
-  const cacheKey = `image_search:${apiParams.toString()}`;
-  const cachedResult = getCachedResponse(cacheKey);
+  // Generate a unique cache key based on parameters and user session
+  // We're excluding timestamp parameter from cache key
+  const paramsForCache = new URLSearchParams();
+  ['q', 'safesearch', 'country', 'search_lang', 'count'].forEach(param => {
+    const value = apiParams.get(param);
+    if (value) {
+      paramsForCache.append(param, value);
+    }
+  });
+  
+  const cacheKey = `image_search:${paramsForCache.toString()}`;
+  
+  // Only use the cache if we didn't explicitly request to skip it with a timestamp
+  const skipCache = searchParams.has('_ts');
+  const cachedResult = !skipCache ? getCachedResponse(cacheKey) : null;
   if (cachedResult) {
     return NextResponse.json(cachedResult);
   }

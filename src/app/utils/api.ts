@@ -31,32 +31,59 @@ export async function fetchWithRateLimiting(
       // Wait for a rate limiting token
       await limiter.waitForToken();
       
-      const response = await fetch(url, options);
+      // Add timeout to fetch to prevent hanging requests
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
       
-      if (response.status === 429) {
-        // If we get a 429, we'll wait longer before the next attempt
-        const retryAfter = parseInt(response.headers.get('retry-after') || '5');
-        await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
-        continue;
+      const fetchOptions = {
+        ...options,
+        signal: controller.signal
+      };
+      
+      try {
+        const response = await fetch(url, fetchOptions);
+        clearTimeout(timeoutId);
+        
+        if (response.status === 429) {
+          // If we get a 429, we'll wait longer before the next attempt
+          const retryAfter = parseInt(response.headers.get('retry-after') || '5');
+          console.log(`Rate limited by API, waiting ${retryAfter} seconds before retry`);
+          await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
+          continue;
+        }
+        
+        if (!response.ok) {
+          const errorBody = await response.text();
+          console.error(`API error: ${response.status} - ${errorBody}`);
+          throw new ApiError(
+            `API request failed with status ${response.status}: ${errorBody}`,
+            response.status,
+            errorBody
+          );
+        }
+        
+        return response;      } catch (error: unknown) {
+        clearTimeout(timeoutId);
+        const fetchError = error as Error;
+        if (fetchError && fetchError.name === 'AbortError') {
+          console.error('API request timed out');
+          throw new ApiError('Request timed out', 408);
+        }
+        throw error;
       }
-      
-      if (!response.ok) {
-        throw new ApiError(
-          `API request failed with status ${response.status}`,
-          response.status,
-          await response.json().catch(() => null)
-        );
-      }
-      
-      return response;
     } catch (error) {
+      console.error(`Attempt ${attempt + 1} failed:`, error);
       lastError = error as Error;
+      
       if (attempt < maxRetries - 1) {
         // Exponential backoff: wait 2^attempt seconds before retrying
-        await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+        const backoffTime = Math.pow(2, attempt) * 1000;
+        console.log(`Retrying in ${backoffTime / 1000} seconds...`);
+        await new Promise(resolve => setTimeout(resolve, backoffTime));
       }
     }
   }
   
+  console.error('All retry attempts failed');
   throw lastError || new Error('API request failed after maximum retries');
 }

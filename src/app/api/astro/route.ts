@@ -40,9 +40,7 @@ export async function POST(request: NextRequest) {
       true // This is a search request
     );
 
-    const searchResponse = await response.json() as BraveSearchResponse;
-
-    // Then generate the overview using NLPCloud
+    const searchResponse = await response.json() as BraveSearchResponse;    // Then generate the overview using NLPCloud
     const astroResponse = await generateOverview(query, searchResponse);
 
     if (astroResponse.error) {
@@ -52,7 +50,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json(astroResponse);
+    // Return with low priority headers to ensure this loads after search results
+    return NextResponse.json(
+      astroResponse,
+      {
+        headers: {
+          'Cache-Control': 'private, max-age=300', // Cache for 5 minutes
+          'Priority': 'low',
+          'X-Priority': 'low'
+        }
+      }
+    );
   } catch (error) {
     console.error('Astro overview error:', error);
     return NextResponse.json(

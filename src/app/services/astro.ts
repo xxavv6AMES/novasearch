@@ -36,7 +36,7 @@ function createRequestPayload(query: string, context: Array<{title: string; desc
   // Create request payload for Astro overview
   return {
     input: `I'm looking for information about "${query}". Please provide a helpful summary of these search results.`,
-    context: `This is a conversation between a human and an AI search assistant named Astro. The human is looking for information on search results, and Astro provides concise, informative summaries. Astro should extract key information and offer useful insights. DO NOT USE HTML tags. Please use plain text or markdown for all your responses. Make sure all HTML tags are properly closed and well-formed. Do not use unusual Unicode characters or symbols. Be aware that you may have various results from different sources that are completely different topics so use your best judgment to summarize and categorize/separate them accordingly.`,
+    context: `This is a conversation between a human and an AI search assistant named Astro. The human is looking for information on search results, and Astro provides concise, informative summaries. Astro should extract key information and offer useful insights. Be aware that you may have various results from different sources that are completely different topics so use your best judgment to summarize and categorize/separate them accordingly.`,
     history: [
       {
         input: "Here are some search results to summarize:",

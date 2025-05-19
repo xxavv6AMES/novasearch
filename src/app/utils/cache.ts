@@ -3,7 +3,7 @@ import { LRUCache } from 'lru-cache';
 // Cache for search results and suggestions
 const searchCache = new LRUCache<string, Record<string, unknown>>({
   max: 100,
-  ttl: 1000 * 60 * 5, // 5 minutes
+  ttl: 1000 * 60 * 1, // 1 minute - reduced from 5 minutes to prevent stale results
 });
 
 interface TokenBucket {
@@ -96,6 +96,10 @@ export function getCachedResponse(key: string) {
 
 export function setCachedResponse(key: string, value: Record<string, unknown>) {
   searchCache.set(key, value);
+}
+
+export function clearSearchCache() {
+  searchCache.clear();
 }
 
 export function resetRateLimit(key: 'search' | 'suggest') {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, Suspense, lazy } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -10,8 +10,9 @@ import ImageResultItem from "@/app/components/ImageResultItem";
 import SearchFilters from "@/app/components/SearchFilters";
 import SearchTypeNav from "@/app/components/SearchTypeNav";
 import ImageViewer from "@/app/components/ImageViewer";
-import AstroOverview from "@/app/components/AstroOverview";
-import { searchBrave } from "@/app/services/search";
+// Lazy load Astro component to prioritize search results
+const AstroOverview = lazy(() => import("@/app/components/AstroOverview"));
+import { searchBrave, clearCache } from "@/app/services/search";
 import { BraveSearchResponse } from "@/app/types/search";
 import { ImageResult } from "@/app/types/images";
 import { SearchFilters as SearchFiltersType, defaultFilters } from "@/app/types/filters";
@@ -52,19 +53,28 @@ function SearchResultsContent() {
     }
     return 0;
   });
-
+  // Extract the timestamp parameter to detect when a manual refresh is requested
+  const timestamp = searchParams.get('_ts');
+  
   useEffect(() => {
     if (query) {
-      performSearch(query, filters);
+      performSearch(query, filters, !!timestamp);
     }
-  }, [query, filters]);
-
-  const performSearch = async (searchQuery: string, searchFilters: SearchFiltersType) => {
+  }, [query, filters, timestamp]);
+  const performSearch = async (searchQuery: string, searchFilters: SearchFiltersType, forceRefresh: boolean = false) => {
     setIsSearching(true);
     setError(null);
     
     try {
-      const response = await searchBrave(searchQuery, searchFilters);
+      // Clone the filters to avoid mutating the original object
+      const filtersWithRefresh = { ...searchFilters };
+      
+      // Add a timestamp to force cache bypass when refresh is requested
+      if (forceRefresh) {
+        filtersWithRefresh._timestamp = Date.now().toString();
+      }
+      
+      const response = await searchBrave(searchQuery, filtersWithRefresh);
       
       if ('web' in response) {
         // Handle web search results
@@ -189,13 +199,51 @@ function SearchResultsContent() {
           {/* Astro Overviews Sidebar */}
           {filters.type !== 'images' && (
             <div className="lg:col-span-1">
-              <AstroOverview
-                query={query}
-                enabled={astroEnabled}
-                onToggle={handleAstroToggle}
-                usageCount={astroUsage}
-                maxUsage={20}
-              />
+              <Suspense fallback={
+                <div className="bg-white dark:bg-gray-900 rounded-lg p-6 shadow-sm animate-pulse">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
+                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full mb-2.5"></div>
+                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-5/6 mb-2.5"></div>
+                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-4/6"></div>
+                </div>
+              }>
+                {query && resultCount > 0 && (
+                  <AstroOverview
+                    query={query}
+                    enabled={astroEnabled}
+                    onToggle={handleAstroToggle}
+                    usageCount={astroUsage}
+                    maxUsage={20}
+                  />
+                )}
+              </Suspense>
+              
+              {/* Emergency Cache Clear Button */}
+              <div className="mt-4 bg-white dark:bg-gray-900 rounded-lg p-4 shadow">
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Having search issues?</h3>
+                <button
+                  onClick={async () => {
+                    setIsSearching(true);
+                    try {
+                      await clearCache();
+                      // Refresh the current search with forced reload
+                      if (query) {
+                        performSearch(query, filters, true);
+                      }
+                    } catch (err) {
+                      console.error('Failed to clear cache:', err);
+                    }
+                  }}
+                  className="w-full py-2 px-3 text-sm bg-red-100 text-red-600 hover:bg-red-200 
+                         dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50
+                         rounded transition-colors"
+                >
+                  Clear Search Cache
+                </button>
+                <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                  Use this if search results appear to be stuck.
+                </p>
+              </div>
             </div>
           )}
         </div>

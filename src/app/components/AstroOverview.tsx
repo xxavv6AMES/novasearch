@@ -75,11 +75,15 @@ function AstroOverview({ query, enabled, onToggle, usageCount, maxUsage }: Astro
     setOverview(null);
     setError(null);
   }, [query]);
-
-  // Generate overview when enabled
+  // Generate overview when enabled, but with a slight delay to prioritize search results
   useEffect(() => {
     if (enabled && query && !overview) {
-      generateOverview();
+      // Add a delay to ensure search results are loaded first
+      const timer = setTimeout(() => {
+        generateOverview();
+      }, 300);
+      
+      return () => clearTimeout(timer);
     }
   }, [enabled, query, overview, generateOverview]);
 

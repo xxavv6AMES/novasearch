@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect, useRef, KeyboardEvent } from 'react';
+import { useState, useEffect, useRef, KeyboardEvent, FormEvent } from 'react';
 import Image from 'next/image';
 import { getSearchSuggestions } from '../services/suggestions';
 import { checkSpelling } from '../services/spellcheck';
 import { useDebounce } from 'use-debounce';
 import { SearchFilters, defaultFilters } from '../types/filters';
+import { useRouter } from 'next/navigation';
 
 interface SearchBoxProps {
   onSearch: (query: string) => void;
@@ -20,7 +21,9 @@ export default function SearchBox({ onSearch, initialValue = '', filters = defau
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [debouncedQuery] = useDebounce(query, 300);
   const suggestionsRef = useRef<HTMLDivElement>(null);
-  const [spellcheckSuggestion, setSpellcheckSuggestion] = useState<string | null>(null);  // Separate effect for suggestions
+  const [spellcheckSuggestion, setSpellcheckSuggestion] = useState<string | null>(null);
+  const router = useRouter();
+
   useEffect(() => {
     const fetchSuggestions = async () => {
       if (debouncedQuery.trim()) {
@@ -42,19 +45,15 @@ export default function SearchBox({ onSearch, initialValue = '', filters = defau
     fetchSuggestions();
   }, [debouncedQuery]);
   
-  // Separate effect for spellcheck
   useEffect(() => {
     const fetchSpellcheck = async () => {
-      // Reset spellcheck suggestion when query changes
       setSpellcheckSuggestion(null);
       
-      // Only check spelling for queries with at least 3 characters
       if (debouncedQuery.trim().length >= 3) {
         try {
           console.log('Checking spelling for:', debouncedQuery);
           const spellcheckResults = await checkSpelling(debouncedQuery, filters);
           
-          // If there's a spellcheck suggestion that's different from the query
           if (
             spellcheckResults?.results?.length > 0 &&
             spellcheckResults.results[0]?.query &&
@@ -65,7 +64,6 @@ export default function SearchBox({ onSearch, initialValue = '', filters = defau
           }
         } catch (error) {
           console.error('Failed to check spelling:', error);
-          // Already logging in the service
         }
       }
     };
@@ -84,7 +82,7 @@ export default function SearchBox({ onSearch, initialValue = '', filters = defau
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (query.trim()) {
       onSearch(query.trim());
@@ -105,15 +103,18 @@ export default function SearchBox({ onSearch, initialValue = '', filters = defau
       case 'ArrowUp':
         e.preventDefault();
         setSelectedIndex(prev => prev > -1 ? prev - 1 : -1);
-        break;
-      case 'Enter':
+        break;      case 'Enter':
         e.preventDefault();
         if (selectedIndex > -1) {
           setQuery(suggestions[selectedIndex]);
           onSearch(suggestions[selectedIndex]);
           setShowSuggestions(false);
         } else {
-          handleSubmit(e);
+          // Execute the search directly instead of trying to call handleSubmit with wrong event type
+          if (query.trim()) {
+            onSearch(query.trim());
+            setShowSuggestions(false);
+          }
         }
         break;
       case 'Escape':
@@ -122,8 +123,21 @@ export default function SearchBox({ onSearch, initialValue = '', filters = defau
     }
   };
 
+  const handleRefresh = () => {
+    if (query.trim()) {
+      const searchParams = new URLSearchParams({ q: query, _ts: Date.now().toString() });
+      
+      if (filters?.type) {
+        searchParams.append('type', filters.type);
+      }
+      
+      router.push(`/search?${searchParams.toString()}`);
+    }
+  };
+
   return (
-    <div className="w-full relative" ref={suggestionsRef}>      <form onSubmit={handleSubmit}>
+    <div className="w-full relative" ref={suggestionsRef}>
+      <form onSubmit={handleSubmit}>
         <div className="relative group">
           <div className="absolute left-5 top-1/2 -translate-y-1/2">
             <Image
@@ -150,20 +164,42 @@ export default function SearchBox({ onSearch, initialValue = '', filters = defau
                      transition-all font-jakarta placeholder:text-gray-400 
                      dark:placeholder:text-gray-600"
           />
-          <button
-            type="submit"
-            className="absolute right-3 top-1/2 -translate-y-1/2 px-5 py-2 
-                     bg-blue-500 text-white rounded-full transition-all 
-                     hover:bg-blue-600 font-grotesk text-sm font-medium 
-                     group-focus-within:opacity-100 disabled:opacity-50 
-                     disabled:cursor-not-allowed"
-            disabled={!query.trim()}
-          >
-            Search
-          </button>
+          <div className="absolute inset-y-0 right-0 flex items-center pr-3 gap-2">
+            {query && (
+              <button 
+                type="button" 
+                onClick={() => setQuery("")}
+                className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+            
+            <button 
+              type="button" 
+              onClick={handleRefresh}
+              className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 mr-1"
+              title="Refresh results"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            </button>
+            
+            <button type="submit" className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300">
+              <Image
+                src="/search.svg"
+                alt="Search"
+                width={20}
+                height={20}
+                className="dark:invert"
+              />
+            </button>
+          </div>
         </div>
         
-        {/* Spellcheck suggestion */}
         {spellcheckSuggestion && (
           <div className="mt-2 text-sm">
             <span className="text-gray-600 dark:text-gray-400">Did you mean: </span>
@@ -181,7 +217,6 @@ export default function SearchBox({ onSearch, initialValue = '', filters = defau
         )}
       </form>
 
-      {/* Suggestions Dropdown */}
       {showSuggestions && suggestions.length > 0 && (
         <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-900 
                       rounded-lg border-2 border-gray-200 dark:border-gray-800 shadow-lg 
