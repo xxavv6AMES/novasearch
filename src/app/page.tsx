@@ -2,8 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useState } from "react";
 import SearchBox from "./components/SearchBox";
 import TrendingTopics from "./components/TrendingTopics";
+import AuthModal from "./components/AuthModal";
+import { useAuth } from "./context/auth-context";
 
 const features = [
 	{
@@ -28,6 +31,8 @@ const features = [
 
 export default function Home() {
 	const router = useRouter();
+	const [authModalOpen, setAuthModalOpen] = useState(false);
+	const { user, isAuthenticated } = useAuth();
 
 	const handleSearch = (query: string) => {
 		router.push(`/search?q=${encodeURIComponent(query)}`);
@@ -50,11 +55,13 @@ export default function Home() {
                        to-purple-500 bg-clip-text text-transparent font-grotesk">
 							Nova Search
 						</h1>
-					</div>
-					<button className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 
+					</div>					<button 
+						onClick={() => setAuthModalOpen(true)}
+						className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 
                          hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full 
-                         transition-colors">
-						Sign In
+                         transition-colors"
+					>
+						{isAuthenticated ? 'My Account' : 'Sign In'}
 					</button>
 				</div>
 
@@ -122,11 +129,13 @@ export default function Home() {
 				</div>
 			</div>
 
-			{/* Footer */}
-			<footer className="w-full pb-8 text-center text-sm text-gray-600 
+			{/* Footer */}			<footer className="w-full pb-8 text-center text-sm text-gray-600 
                       dark:text-gray-400">
 				<p>xxavvTechnologies • {new Date().getFullYear()}</p>
 			</footer>
+
+			{/* Auth Modal */}
+			<AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
 		</div>
 	);
 }

@@ -4,6 +4,8 @@ import { useEffect, useState, Suspense, lazy } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { useAuth } from "../context/auth-context";
+import AuthModal from "../components/AuthModal";
 import SearchBox from "@/app/components/SearchBox";
 import SearchResultItem from "@/app/components/SearchResultItem";
 import ImageResultItem from "@/app/components/ImageResultItem";
@@ -22,6 +24,7 @@ function SearchResultsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const query = searchParams.get('q') || '';
+  const { user, isAuthenticated } = useAuth();
   
   const [webResults, setWebResults] = useState<BraveSearchResponse['web']['results']>([]);
   const [imageResults, setImageResults] = useState<ImageResult[]>([]);
@@ -29,6 +32,7 @@ function SearchResultsContent() {
   const [selectedImage, setSelectedImage] = useState<ImageResult | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
   const [filters, setFilters] = useState<SearchFiltersType>(defaultFilters);
   const [astroEnabled, setAstroEnabled] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -115,8 +119,7 @@ function SearchResultsContent() {
     <div className="min-h-screen flex flex-col px-4 py-4 gap-6">
       {/* Header with Search */}
       <div className="w-full max-w-7xl mx-auto flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 group">
+        <div className="flex items-center justify-between">          <Link href="/" className="flex items-center gap-2 group">
             <Image
               src="/nova-logo.svg"
               alt="Nova Search"
@@ -130,6 +133,14 @@ function SearchResultsContent() {
               Nova Search
             </span>
           </Link>
+          <button 
+            onClick={() => setAuthModalOpen(true)}
+            className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 
+                    hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full 
+                    transition-colors"
+          >
+            {isAuthenticated ? 'My Account' : 'Sign In'}
+          </button>
         </div><div className="flex items-center gap-4">
           <div className="flex-1">
             <SearchBox onSearch={handleSearch} initialValue={query} filters={filters} />
@@ -247,19 +258,23 @@ function SearchResultsContent() {
             </div>
           )}
         </div>
-      </div>
-
-      {/* Image Viewer */}
+      </div>      {/* Image Viewer */}
       <ImageViewer 
         image={selectedImage} 
         onClose={() => setSelectedImage(null)}
       />
+
+      {/* Auth Modal */}
+      <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
     </div>
   );
 }
 
 // Main component that wraps the search results content in Suspense
 export default function SearchResults() {
+  const [fallbackAuthModalOpen, setFallbackAuthModalOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
+  
   return (
     <Suspense fallback={
       <div className="min-h-screen flex flex-col px-4 py-4 gap-6">
@@ -278,12 +293,21 @@ export default function SearchResults() {
                 Nova Search
               </span>
             </Link>
+            <button 
+              onClick={() => setFallbackAuthModalOpen(true)}
+              className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 
+                       hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full 
+                       transition-colors"
+            >
+              {isAuthenticated ? 'My Account' : 'Sign In'}
+            </button>
           </div>
           <div className="flex justify-center w-full py-20">
             <div className="animate-spin rounded-full h-10 w-10 border-2 border-blue-500 
                          border-t-transparent"></div>
           </div>
         </div>
+        <AuthModal isOpen={fallbackAuthModalOpen} onClose={() => setFallbackAuthModalOpen(false)} />
       </div>
     }>
       <SearchResultsContent />
