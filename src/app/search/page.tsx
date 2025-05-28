@@ -8,6 +8,7 @@ import { useAuth } from "../context/auth-context";
 import AuthModal from "../components/AuthModal";
 import SearchBox from "@/app/components/SearchBox";
 import SearchResultItem from "@/app/components/SearchResultItem";
+import NewsResultItem from "@/app/components/NewsResultItem";
 import ImageResultItem from "@/app/components/ImageResultItem";
 import SearchFilters from "@/app/components/SearchFilters";
 import SearchTypeNav from "@/app/components/SearchTypeNav";
@@ -15,7 +16,7 @@ import ImageViewer from "@/app/components/ImageViewer";
 // Lazy load Astro component to prioritize search results
 const AstroOverview = lazy(() => import("@/app/components/AstroOverview"));
 import { searchBrave, clearCache } from "@/app/services/search";
-import { BraveSearchResponse } from "@/app/types/search";
+import { BraveSearchResponse, BraveNewsResponse } from "@/app/types/search";
 import { ImageResult } from "@/app/types/images";
 import { SearchFilters as SearchFiltersType, defaultFilters } from "@/app/types/filters";
 
@@ -24,9 +25,9 @@ function SearchResultsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const query = searchParams.get('q') || '';
-  const { user, isAuthenticated } = useAuth();
-  
-  const [webResults, setWebResults] = useState<BraveSearchResponse['web']['results']>([]);
+  const { isAuthenticated } = useAuth();
+    const [webResults, setWebResults] = useState<BraveSearchResponse['web']['results']>([]);
+  const [newsResults, setNewsResults] = useState<BraveNewsResponse['news']['results']>([]);
   const [imageResults, setImageResults] = useState<ImageResult[]>([]);
   const [resultCount, setResultCount] = useState<number>(0);
   const [selectedImage, setSelectedImage] = useState<ImageResult | null>(null);
@@ -77,23 +78,30 @@ function SearchResultsContent() {
       if (forceRefresh) {
         filtersWithRefresh._timestamp = Date.now().toString();
       }
-      
-      const response = await searchBrave(searchQuery, filtersWithRefresh);
+        const response = await searchBrave(searchQuery, filtersWithRefresh);
       
       if ('web' in response) {
         // Handle web search results
         setWebResults(response.web.results);
+        setNewsResults([]);
         setImageResults([]);
         setResultCount(response.web.results.length);
+      } else if ('news' in response) {
+        // Handle news search results
+        setWebResults([]);
+        setNewsResults(response.news.results);
+        setImageResults([]);
+        setResultCount(response.news.results.length);
       } else {
         // Handle image search results
         setWebResults([]);
+        setNewsResults([]);
         setImageResults(response.results);
         setResultCount(response.results.length);
-      }
-    } catch (err) {
+      }    } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred while searching');
       setWebResults([]);
+      setNewsResults([]);
       setImageResults([]);
       setResultCount(0);
     } finally {
@@ -183,14 +191,17 @@ function SearchResultsContent() {
                 {resultCount > 0 ? (
                   <>                    <p className="text-sm text-gray-600 dark:text-gray-400 col-span-full">
                       Found {resultCount} results for &quot;{query}&quot;
-                    </p>
-                    {filters.type === 'images' ? (
+                    </p>                    {filters.type === 'images' ? (
                       imageResults.map((result, index) => (
                         <ImageResultItem 
                           key={index} 
                           result={result}
                           onClick={setSelectedImage}
                         />
+                      ))
+                    ) : filters.type === 'news' ? (
+                      newsResults.map((result, index) => (
+                        <NewsResultItem key={index} result={result} />
                       ))
                     ) : (
                       webResults.map((result, index) => (

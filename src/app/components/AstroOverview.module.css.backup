@@ -1,0 +1,652 @@
+/* Astro Overview Component Styles */
+
+/* Base content styling */
+.astroContent {
+  width: 100%;
+  line-height: 1.7;
+  font-size: 1rem;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  max-width: 100%;
+  position: relative;
+}
+
+/* Essential keyframes */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(10px);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02) translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes typewriterCursor {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(158, 0, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(158, 0, 255, 0.5);
+  }
+}
+
+/* Component animations */
+.contentContainer {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.responseContainer {
+  animation: bounceIn 0.4s ease-out;
+  background: linear-gradient(135deg, 
+    rgba(158, 0, 255, 0.05) 0%, 
+    rgba(255, 255, 255, 0.02) 50%, 
+    rgba(158, 0, 255, 0.05) 100%);
+  transition: all 0.3s ease;
+}
+
+.responseContainer:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 25px rgba(158, 0, 255, 0.1);
+}
+
+.loadingPulse {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.typingCursor {
+  animation: typewriterCursor 1s infinite;
+  background: #9e00ff;
+  box-shadow: 0 0 4px rgba(158, 0, 255, 0.5);
+}
+
+.queryTag {
+  transition: all 0.2s ease;
+}
+
+.queryTag:hover {
+  transform: scale(1.03);
+}
+
+.completionBadge {
+  animation: slideIn 0.3s ease-out;
+  animation-delay: 0.2s;
+  animation-fill-mode: both;
+}
+
+/* ReactMarkdown content styling */
+.astroContent :global(h1) {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: #9e00ff;
+  line-height: 1.3;
+}
+
+.astroContent :global(h2) {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: #9e00ff;
+  line-height: 1.3;
+}
+
+.astroContent :global(h3) {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.astroContent :global(p) {
+  margin-bottom: 0.75rem;
+  max-width: 100%;
+}
+
+.astroContent :global(strong) {
+  font-weight: 600;
+  color: #9e00ff;
+  background-color: rgba(158, 0, 255, 0.05);
+  padding: 0 0.15rem;
+  border-radius: 0.25rem;
+}
+
+.astroContent :global(em) {
+  font-style: italic;
+}
+
+.astroContent :global(ul), .astroContent :global(ol) {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.astroContent :global(ul) {
+  list-style-type: disc;
+}
+
+.astroContent :global(ol) {
+  list-style-type: decimal;
+}
+
+.astroContent :global(li) {
+  margin-bottom: 0.5rem;
+}
+
+.astroContent :global(a) {
+  color: #9e00ff;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.astroContent :global(a:hover) {
+  text-decoration: none;
+  color: #7a00cc;
+}
+
+.astroContent :global(code) {
+  font-family: monospace;
+  background-color: rgba(158, 0, 255, 0.1);
+  padding: 0.15rem 0.3rem;
+  border-radius: 0.25rem;
+}
+
+.astroContent :global(pre) {
+  white-space: pre-wrap;
+  background-color: rgba(158, 0, 255, 0.05);
+  padding: 1rem;
+  border-radius: 0.25rem;
+  margin: 1rem 0;
+  overflow-x: auto;
+}
+
+.astroContent :global(blockquote) {
+  padding-left: 1rem;
+  border-left: 3px solid rgba(158, 0, 255, 0.3);
+  font-style: italic;
+  margin: 1rem 0;
+  color: rgba(107, 114, 128, 1);
+}
+
+/* Dark mode support */
+:global(.dark) .astroContent :global(h1),
+:global(.dark) .astroContent :global(h2) {
+  color: #c07aff;
+}
+
+:global(.dark) .astroContent :global(strong) {
+  color: #c07aff;
+  background-color: rgba(158, 0, 255, 0.1);
+}
+
+:global(.dark) .astroContent :global(code) {
+  background-color: rgba(158, 0, 255, 0.15);
+  color: #e0c0ff;
+}
+
+:global(.dark) .responseContainer {
+  background: linear-gradient(135deg, 
+    rgba(158, 0, 255, 0.1) 0%, 
+    rgba(0, 0, 0, 0.02) 50%, 
+    rgba(158, 0, 255, 0.1) 100%);
+}
+
+/* Cleanup and safety rules */
+.astroContent > :global(*:first-child) {
+  margin-top: 0;
+}
+
+.astroContent :global(span:empty) {
+  display: none;
+}
+
+/* Smooth transitions */
+.astroContent * {
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+/* Smooth animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(158, 0, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(158, 0, 255, 0.6);
+  }
+}
+
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateY(20px);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05) translateY(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes typewriterCursor {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes typewriterCursor {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+@keyframes progressFlow {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}
+
+/* Content animations */
+.contentContainer {
+  animation: slideIn 0.5s ease-out;
+}
+
+.responseContainer {
+  animation: bounceIn 0.6s ease-out;
+  background: linear-gradient(135deg, 
+    rgba(158, 0, 255, 0.05) 0%, 
+    rgba(255, 255, 255, 0.02) 25%, 
+    rgba(158, 0, 255, 0.03) 50%, 
+    rgba(255, 255, 255, 0.02) 75%, 
+    rgba(158, 0, 255, 0.05) 100%);
+  background-size: 200% 200%;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.loadingPulse {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.typingCursor {
+  animation: typewriterCursor 1s infinite;
+  background: linear-gradient(to bottom, transparent 0%, #9e00ff 20%, #9e00ff 80%, transparent 100%);
+  box-shadow: 0 0 8px rgba(158, 0, 255, 0.6);
+}
+
+.queryTag {
+  animation: slideInFromRight 0.4s ease-out;
+  transition: all 0.2s ease-out;
+}
+
+.completionBadge {
+  animation: bounceIn 0.5s ease-out;
+  animation-delay: 0.2s;
+  animation-fill-mode: both;
+}
+
+.typingEffect {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid #9e00ff;
+  animation: typewriter 0.05s steps(1) forwards;
+}
+
+/* Enhanced hover effects and micro-interactions */
+.responseContainer:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 20px 40px rgba(158, 0, 255, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.queryTag:hover {
+  transform: scale(1.05) translateY(-1px);
+  transition: all 0.2s ease-out;
+}
+
+/* Sparkle effect for completed animations */
+.completionBadge::before {
+  content: '✨';
+  position: absolute;
+  left: -20px;
+  animation: sparkle 2s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+/* Use :global selectors for ReactMarkdown elements */
+.astroContent :global(h1) {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: #9e00ff;
+  line-height: 1.3;
+}
+
+.astroContent :global(h2) {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: #9e00ff;
+  line-height: 1.3;
+}
+
+.astroContent :global(h3) {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.astroContent :global(p) {
+  margin-bottom: 0.75rem;
+  max-width: 100%;
+}
+
+.astroContent :global(strong) {
+  font-weight: 600;
+  color: #9e00ff;
+  background-color: rgba(158, 0, 255, 0.05);
+  padding: 0 0.15rem;
+  border-radius: 0.25rem;
+}
+
+.astroContent :global(em) {
+  font-style: italic;
+}
+
+.astroContent :global(ul), .astroContent :global(ol) {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.astroContent :global(ul) {
+  list-style-type: disc;
+}
+
+.astroContent :global(ol) {
+  list-style-type: decimal;
+}
+
+.astroContent :global(li) {
+  margin-bottom: 0.5rem;
+  animation: slideIn 0.4s ease-out;
+  animation-fill-mode: both;
+}
+
+.astroContent :global(li:nth-child(1)) { animation-delay: 0.1s; }
+.astroContent :global(li:nth-child(2)) { animation-delay: 0.2s; }
+.astroContent :global(li:nth-child(3)) { animation-delay: 0.3s; }
+.astroContent :global(li:nth-child(4)) { animation-delay: 0.4s; }
+.astroContent :global(li:nth-child(5)) { animation-delay: 0.5s; }
+
+.astroContent :global(a) {
+  color: #9e00ff;
+  text-decoration: underline;
+}
+
+.astroContent :global(a:hover) {
+  text-decoration: none;
+}
+
+.astroContent :global(code) {
+  font-family: monospace;
+  background-color: rgba(158, 0, 255, 0.1);
+  padding: 0.15rem 0.3rem;
+  border-radius: 0.25rem;
+}
+
+/* Fix for broken HTML entities and elements */
+.astroContent :global(�) {
+  display: none;
+}
+
+.astroContent > :global(*:first-child) {
+  margin-top: 0;
+}
+
+/* Fix for any malformed tags - ensure proper display for known elements, and handle unknown elements safely */
+.astroContent :global(*:not(h1, h2, h3, h4, h5, h6, p, div, section, article, ul, ol, li, a, span, strong, em, br, img, code, pre)) {
+  display: inline;
+  margin: 0;
+  padding: 0;
+}
+
+/* Dark mode specific overrides */
+:global(.dark) .astroContent :global(h1),
+:global(.dark) .astroContent :global(h2) {
+  color: #c07aff;
+}
+
+:global(.dark) .astroContent :global(strong) {
+  color: #c07aff;
+  background-color: rgba(158, 0, 255, 0.1);
+}
+
+:global(.dark) .astroContent code {
+  background-color: rgba(158, 0, 255, 0.15);
+  color: #e0c0ff;
+}
+
+/* Fix for broken multi-byte characters */
+.astroContent span:empty,
+.astroContent :global(span:empty) {
+  display: none;
+}
+
+/* Add smooth transitions for dark/light mode changes */
+.astroContent * {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Block quotes and citations */
+.astroContent blockquote {
+  padding-left: 1rem;
+  border-left: 3px solid rgba(158, 0, 255, 0.3);
+  font-style: italic;
+  margin: 1rem 0;
+  color: rgba(107, 114, 128, 1);
+}
+
+/* Tables */
+.astroContent table {
+  width: 100%;
+  margin: 1rem 0;
+  border-collapse: collapse;
+}
+
+.astroContent th {
+  background-color: rgba(158, 0, 255, 0.1);
+  font-weight: 600;
+  text-align: left;
+  padding: 0.5rem;
+}
+
+.astroContent td {
+  padding: 0.5rem;
+  border: 1px solid rgba(158, 0, 255, 0.2);
+}
+
+/* Improve paragraphs inside list items */
+.astroContent li > p {
+  margin-bottom: 0.25rem;
+}
+
+/* Image handling */
+.astroContent img {
+  max-width: 100%;
+  height: auto;
+  margin: 1rem 0;
+  border-radius: 0.25rem;
+}
+
+/* Dividers */
+.astroContent hr {
+  border: none;
+  height: 1px;
+  background-color: rgba(158, 0, 255, 0.2);
+  margin: 1.5rem 0;
+}
+
+/* Handle nested lists properly */
+.astroContent ul ul,
+.astroContent ol ol,
+.astroContent ul ol,
+.astroContent ol ul {
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
+
+/* Fix for extra whitespace in code blocks */
+.astroContent pre {
+  white-space: pre-wrap;
+  background-color: rgba(158, 0, 255, 0.05);
+  padding: 1rem;
+  border-radius: 0.25rem;
+  margin: 1rem 0;
+  overflow-x: auto;
+}
+
+/* Dark mode enhancements */
+:global(.dark) .responseContainer {
+  background: linear-gradient(135deg, 
+    rgba(158, 0, 255, 0.1) 0%, 
+    rgba(0, 0, 0, 0.02) 25%, 
+    rgba(158, 0, 255, 0.06) 50%, 
+    rgba(0, 0, 0, 0.02) 75%, 
+    rgba(158, 0, 255, 0.1) 100%);
+}
+
+/* Progress indicator enhancements */
+.loadingProgress {
+  position: relative;
+  overflow: hidden;
+}
+
+.loadingProgress::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(158, 0, 255, 0.4), transparent);
+  animation: progressFlow 2s ease-in-out infinite;
+}
+
+/* Enhanced headings with glow effect */
+.astroContent :global(h1),
+.astroContent :global(h2),
+.astroContent :global(h3) {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.astroContent :global(h1):hover,
+.astroContent :global(h2):hover,
+.astroContent :global(h3):hover {
+  text-shadow: 0 0 10px rgba(158, 0, 255, 0.3);
+  transform: translateX(4px);
+}

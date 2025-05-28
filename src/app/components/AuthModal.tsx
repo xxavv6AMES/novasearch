@@ -1,8 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '../context/auth-context';
 import { signInWithEmail, signInWithOAuth, signUp, signOut, verifyOTP } from '../utils/supabase';
 
@@ -25,10 +23,18 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const [otpCode, setOtpCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  
-  const { user, isAuthenticated } = useAuth();
+    const { user, isAuthenticated } = useAuth();
   
   const modalRef = useRef<HTMLDivElement>(null);
+  
+  const resetAndClose = useCallback(() => {
+    setEmail('');
+    setPassword('');
+    setOtpCode('');
+    setError(null);
+    setMode(AuthMode.INITIAL);
+    onClose();
+  }, [onClose]);
   
   // Handle click outside to close modal
   useEffect(() => {
@@ -45,7 +51,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isOpen]);
+  }, [isOpen, resetAndClose]);
   
   // Reset state when modal opens/closes
   useEffect(() => {
@@ -54,15 +60,6 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
       setError(null);
     }
   }, [isOpen]);
-  
-  const resetAndClose = () => {
-    setEmail('');
-    setPassword('');
-    setOtpCode('');
-    setError(null);
-    setMode(AuthMode.INITIAL);
-    onClose();
-  };
   
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,9 +77,8 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
       } else {
         // Login successful
         resetAndClose();
-      }
-    } catch (err: any) {
-      setError(err.message || 'Failed to sign in');
+      }    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to sign in');
     } finally {
       setLoading(false);
     }
@@ -100,9 +96,8 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
       
       // Show success message and redirect to login
       setMode(AuthMode.LOGIN);
-      setError('Registration successful! Please check your email to confirm your account.');
-    } catch (err: any) {
-      setError(err.message || 'Failed to register');
+      setError('Registration successful! Please check your email to confirm your account.');    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to register');
     } finally {
       setLoading(false);
     }
@@ -119,9 +114,8 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
       if (error) throw error;
       
       // Login successful
-      resetAndClose();
-    } catch (err: any) {
-      setError(err.message || 'Failed to verify code');
+      resetAndClose();    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to verify code');
     } finally {
       setLoading(false);
     }
@@ -133,9 +127,8 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
     
     try {
       const { error } = await signInWithOAuth(provider);
-      if (error) throw error;
-    } catch (err: any) {
-      setError(err.message || `Failed to sign in with ${provider}`);
+      if (error) throw error;    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : `Failed to sign in with ${provider}`);
       setLoading(false);
     }
   };
@@ -426,10 +419,9 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 </svg>
               </button>
             </div>
-            
-            <div className="text-center pt-2">
+              <div className="text-center pt-2">
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Don't have an account?{' '}
+                Don&apos;t have an account?{' '}
                 <a 
                   href="https://account.novasuite.one/register" 
                   target="_blank"

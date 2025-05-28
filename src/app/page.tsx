@@ -32,7 +32,7 @@ const features = [
 export default function Home() {
 	const router = useRouter();
 	const [authModalOpen, setAuthModalOpen] = useState(false);
-	const { user, isAuthenticated } = useAuth();
+	const { isAuthenticated } = useAuth();
 
 	const handleSearch = (query: string) => {
 		router.push(`/search?q=${encodeURIComponent(query)}`);

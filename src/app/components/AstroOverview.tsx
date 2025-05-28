@@ -24,11 +24,55 @@ const FEATURES = [
 function AstroOverview({ query, enabled, onToggle, usageCount, maxUsage }: AstroOverviewProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [overview, setOverview] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);  const [isStreaming, setIsStreaming] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [currentQuery, setCurrentQuery] = useState<string | null>(null);  const [displayedText, setDisplayedText] = useState('');
+  const [isAnimating, setIsAnimating] = useState(false);  const [showCursor, setShowCursor] = useState(false);
+  const [animationStage, setAnimationStage] = useState<'preparing' | 'typing' | 'complete'>('complete');
+  const [isVisible, setIsVisible] = useState(false);
+  
+  // Component mount animation
+  useEffect(() => {
+    const timer = setTimeout(() => setIsVisible(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
+  // Simplified typewriter effect
+  useEffect(() => {
+    if (overview && overview !== displayedText) {
+      setAnimationStage('typing');
+      setIsAnimating(true);
+      setDisplayedText('');
+      setShowCursor(true);
+      
+      let currentIndex = 0;
+      const interval = setInterval(() => {
+        if (currentIndex <= overview.length) {
+          setDisplayedText(overview.slice(0, currentIndex));
+          currentIndex += Math.random() > 0.7 ? 2 : 1;
+        } else {
+          clearInterval(interval);
+          setIsAnimating(false);
+          setAnimationStage('complete');
+          setTimeout(() => setShowCursor(false), 800);
+        }
+      }, 25);
+      
+      return () => clearInterval(interval);
+    }
+  }, [overview]);
+  
   const generateOverview = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    setOverview("");
+    // Prevent duplicate calls
+    if (isLoading || !query || currentQuery === query) {
+      return;
+    }
+    
+    setIsLoading(true);      setError(null);
+      setOverview("");
+      setDisplayedText("");
+      setCurrentQuery(query);
+      setAnimationStage('preparing');
+      setShowCursor(false);
     
     try {
       // Always use non-streaming approach
@@ -40,44 +84,58 @@ function AstroOverview({ query, enabled, onToggle, usageCount, maxUsage }: Astro
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ query, stream: false }),
-      });      
-        if (!response.ok) {
-          try {
-            // Try to parse error as JSON
-            const error = await response.json();
-            throw new Error(error.error || error.message || 'Failed to generate overview');
-          } catch {
-            // If it's not JSON, use text error
-            const errorText = await response.text();
-            throw new Error(errorText || response.statusText || 'Failed to generate overview');
-          }
+      });
+      
+      if (!response.ok) {
+        // Read the response text first
+        const errorText = await response.text();
+        try {
+          // Try to parse as JSON
+          const error = JSON.parse(errorText);
+          throw new Error(error.error || error.message || 'Failed to generate overview');
+        } catch {
+          // If it's not JSON, use the raw text
+          throw new Error(errorText || response.statusText || 'Failed to generate overview');
         }
+      }
 
       // Handle regular JSON response
       const data = await response.json();
       if (!data.overview) {
         throw new Error('No overview received from the server');
       }
-      setOverview(data.overview);
+      
+      // Add a small delay before starting the typewriter effect
+      setTimeout(() => {
+        setOverview(data.overview);
+      }, 300);
         
-            } catch (err) {
-      console.error('Error generating overview:', err);
-      setError(err instanceof Error ? err.message : 'Failed to generate overview');
+    } catch (err) {
+      console.error('Error generating overview:', err);      setError(err instanceof Error ? err.message : 'Failed to generate overview');
       setOverview(null);
+      setDisplayedText('');
+      setAnimationStage('complete');
+      setShowCursor(false);
     } finally {
       setIsLoading(false);
       setIsStreaming(false);
     }
-  }, [query]);
-
+  }, [query, isLoading, currentQuery]);
   // Reset overview when query changes
   useEffect(() => {
-    setOverview(null);
-    setError(null);
-  }, [query]);
+    if (currentQuery !== query) {      setOverview(null);
+      setDisplayedText('');
+      setError(null);
+      setCurrentQuery(null);
+      setIsAnimating(false);
+      setAnimationStage('complete');
+      setShowCursor(false);
+    }
+  }, [query, currentQuery]);
+  
   // Generate overview when enabled, but with a slight delay to prioritize search results
   useEffect(() => {
-    if (enabled && query && !overview) {
+    if (enabled && query && !overview && !isLoading && currentQuery !== query) {
       // Add a delay to ensure search results are loaded first
       const timer = setTimeout(() => {
         generateOverview();
@@ -85,64 +143,67 @@ function AstroOverview({ query, enabled, onToggle, usageCount, maxUsage }: Astro
       
       return () => clearTimeout(timer);
     }
-  }, [enabled, query, overview, generateOverview]);
+  }, [enabled, query, overview, isLoading, currentQuery, generateOverview]);
 
   const handleToggle = () => {
     if (!enabled && usageCount >= maxUsage) {
       return;
     }
-    if (!enabled && query) {
-      generateOverview();
+    if (!enabled && query && !isLoading && currentQuery !== query) {
+      // Add a smooth transition delay
+      setTimeout(() => {
+        generateOverview();
+      }, 100);
     }
     onToggle(!enabled);
-  };
-
-  return (
-    <div className="w-full max-w-4xl bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-300 hover:shadow-xl">
+  };  return (
+    <div className={`w-full max-w-4xl bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-800 relative overflow-hidden transition-all duration-700 hover:shadow-xl transform hover:scale-[1.02] ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
       {/* Background effects - always render but conditionally show */}
-      <div className={`absolute inset-0 bg-gradient-to-br from-[#9e00ff]/10 to-transparent animate-gradient-shift pointer-events-none ${enabled ? 'opacity-100' : 'opacity-0'}`} />
-      <div className={`absolute -inset-0.5 bg-[#9e00ff] rounded-xl blur-lg transition-opacity duration-300 ${enabled ? 'opacity-20' : 'opacity-0'}`} />
+      <div className={`absolute inset-0 bg-gradient-to-br from-[#9e00ff]/10 to-transparent transition-opacity duration-500 pointer-events-none ${enabled ? 'opacity-100 animate-pulse' : 'opacity-0'}`} />
+      <div className={`absolute -inset-0.5 bg-gradient-to-r from-[#9e00ff] via-purple-600 to-[#9e00ff] rounded-xl blur-lg transition-opacity duration-500 ${enabled ? 'opacity-20' : 'opacity-0'}`} 
+           style={{ backgroundSize: '200% 200%', animation: enabled ? 'gradientShift 3s ease infinite' : 'none' }} />
 
       {/* Header */}
-      <div className="relative p-5 border-b border-gray-200 dark:border-gray-800">
+      <div className="relative p-5 border-b border-gray-200 dark:border-gray-800 transition-all duration-300">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
             {/* Astro Icon */}
-            <div className={`p-2 rounded-lg ${enabled ? 'bg-[#9e00ff]/10' : 'bg-gray-100 dark:bg-gray-800'}`}>
-              <svg className={`w-6 h-6 ${enabled ? 'text-[#9e00ff]' : 'text-gray-400'}`} 
-                   viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <div className={`p-2 rounded-lg transition-all duration-300 ${enabled ? 'bg-[#9e00ff]/10 scale-110' : 'bg-gray-100 dark:bg-gray-800'}`}>
+              <svg className={`w-6 h-6 transition-all duration-300 ${enabled ? 'text-[#9e00ff] animate-spin' : 'text-gray-400'}`} 
+                   viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                   style={{ animationDuration: enabled ? '8s' : '0s' }}>
                 <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="2"/>
                 <path d="M12 8v4l3 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
               </svg>
             </div>
             <div>
-              <h2 className={`text-xl font-semibold ${enabled ? 'text-[#9e00ff]' : 'text-gray-900 dark:text-gray-100'}`}>
+              <h2 className={`text-xl font-semibold transition-colors duration-300 ${enabled ? 'text-[#9e00ff]' : 'text-gray-900 dark:text-gray-100'}`}>
                 Astro Overview
               </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-gray-600 dark:text-gray-400 transition-opacity duration-300">
                 Powered by NovaAI ModelA 8-Pro
               </p>
             </div>
           </div>
           <button
             onClick={handleToggle}
-            className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#9e00ff] focus:ring-offset-2 ${enabled ? 'bg-[#9e00ff]' : 'bg-gray-200 dark:bg-gray-700'}`}
+            className={`relative inline-flex h-7 w-12 items-center rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#9e00ff] focus:ring-offset-2 transform hover:scale-110 ${enabled ? 'bg-[#9e00ff] shadow-lg' : 'bg-gray-200 dark:bg-gray-700'}`}
           >
             <span className="sr-only">Enable Astro Overview</span>
             <span
-              className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-lg transition-transform ${enabled ? 'translate-x-6' : 'translate-x-1'}`}
+              className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-lg transition-all duration-300 ${enabled ? 'translate-x-6 scale-110' : 'translate-x-1'}`}
             />
           </button>
         </div>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className={`inline-block w-2 h-2 rounded-full ${enabled ? 'bg-[#9e00ff] animate-pulse' : 'bg-gray-400'}`}></span>
-            <span className="text-sm text-gray-600 dark:text-gray-400">
+            <span className={`inline-block w-2 h-2 rounded-full transition-all duration-300 ${enabled ? 'bg-[#9e00ff] animate-pulse scale-125' : 'bg-gray-400'}`}></span>
+            <span className="text-sm text-gray-600 dark:text-gray-400 transition-opacity duration-300">
               {enabled ? 'Active' : 'Inactive'}
             </span>
           </div>
           <div className="text-sm">
-            <span className={`font-medium ${usageCount >= maxUsage ? 'text-red-500' : 'text-[#9e00ff]'}`}>
+            <span className={`font-medium transition-colors duration-300 ${usageCount >= maxUsage ? 'text-red-500' : 'text-[#9e00ff]'}`}>
               {usageCount}
             </span>
             <span className="text-gray-500 dark:text-gray-400">/{maxUsage} uses this month</span>
@@ -182,36 +243,91 @@ function AstroOverview({ query, enabled, onToggle, usageCount, maxUsage }: Astro
                 </div>
               </div>
             )}
-          </div>
-        ) : isLoading ? (
-          <div className="flex items-center justify-center py-8">
+          </div>        ) : isLoading ? (
+          <div className="flex flex-col items-center justify-center py-10 space-y-4">
             <div className="relative">
               <div className="w-12 h-12 rounded-full border-2 border-[#9e00ff]/20 border-t-[#9e00ff] animate-spin"></div>
-              <div className="absolute inset-0 w-12 h-12 rounded-full border-2 border-[#9e00ff]/10 blur-sm"></div>
+              <div className="absolute inset-0 w-12 h-12 rounded-full border-2 border-[#9e00ff]/10 blur-sm animate-pulse"></div>
             </div>
-          </div>        ) : overview ? (
-          <div className="prose dark:prose-invert max-w-none w-full">
-            <div className="p-4 bg-[#9e00ff]/5 rounded-lg border border-[#9e00ff]/10 shadow-inner">
+            
+            <div className="text-center">
+              <p className="text-sm font-medium text-[#9e00ff] animate-pulse">
+                Generating your overview...
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                This may take a moment
+              </p>
+            </div>
+          </div>        ) : overview || displayedText ? (
+          <div className={`prose dark:prose-invert max-w-none w-full ${styles.contentContainer}`}>
+            <div className="mb-4">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#9e00ff] to-purple-600 flex items-center justify-center">
+                  <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-[#9e00ff] m-0">Astro Analysis</h3>
+                {isAnimating && (
+                  <div className="flex items-center gap-1 ml-2">
+                    <span className="text-xs text-gray-500">Live</span>
+                    <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <div className={`p-6 bg-gradient-to-br from-[#9e00ff]/5 to-purple-50/30 dark:from-[#9e00ff]/10 dark:to-purple-900/20 rounded-xl border border-[#9e00ff]/10 shadow-lg ${styles.responseContainer}`}>
               <div className={styles.astroContent}>
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {overview || ""}
+                  {displayedText || overview || ""}
                 </ReactMarkdown>
+                {(isAnimating || showCursor) && (
+                  <span className={`inline-block w-0.5 h-5 bg-[#9e00ff] ml-1 ${styles.typingCursor}`}></span>
+                )}
               </div>
-              <div className="mt-4 pt-3 border-t border-[#9e00ff]/10 flex items-center justify-between">
-                <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-2">
-                  {isStreaming && (
-                    <>
-                      <span className="inline-block w-2 h-2 rounded-full bg-[#9e00ff] animate-pulse"></span>
-                      <span>Streaming</span>
-                    </>
-                  )}
-                  {!isStreaming && (
-                    <span>Powered by Astro AI</span>
-                  )}
+              
+              <div className="mt-6 pt-4 border-t border-[#9e00ff]/10">
+                <div className="flex items-center justify-between">
+                  <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                    {isAnimating ? (
+                      <>
+                        <div className="flex gap-1">
+                          <div className="w-1 h-1 rounded-full bg-[#9e00ff] animate-bounce"></div>
+                          <div className="w-1 h-1 rounded-full bg-[#9e00ff] animate-bounce" style={{ animationDelay: '100ms' }}></div>
+                          <div className="w-1 h-1 rounded-full bg-[#9e00ff] animate-bounce" style={{ animationDelay: '200ms' }}></div>
+                        </div>
+                        <span>Generating response...</span>
+                      </>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 rounded-full bg-gradient-to-r from-[#9e00ff] to-purple-600 flex items-center justify-center">
+                          <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                        <span>Powered by Astro AI</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className={`text-xs text-[#9e00ff] opacity-75 ${styles.queryTag}`}>
+                    <span className="bg-[#9e00ff]/10 px-2 py-1 rounded-full border border-[#9e00ff]/20">
+                      &quot;{query.length > 30 ? query.substring(0, 30) + '...' : query}&quot;
+                    </span>
+                  </div>
                 </div>
-                <div className="text-xs text-[#9e00ff]">
-                  Summary for &quot;{query}&quot;
-                </div>
+                
+                {!isAnimating && (
+                  <div className={`mt-3 flex items-center gap-2 text-xs text-green-600 dark:text-green-400 ${styles.completionBadge}`}>
+                    <div className="w-3 h-3 rounded-full bg-green-500 flex items-center justify-center">
+                      <svg className="w-2 h-2 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span>Analysis complete</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>

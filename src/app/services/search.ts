@@ -1,8 +1,8 @@
-import { BraveSearchResponse } from '../types/search';
+import { BraveSearchResponse, BraveNewsResponse } from '../types/search';
 import { SearchFilters } from '../types/filters';
 import { ImageSearchResponse } from '../types/images';
 
-export type SearchResults = BraveSearchResponse | ImageSearchResponse;
+export type SearchResults = BraveSearchResponse | BraveNewsResponse | ImageSearchResponse;
 
 export async function searchBrave(query: string, filters: SearchFilters): Promise<SearchResults> {
   // Convert filters to URLSearchParams

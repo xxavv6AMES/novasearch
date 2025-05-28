@@ -38,9 +38,9 @@ export async function POST(request: NextRequest) {
         },
       },
       true // This is a search request
-    );
+    );    const searchResponse = await response.json() as BraveSearchResponse;
 
-    const searchResponse = await response.json() as BraveSearchResponse;    // Then generate the overview using NLPCloud
+    // Then generate the overview using Bedrock via Lambda
     const astroResponse = await generateOverview(query, searchResponse);
 
     if (astroResponse.error) {
