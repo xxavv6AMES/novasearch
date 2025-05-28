@@ -22,24 +22,18 @@ const FEATURES = [
 ] as const;
 
 function AstroOverview({ query, enabled, onToggle, usageCount, maxUsage }: AstroOverviewProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [overview, setOverview] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isStreaming, setIsStreaming] = useState(false);
-  const [currentQuery, setCurrentQuery] = useState<string | null>(null);  const [displayedText, setDisplayedText] = useState('');
+  const [isLoading, setIsLoading] = useState(false);  const [overview, setOverview] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);  const [currentQuery, setCurrentQuery] = useState<string | null>(null);  const [displayedText, setDisplayedText] = useState('');
   const [isAnimating, setIsAnimating] = useState(false);  const [showCursor, setShowCursor] = useState(false);
-  const [animationStage, setAnimationStage] = useState<'preparing' | 'typing' | 'complete'>('complete');
   const [isVisible, setIsVisible] = useState(false);
   
   // Component mount animation
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 100);
     return () => clearTimeout(timer);
-  }, []);
-  // Simplified typewriter effect
+  }, []);  // Simplified typewriter effect
   useEffect(() => {
     if (overview && overview !== displayedText) {
-      setAnimationStage('typing');
       setIsAnimating(true);
       setDisplayedText('');
       setShowCursor(true);
@@ -48,11 +42,9 @@ function AstroOverview({ query, enabled, onToggle, usageCount, maxUsage }: Astro
       const interval = setInterval(() => {
         if (currentIndex <= overview.length) {
           setDisplayedText(overview.slice(0, currentIndex));
-          currentIndex += Math.random() > 0.7 ? 2 : 1;
-        } else {
+          currentIndex += Math.random() > 0.7 ? 2 : 1;        } else {
           clearInterval(interval);
           setIsAnimating(false);
-          setAnimationStage('complete');
           setTimeout(() => setShowCursor(false), 800);
         }
       }, 25);
@@ -66,18 +58,13 @@ function AstroOverview({ query, enabled, onToggle, usageCount, maxUsage }: Astro
     if (isLoading || !query || currentQuery === query) {
       return;
     }
-    
-    setIsLoading(true);      setError(null);
+      setIsLoading(true);      setError(null);
       setOverview("");
       setDisplayedText("");
       setCurrentQuery(query);
-      setAnimationStage('preparing');
       setShowCursor(false);
     
     try {
-      // Always use non-streaming approach
-      setIsStreaming(false);
-      
       const response = await fetch('/api/astro', {
         method: 'POST',
         headers: {
@@ -110,25 +97,19 @@ function AstroOverview({ query, enabled, onToggle, usageCount, maxUsage }: Astro
         setOverview(data.overview);
       }, 300);
         
-    } catch (err) {
-      console.error('Error generating overview:', err);      setError(err instanceof Error ? err.message : 'Failed to generate overview');
+    } catch (err) {      console.error('Error generating overview:', err);      setError(err instanceof Error ? err.message : 'Failed to generate overview');
       setOverview(null);
       setDisplayedText('');
-      setAnimationStage('complete');
-      setShowCursor(false);
-    } finally {
+      setShowCursor(false);    } finally {
       setIsLoading(false);
-      setIsStreaming(false);
     }
   }, [query, isLoading, currentQuery]);
   // Reset overview when query changes
   useEffect(() => {
     if (currentQuery !== query) {      setOverview(null);
-      setDisplayedText('');
-      setError(null);
+      setDisplayedText('');      setError(null);
       setCurrentQuery(null);
       setIsAnimating(false);
-      setAnimationStage('complete');
       setShowCursor(false);
     }
   }, [query, currentQuery]);

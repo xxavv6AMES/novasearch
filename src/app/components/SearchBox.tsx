@@ -2,7 +2,7 @@
 
 import { useState, FormEvent } from 'react';
 import Image from 'next/image';
-import { SearchFilters, defaultFilters } from '../types/filters';
+import { SearchFilters } from '../types/filters';
 import { useRouter } from 'next/navigation';
 
 interface SearchBoxProps {
@@ -11,7 +11,7 @@ interface SearchBoxProps {
   filters?: SearchFilters;
 }
 
-export default function SearchBox({ onSearch, initialValue = '', filters = defaultFilters }: SearchBoxProps) {
+export default function SearchBox({ onSearch, initialValue = '' }: SearchBoxProps) {
   const [query, setQuery] = useState(initialValue);
   const router = useRouter();
 

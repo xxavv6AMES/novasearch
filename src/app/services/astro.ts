@@ -92,29 +92,31 @@ export const sendMessage = async (
       body: JSON.stringify(requestBody)
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
+    if (!response.ok) {      const errorText = await response.text();
       console.error('API Error Response:', errorText);
-      let errorData;
+      let errorData: { message?: string };
       try {
         errorData = JSON.parse(errorText);
       } catch {
         errorData = { message: `HTTP ${response.status}: ${errorText}` };
       }
       throw new Error(errorData.message || `API error: ${response.status}`);
-    }    const data = await response.json();
+    }
+      const data: unknown = await response.json();
     console.log('API Response:', data);
     
     // Handle AWS API Gateway Lambda response format
-    let responseData = data;
-    if (data.statusCode && data.body) {
+    let responseData: { generated_text?: string } = {};
+    if (data && typeof data === 'object' && 'statusCode' in data && 'body' in data) {
       // Parse the stringified body from Lambda
       try {
-        responseData = JSON.parse(data.body);
+        responseData = JSON.parse((data as { body: string }).body);
       } catch (parseError) {
         console.error('Failed to parse Lambda response body:', parseError);
         throw new Error('Invalid response format from API');
       }
+    } else {
+      responseData = data as { generated_text?: string };
     }
     
     if (!responseData?.generated_text) {
@@ -127,13 +129,13 @@ export const sendMessage = async (
     return {
       response: responseData.generated_text,
       history: newHistory
-    };
-  } catch (error: any) {
+    };  } catch (error: unknown) {
     if (error instanceof LimitError) {
       throw error;
     }
     console.error('Chat error:', error);
-    throw new Error(error.message || 'Failed to send message');
+    const errorMessage = error instanceof Error ? error.message : 'Failed to send message';
+    throw new Error(errorMessage);
   }
 };
 
@@ -143,12 +145,12 @@ export async function generateOverview(query: string, searchResults: BraveSearch
     const response = await sendMessage(query, [], searchResults);
     return {
       overview: response.response,
-    };
-  } catch (error: any) {
+    };  } catch (error: unknown) {
     console.error('Error generating overview:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to generate overview';
     return {
       overview: '',
-      error: error.message || 'Failed to generate overview'
+      error: errorMessage
     };
   }
 }
