@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '../context/auth-context';
 import { signInWithEmail, signInWithOAuth, signUp, signOut, verifyOTP } from '../utils/supabase';
+import { storeAuthReturnUrl } from '../utils/auth-redirect';
 
 enum AuthMode {
   INITIAL,
@@ -60,13 +61,14 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
       setError(null);
     }
   }, [isOpen]);
-  
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
     
     try {
+      // Store current page for redirect
+      storeAuthReturnUrl();
       const { error, data } = await signInWithEmail(email, password);
       
       if (error) throw error;
@@ -77,26 +79,27 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
       } else {
         // Login successful
         resetAndClose();
-      }    } catch (err: unknown) {
+      }} catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to sign in');
     } finally {
       setLoading(false);
     }
   };
-  
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
     
     try {
+      // Store current page for redirect
+      storeAuthReturnUrl();
       const { error } = await signUp(email, password);
       
       if (error) throw error;
       
       // Show success message and redirect to login
       setMode(AuthMode.LOGIN);
-      setError('Registration successful! Please check your email to confirm your account.');    } catch (err: unknown) {
+      setError('Registration successful! Please check your email to confirm your account.');} catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to register');
     } finally {
       setLoading(false);
@@ -120,14 +123,15 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
       setLoading(false);
     }
   };
-  
   const handleOAuthSignIn = async (provider: 'google' | 'github' | 'twitter') => {
     setError(null);
     setLoading(true);
     
     try {
+      // Store current page for redirect
+      storeAuthReturnUrl();
       const { error } = await signInWithOAuth(provider);
-      if (error) throw error;    } catch (err: unknown) {
+      if (error) throw error;} catch (err: unknown) {
       setError(err instanceof Error ? err.message : `Failed to sign in with ${provider}`);
       setLoading(false);
     }
