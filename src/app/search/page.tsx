@@ -39,8 +39,9 @@ function SearchResultsContent({ initialQuery, router }: SearchResultsContentProp
       setQuery(newQuery);
     }
   }, [searchParams, query]);
+
   const { isAuthenticated } = useAuth();
-    const [webResults, setWebResults] = useState<BraveSearchResponse['web']['results']>([]);
+  const [webResults, setWebResults] = useState<BraveSearchResponse['web']['results']>([]);
   const [newsResults, setNewsResults] = useState<BraveNewsResponse['news']['results']>([]);
   const [imageResults, setImageResults] = useState<ImageResult[]>([]);
   const [resultCount, setResultCount] = useState<number>(0);
@@ -48,7 +49,10 @@ function SearchResultsContent({ initialQuery, router }: SearchResultsContentProp
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [filters, setFilters] = useState<SearchFiltersType>(defaultFilters);
+  const [filters, setFilters] = useState<SearchFiltersType>(() => {
+    const typeParam = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('type') as SearchFiltersType['type'] : undefined;
+    return { ...defaultFilters, ...(typeParam ? { type: typeParam as SearchFiltersType['type'] } : {}) };
+  });
   const [astroEnabled, setAstroEnabled] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('astroEnabled') === 'true';
@@ -191,9 +195,9 @@ function SearchResultsContent({ initialQuery, router }: SearchResultsContentProp
 
       {/* Main Content */}
       <div className="w-full max-w-7xl mx-auto">
-        <div className={filters.type === 'images' ? '' : 'grid grid-cols-1 lg:grid-cols-4 gap-6'}>
+        <div className={filters.type === 'images' ? '' : 'grid grid-cols-1 lg:grid-cols-3 gap-6'}>
           {/* Search Results */}
-          <div className={filters.type === 'images' ? 'w-full' : 'lg:col-span-3'}>
+          <div className={filters.type === 'images' ? 'w-full' : 'lg:col-span-2'}>
             {isSearching ? (
               <div className="flex justify-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 

@@ -15,7 +15,7 @@ export default function ImageResultItem({ result, onClick }: ImageResultItemProp
         <div className="relative w-full h-full">
           {/* Main image with placeholder background */}
           <img
-            src={result.properties.url}
+            src={result.properties?.url || result.url}
             alt={result.title}
             className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
             style={{ 

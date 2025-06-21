@@ -25,13 +25,20 @@ export async function GET(request: NextRequest) {
   const apiParams = new URLSearchParams();
   apiParams.append('q', query);
 
+  // Determine search type (web by default)
+  const searchType = searchParams.get('type') || 'web';
+
   // Copy allowed parameters from request to API call
   ['safesearch', 'freshness', 'country', 'search_lang', 'type'].forEach(param => {
     const value = searchParams.get(param);
     if (value) {
-      apiParams.append(param, value);
+        // Only forward 'type' param to Brave API for types other than 'news' and 'web'
+      if (param !== 'type' || (value && value !== 'news' && value !== 'web')) {
+        apiParams.append(param, value);
+      }
     }
   });
+
   // Generate a unique cache key based on parameters and user session
   // We're excluding timestamp parameter from cache key
   const paramsForCache = new URLSearchParams();
@@ -42,6 +49,8 @@ export async function GET(request: NextRequest) {
     }
   });
   
+  // Include search type in cache key to avoid collisions between web/news results
+  paramsForCache.append('searchType', searchType);
   const cacheKey = `search:${paramsForCache.toString()}`;
   
   // Only use the cache if we didn't explicitly request to skip it with a timestamp
@@ -51,8 +60,13 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(cachedResult);
   }  try {
     console.log(`Making search request to Brave API: ${apiParams.toString()}`);
+    // Choose correct Brave API endpoint based on search type
+    const braveEndpoint = searchType === 'news'
+      ? 'https://api.search.brave.com/res/v1/news/search'
+      : 'https://api.search.brave.com/res/v1/web/search';
+
     const response = await fetchWithRateLimiting(
-      `https://api.search.brave.com/res/v1/web/search?${apiParams.toString()}`,
+      `${braveEndpoint}?${apiParams.toString()}`,
       {
         headers: {
           'Accept': 'application/json',
