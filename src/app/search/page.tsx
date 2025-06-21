@@ -295,17 +295,12 @@ function SearchResultsContent({ initialQuery, router }: SearchResultsContentProp
   );
 }
 
-// Component to handle search params with Suspense
-function SearchParamsWrapper() {
+// Main component that wraps the search results content in Suspense
+// Wrapper component that uses useSearchParams inside Suspense
+function SearchResultsWrapper() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const query = searchParams.get('q') || '';
-  
-  return <SearchResultsContent initialQuery={query} router={router} />;
-}
-
-// Main component that wraps the search results content in Suspense
-export default function SearchResults() {
   const [fallbackAuthModalOpen, setFallbackAuthModalOpen] = useState(false);
   const { isAuthenticated } = useAuth();
   
@@ -344,7 +339,11 @@ export default function SearchResults() {
         <AuthModal isOpen={fallbackAuthModalOpen} onClose={() => setFallbackAuthModalOpen(false)} />
       </div>
     }>
-      <SearchParamsWrapper />
+      <SearchResultsContent initialQuery={query} router={router} />
     </Suspense>
   );
+}
+
+export default function SearchResults() {
+  return <SearchResultsWrapper />;
 }
