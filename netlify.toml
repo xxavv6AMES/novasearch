@@ -4,7 +4,7 @@
 
 [build.environment]
   NEXT_TELEMETRY_DISABLED = "1"
-  NODE_VERSION = "20"
+  NODE_VERSION = "18.20.2"  # LTS version
 
 # Using automatic Next.js support without the plugin
 
