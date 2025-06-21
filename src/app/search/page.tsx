@@ -20,11 +20,23 @@ import { BraveSearchResponse, BraveNewsResponse } from "@/app/types/search";
 import { ImageResult } from "@/app/types/images";
 import { SearchFilters as SearchFiltersType, defaultFilters } from "@/app/types/filters";
 
+interface SearchResultsContentProps {
+  initialQuery: string;
+  router: any;
+}
+
 // This component will use the searchParams hook
-function SearchResultsContent() {
-  const router = useRouter();
+function SearchResultsContent({ initialQuery, router }: SearchResultsContentProps) {
+  const [query, setQuery] = useState(initialQuery);
   const searchParams = useSearchParams();
-  const query = searchParams.get('q') || '';
+  
+  // Update query when search params change
+  useEffect(() => {
+    const newQuery = searchParams.get('q') || '';
+    if (newQuery !== query) {
+      setQuery(newQuery);
+    }
+  }, [searchParams, query]);
   const { isAuthenticated } = useAuth();
     const [webResults, setWebResults] = useState<BraveSearchResponse['web']['results']>([]);
   const [newsResults, setNewsResults] = useState<BraveNewsResponse['news']['results']>([]);
@@ -281,6 +293,15 @@ function SearchResultsContent() {
   );
 }
 
+// Component to handle search params with Suspense
+function SearchParamsWrapper() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const query = searchParams.get('q') || '';
+  
+  return <SearchResultsContent initialQuery={query} router={router} />;
+}
+
 // Main component that wraps the search results content in Suspense
 export default function SearchResults() {
   const [fallbackAuthModalOpen, setFallbackAuthModalOpen] = useState(false);
@@ -321,7 +342,7 @@ export default function SearchResults() {
         <AuthModal isOpen={fallbackAuthModalOpen} onClose={() => setFallbackAuthModalOpen(false)} />
       </div>
     }>
-      <SearchResultsContent />
+      <SearchParamsWrapper />
     </Suspense>
   );
 }
