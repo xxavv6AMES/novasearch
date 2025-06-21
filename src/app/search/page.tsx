@@ -20,9 +20,11 @@ import { BraveSearchResponse, BraveNewsResponse } from "@/app/types/search";
 import { ImageResult } from "@/app/types/images";
 import { SearchFilters as SearchFiltersType, defaultFilters } from "@/app/types/filters";
 
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
+
 interface SearchResultsContentProps {
   initialQuery: string;
-  router: any;
+  router: AppRouterInstance;
 }
 
 // This component will use the searchParams hook
